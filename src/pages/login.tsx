@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { authTokenVar, isLoggedInVar } from '../apollo';
 import styled from 'styled-components';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Spin, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { LOCALSTORAGE_TOKEN } from '../constants';
 import logo from '../images/CoreEdge_logo.png';
@@ -84,21 +84,36 @@ export const Login: React.FC = () => {
 
   const onCompleted = (data: loginMutation) => {
     const {
-      login: { ok, token },
+      login: { ok, token, error },
     } = data;
     if (ok && token) {
       localStorage.setItem(LOCALSTORAGE_TOKEN, token);
       authTokenVar(token);
       isLoggedInVar(true);
+      notification.success({
+        message: 'Success!',
+        description: '로그인 성공',
+        placement: 'topRight',
+        duration: 1,
+      });
+    } else if (error) {
+      notification.error({
+        message: 'Error',
+        description: `로그인 실패. ${error}`,
+        placement: 'topRight',
+        duration: 0,
+      });
     }
   };
 
-  const [loginMutation, { data: loading }] = useMutation<
+  const [loginMutation, { data, loading, error }] = useMutation<
     loginMutation,
     loginMutationVariables
   >(LOGIN_MUTATION, {
     onCompleted,
   });
+
+  if (error) console.log(error);
 
   const onFinish = () => {
     if (!loading) {
@@ -188,7 +203,7 @@ export const Login: React.FC = () => {
                 />
               </Form.Item>
               <SButton type="primary" htmlType="submit">
-                로그인
+                {!loading ? '로그인' : <Spin />}
               </SButton>
             </Form>
           </FormBox>

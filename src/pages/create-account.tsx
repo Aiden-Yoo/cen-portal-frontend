@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { Form, Input, Button, Select } from 'antd';
+import { Form, Input, Button, Select, Spin, notification } from 'antd';
 import {
   UserOutlined,
   LockOutlined,
@@ -95,11 +95,32 @@ export const CreateAccount: React.FC = () => {
 
   const onCompleted = (data: createAccountMutation) => {
     const {
-      createAccount: { ok },
+      createAccount: { ok, error },
     } = data;
     if (ok) {
-      alert('Account Created! Log in now!');
+      notification.info({
+        message: 'Success!',
+        description:
+          "회원가입 성공. '① 가입 이메일 인증, ② 관리자 승인'이 완료되어야 로그인이 가능합니다.",
+        placement: 'topRight',
+        duration: 0,
+      });
+      setUsername('');
+      setPassword('');
+      setPasswordConfirm('');
+      setRole(UserRole.Partner);
+      setName('');
+      setCompany('');
+      setTeam('');
+      setJobTitle('');
       history.push('/');
+    } else if (error) {
+      notification.error({
+        message: 'Error',
+        description: `회원가입 실패. ${error}`,
+        placement: 'topRight',
+        duration: 0,
+      });
     }
   };
 
@@ -113,7 +134,6 @@ export const CreateAccount: React.FC = () => {
     },
   );
 
-  if (loading) console.log('loading...');
   if (error) console.log(error);
 
   const onFinish = () => {
@@ -131,14 +151,6 @@ export const CreateAccount: React.FC = () => {
           },
         },
       });
-      setUsername('');
-      setPassword('');
-      setPasswordConfirm('');
-      setRole(UserRole.Partner);
-      setName('');
-      setCompany('');
-      setTeam('');
-      setJobTitle('');
     }
   };
 
@@ -365,7 +377,7 @@ export const CreateAccount: React.FC = () => {
                 />
               </Form.Item>
               <SButton type="primary" htmlType="submit">
-                회원가입
+                {!loading ? '회원가입' : <Spin />}
               </SButton>
             </Form>
           </FormBox>
