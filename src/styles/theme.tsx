@@ -53,6 +53,10 @@ const colors = {
   gray_1: '#222222',
   gray_2: '#767676',
   green_1: '#3cb46e',
+  main_black: '#000000',
+  main_gray: '#767676',
+  main_blue: '#1a0575',
+  main_white: '#f0e6e6',
 };
 
 const device = {
