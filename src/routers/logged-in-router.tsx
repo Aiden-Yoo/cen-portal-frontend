@@ -1,11 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useHistory } from 'react-router';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useMe } from '../hooks/useMe';
 import { Layout, Menu } from 'antd';
@@ -18,9 +12,10 @@ import { UserRole } from '../__generated__/globalTypes';
 import logo from '../images/CoreEdge_logo.png';
 import { NotFound } from '../pages/404';
 import { Loading } from '../components/loading';
+import { Header } from '../components/header';
 import { Order } from '../pages/cen/orders/order';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Footer, Sider } = Layout;
 
 const LogoColumn = styled.div`
   height: 64px;
@@ -137,7 +132,9 @@ export const LoggedInRouter: React.FC = () => {
           }}
         >
           <LogoColumn>
-            <Logo src={logo} />
+            <Link to="/">
+              <Logo src={logo} />
+            </Link>
           </LogoColumn>
           {siderRoutes.map((route) => (
             <Route key={route.path} path={route.path}>
@@ -146,7 +143,8 @@ export const LoggedInRouter: React.FC = () => {
           ))}
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: '#ffffff' }} />
+          {/* <Header style={{ padding: 0, background: '#ffffff' }} /> */}
+          <Header />
           <Switch>
             {commonRoutes.map((route) => (
               <Route exact key={route.path} path={route.path}>

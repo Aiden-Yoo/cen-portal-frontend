@@ -1,11 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   position: relative;
-  height: 100vh;
+  height: calc(100vh - 84px);
 `;
 
 const Notfound = styled.div`
