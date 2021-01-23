@@ -1,5 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
 import styled from 'styled-components';
 import { useMe } from '../hooks/useMe';
 import { Layout, Menu } from 'antd';
@@ -10,7 +16,9 @@ import {
 } from '@ant-design/icons';
 import { UserRole } from '../__generated__/globalTypes';
 import logo from '../images/CoreEdge_logo.png';
-import Loading from '../components/loading';
+import { NotFound } from '../pages/404';
+import { Loading } from '../components/loading';
+import { Order } from '../pages/cen/orders/order';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -38,10 +46,7 @@ const Contents = styled.div`
 `;
 
 const cenRoutes = [
-  { path: '/cen/orders', component: '/cen/orders' },
-  { path: '/cen/partners', component: '/cen/partners' },
-  { path: '/cen/bundles', component: '/cen/bundles' },
-  // { path: "/cen/orders", component: <Order /> },
+  { path: '/cen/orders', component: <Order /> },
   // { path: "/cen/orders/add-order", component: <AddOrder /> },
   // { path: "/cen/orders/:id", component: <OrderDetail /> },
   // { path: "/cen/orders/:id/edit-order", component: <EditOrder /> },
@@ -116,37 +121,40 @@ export const LoggedInRouter: React.FC = () => {
 
   return (
     <Router>
-      <Switch>
+      <Layout>
+        <Sider
+          breakpoint="lg"
+          collapsedWidth="0"
+          onBreakpoint={(broken) => {
+            console.log(broken);
+          }}
+          onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+          }}
+          style={{
+            height: 'inherit',
+            left: 0,
+          }}
+        >
+          <LogoColumn>
+            <Logo src={logo} />
+          </LogoColumn>
+          {siderRoutes.map((route) => (
+            <Route key={route.path} path={route.path}>
+              {route.component}
+            </Route>
+          ))}
+        </Sider>
         <Layout>
-          <Sider
-            breakpoint="lg"
-            collapsedWidth="0"
-            onBreakpoint={(broken) => {
-              console.log(broken);
-            }}
-            onCollapse={(collapsed, type) => {
-              console.log(collapsed, type);
-            }}
-            style={{
-              height: 'inherit',
-              left: 0,
-            }}
-          >
-            <LogoColumn>
-              <Logo src={logo} />
-            </LogoColumn>
-            {siderRoutes.map((route) => (
-              <Route key={route.path} path={route.path}>
-                {route.component}
+          <Header style={{ padding: 0, background: '#ffffff' }} />
+          <Switch>
+            {commonRoutes.map((route) => (
+              <Route exact key={route.path} path={route.path}>
+                <ContentColumn>
+                  <Contents>{route.component}</Contents>
+                </ContentColumn>
               </Route>
             ))}
-          </Sider>
-
-          <Layout>
-            <Header
-              className="site-layout-sub-header-background"
-              style={{ padding: 0, background: '#ffffff' }}
-            />
             {(data.me.role === UserRole.CENSE ||
               data.me.role === UserRole.CEN) &&
               cenRoutes.map((route) => (
@@ -156,30 +164,21 @@ export const LoggedInRouter: React.FC = () => {
                   </ContentColumn>
                 </Route>
               ))}
-            {commonRoutes.map((route) => (
-              <Route exact key={route.path} path={route.path}>
-                <Route exact key={route.path} path={route.path}>
-                  <ContentColumn>
-                    <Contents>{route.component}</Contents>
-                  </ContentColumn>
-                </Route>
-              </Route>
-            ))}
-            {/* <Route>
+            <Route>
               <NotFound />
-            </Route> */}
-            <Footer
-              style={{
-                textAlign: 'center',
-                fontSize: '10px',
-                padding: '5px 0',
-              }}
-            >
-              COPYRIGHT© 2017-{year} COREEDGE NETWORKS INC. ALL RIGHTS RESERVED.
-            </Footer>
-          </Layout>
+            </Route>
+          </Switch>
+          <Footer
+            style={{
+              textAlign: 'center',
+              fontSize: '10px',
+              padding: '5px 0',
+            }}
+          >
+            COPYRIGHT© 2017-{year} COREEDGE NETWORKS INC. ALL RIGHTS RESERVED.
+          </Footer>
         </Layout>
-      </Switch>
+      </Layout>
     </Router>
   );
 };

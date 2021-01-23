@@ -1,7 +1,7 @@
 import React from 'react';
 import { Spin } from 'antd';
 
-const Loading: React.FC = () => {
+export const Loading: React.FC = () => {
   return (
     <div
       style={{
@@ -15,5 +15,3 @@ const Loading: React.FC = () => {
     </div>
   );
 };
-
-export default Loading;
