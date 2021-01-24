@@ -15,6 +15,11 @@ export enum UserRole {
   Partner = "Partner",
 }
 
+export interface AllBundlesInput {
+  page?: number | null;
+  take?: number | null;
+}
+
 export interface CreateAccountInput {
   email: string;
   password: string;
@@ -24,6 +29,10 @@ export interface CreateAccountInput {
   team?: string | null;
   jobTitle?: string | null;
   bio?: string | null;
+}
+
+export interface DeleteBundleInput {
+  bundleId: number;
 }
 
 export interface LoginInput {

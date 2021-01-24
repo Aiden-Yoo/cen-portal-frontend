@@ -13,9 +13,12 @@ import logo from '../images/CoreEdge_logo.png';
 import { NotFound } from '../pages/404';
 import { Loading } from '../components/loading';
 import { Header } from '../components/header';
-import { Order } from '../pages/cen/orders/order';
+import { Order } from '../pages/cen/orders/orders';
+import { Partner } from '../pages/cen/partners/partners';
+import { Device } from '../pages/cen/devices/devices';
 
 const { Content, Footer, Sider } = Layout;
+const { SubMenu } = Menu;
 
 const LogoColumn = styled.div`
   height: 64px;
@@ -45,17 +48,17 @@ const cenRoutes = [
   // { path: "/cen/orders/add-order", component: <AddOrder /> },
   // { path: "/cen/orders/:id", component: <OrderDetail /> },
   // { path: "/cen/orders/:id/edit-order", component: <EditOrder /> },
-  // { path: "/cen/partners", component: <Partner /> },
+  { path: '/cen/partners', component: <Partner /> },
   // { path: "/cen/partners/add-partner", component: <AddPartner /> },
   // { path: "/cen/partners/:id", component: <PartnerDetail /> },
   // { path: "/cen/partners/:id/edit-partner", component: <EditPartner /> },
   // { path: "/cen/partners/:id/add-contact", component: <AddContact /> },
-  // { path: "/cen/bundles", component: <Device /> },
-  // { path: "/cen/bundles/add-bundle", component: <AddBundle /> },
-  // { path: "/cen/bundles/add-part", component: <AddPart /> },
-  // { path: "/cen/bundles/:id", component: <BundleDetail /> },
-  // { path: "/cen/bundles/:id/edit-bundle", component: <EditBundle /> },
-  // { path: "/cen/bundles/:id/add-part", component: <AddPart /> },
+  { path: '/cen/devices', component: <Device /> },
+  // { path: "/cen/devices/add-bundle", component: <AddBundle /> },
+  // { path: "/cen/devices/add-part", component: <AddPart /> },
+  // { path: "/cen/devices/:id", component: <BundleDetail /> },
+  // { path: "/cen/devices/:id/edit-bundle", component: <EditBundle /> },
+  // { path: "/cen/devices/:id/add-part", component: <AddPart /> },
 ];
 
 const commonRoutes = [
@@ -69,17 +72,30 @@ const siderRoutes = [
   {
     path: '/cen',
     component: (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
-        <Menu.Item key="1" icon={<UserOutlined />}>
-          cen 1
-        </Menu.Item>
-        <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+      <Menu
+        theme="dark"
+        mode="inline"
+        defaultSelectedKeys={['1-1']}
+        defaultOpenKeys={['sub1']}
+      >
+        <SubMenu key="sub1" icon={<UserOutlined />} title="출고요청">
+          <Menu.Item key="1-1">
+            <Link to="/cen/orders">출고요청서</Link>
+          </Menu.Item>
+          <Menu.Item key="1-2">
+            <Link to="/cen/partners">파트너</Link>
+          </Menu.Item>
+          <Menu.Item key="1-3">
+            <Link to="/cen/devices">제품</Link>
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Item key="6" icon={<VideoCameraOutlined />}>
           nav 2
         </Menu.Item>
-        <Menu.Item key="3" icon={<UploadOutlined />}>
+        <Menu.Item key="7" icon={<UploadOutlined />}>
           nav 3
         </Menu.Item>
-        <Menu.Item key="4" icon={<UserOutlined />}>
+        <Menu.Item key="8" icon={<UserOutlined />}>
           nav 4
         </Menu.Item>
       </Menu>

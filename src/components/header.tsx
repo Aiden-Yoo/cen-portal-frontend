@@ -16,7 +16,7 @@ export const Header: React.FC = () => {
           {(data?.me.role === UserRole.CENSE ||
             data?.me.role === UserRole.CEN) && (
             <Menu.Item key="cen">
-              <Link to="/cen">CEN</Link>
+              <Link to="/cen/orders">CEN</Link>
             </Menu.Item>
           )}
           <Menu.Item key="partner">
