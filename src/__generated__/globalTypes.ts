@@ -72,12 +72,40 @@ export interface CreateBundleInput {
   parts?: PartInputType[] | null;
 }
 
+export interface CreateOrderInput {
+  salesPerson: string;
+  projectName: string;
+  classification: OrderClassification;
+  demoReturnDate?: any | null;
+  orderSheet: boolean;
+  destination: string;
+  receiver: string;
+  contact: string;
+  address: string;
+  deliveryDate: any;
+  deliveryType: DeliveryType;
+  deliveryMethod: DeliveryMethod;
+  remark?: string | null;
+  status: OrderStatus;
+  partnerId: number;
+  items: CreateOrderItemInput[];
+}
+
+export interface CreateOrderItemInput {
+  bundleId: number;
+  num: number;
+}
+
 export interface DeleteBundleInput {
   bundleId: number;
 }
 
 export interface DeleteOrderInput {
   orderId: number;
+}
+
+export interface GetOrderInput {
+  id: number;
 }
 
 export interface GetOrdersInput {

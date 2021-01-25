@@ -23,6 +23,7 @@ import {
   deleteBundleMutationVariables,
 } from '../../../__generated__/deleteBundleMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
+import { Loading } from '../../../components/loading';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -277,18 +278,22 @@ export const Device = () => {
         </SButton>
       </MenuBar>
       <Form form={form} component={false}>
-        <Table<Item>
-          bordered
-          rowSelection={rowSelection}
-          dataSource={data}
-          columns={columns}
-          pagination={{
-            total,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-            onChange: (page, take) => handlePageChange(page, take),
-          }}
-        />
+        {loading ? (
+          <Loading />
+        ) : (
+          <Table<Item>
+            bordered
+            rowSelection={rowSelection}
+            dataSource={data}
+            columns={columns}
+            pagination={{
+              total,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} of ${total} items`,
+              onChange: (page, take) => handlePageChange(page, take),
+            }}
+          />
+        )}
       </Form>
     </Wrapper>
   );

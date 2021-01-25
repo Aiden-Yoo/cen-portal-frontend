@@ -25,6 +25,7 @@ import {
   deleteOrderMutationVariables,
 } from '../../../__generated__/deleteOrderMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
+import { Loading } from '../../../components/loading';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -138,6 +139,10 @@ export const Order = () => {
     onCompleted,
   });
 
+  // if (loading) {
+  //   return <Loading />;
+  // }
+
   useEffect(() => {
     if (ordersData && !loading) {
       const orders: any = ordersData?.getOrders.orders;
@@ -147,7 +152,11 @@ export const Order = () => {
           key: `${orders[i].id}`,
           no: i + 1 + (page - 1) * take,
           createAt: new Date(orders[i].createAt).toLocaleDateString(),
-          projectName: orders[i].projectName,
+          projectName: (
+            <Link
+              to={`/cen/orders/${orders[i].id}`}
+            >{`${orders[i].projectName}`}</Link>
+          ),
           classification: orders[i].classification,
           salesPerson: orders[i].salesPerson,
           deliveryDate: new Date(orders[i].deliveryDate).toLocaleDateString(),
@@ -353,18 +362,22 @@ export const Order = () => {
         </SButton>
       </MenuBar>
       <Form form={form} component={false}>
-        <Table<getOrdersQuery_getOrders_orders>
-          bordered
-          rowSelection={rowSelection}
-          dataSource={data}
-          columns={columns}
-          pagination={{
-            total,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} items`,
-            onChange: (page, take) => handlePageChange(page, take),
-          }}
-        />
+        {loading ? (
+          <Loading />
+        ) : (
+          <Table<getOrdersQuery_getOrders_orders>
+            bordered
+            rowSelection={rowSelection}
+            dataSource={data}
+            columns={columns}
+            pagination={{
+              total,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} of ${total} items`,
+              onChange: (page, take) => handlePageChange(page, take),
+            }}
+          />
+        )}
       </Form>
     </Wrapper>
   );

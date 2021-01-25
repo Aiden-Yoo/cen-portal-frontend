@@ -18,6 +18,7 @@ import { Partner } from '../pages/cen/partners/partners';
 import { Device } from '../pages/cen/devices/devices';
 import { AddBundle } from '../pages/cen/devices/addBundle';
 import { AddOrder } from '../pages/cen/orders/addOrder';
+import { OrderDetail } from '../pages/cen/orders/orderDetail';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -48,7 +49,7 @@ const Contents = styled.div`
 const cenRoutes = [
   { path: '/cen/orders', component: <Order /> },
   { path: '/cen/orders/add-order', component: <AddOrder /> },
-  // { path: "/cen/orders/:id", component: <OrderDetail /> },
+  { path: '/cen/orders/:id', component: <OrderDetail /> },
   // { path: "/cen/orders/:id/edit-order", component: <EditOrder /> },
   { path: '/cen/partners', component: <Partner /> },
   // { path: "/cen/partners/add-partner", component: <AddPartner /> },
@@ -128,73 +129,73 @@ export const LoggedInRouter: React.FC = () => {
   const year = new Date().getFullYear();
   const { data, loading, error } = useMe();
 
-  if (!data || loading || error) {
-    return <Loading />;
-  }
-
   return (
     <Router>
-      <Layout>
-        <Sider
-          breakpoint="lg"
-          collapsedWidth="0"
-          onBreakpoint={(broken) => {
-            console.log(broken);
-          }}
-          onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-          }}
-          style={{
-            height: 'inherit',
-            left: 0,
-          }}
-        >
-          <LogoColumn>
-            <Link to="/">
-              <Logo src={logo} />
-            </Link>
-          </LogoColumn>
-          {siderRoutes.map((route) => (
-            <Route key={route.path} path={route.path}>
-              {route.component}
-            </Route>
-          ))}
-        </Sider>
+      {loading ? (
+        <Loading />
+      ) : (
         <Layout>
-          {/* <Header style={{ padding: 0, background: '#ffffff' }} /> */}
-          <Header />
-          <Switch>
-            {commonRoutes.map((route) => (
-              <Route exact key={route.path} path={route.path}>
-                <ContentColumn>
-                  <Contents>{route.component}</Contents>
-                </ContentColumn>
+          <Sider
+            breakpoint="lg"
+            collapsedWidth="0"
+            onBreakpoint={(broken) => {
+              console.log(broken);
+            }}
+            onCollapse={(collapsed, type) => {
+              console.log(collapsed, type);
+            }}
+            style={{
+              height: 'inherit',
+              left: 0,
+            }}
+          >
+            <LogoColumn>
+              <Link to="/">
+                <Logo src={logo} />
+              </Link>
+            </LogoColumn>
+            {siderRoutes.map((route) => (
+              <Route key={route.path} path={route.path}>
+                {route.component}
               </Route>
             ))}
-            {(data.me.role === UserRole.CENSE ||
-              data.me.role === UserRole.CEN) &&
-              cenRoutes.map((route) => (
+          </Sider>
+          <Layout>
+            {/* <Header style={{ padding: 0, background: '#ffffff' }} /> */}
+            <Header />
+            <Switch>
+              {commonRoutes.map((route) => (
                 <Route exact key={route.path} path={route.path}>
                   <ContentColumn>
                     <Contents>{route.component}</Contents>
                   </ContentColumn>
                 </Route>
               ))}
-            <Route>
-              <NotFound />
-            </Route>
-          </Switch>
-          <Footer
-            style={{
-              textAlign: 'center',
-              fontSize: '10px',
-              padding: '5px 0',
-            }}
-          >
-            COPYRIGHT© 2017-{year} COREEDGE NETWORKS INC. ALL RIGHTS RESERVED.
-          </Footer>
+              {(data?.me.role === UserRole.CENSE ||
+                data?.me.role === UserRole.CEN) &&
+                cenRoutes.map((route) => (
+                  <Route exact key={route.path} path={route.path}>
+                    <ContentColumn>
+                      <Contents>{route.component}</Contents>
+                    </ContentColumn>
+                  </Route>
+                ))}
+              <Route>
+                <NotFound />
+              </Route>
+            </Switch>
+            <Footer
+              style={{
+                textAlign: 'center',
+                fontSize: '10px',
+                padding: '5px 0',
+              }}
+            >
+              COPYRIGHT© 2017-{year} COREEDGE NETWORKS INC. ALL RIGHTS RESERVED.
+            </Footer>
+          </Layout>
         </Layout>
-      </Layout>
+      )}
     </Router>
   );
 };
