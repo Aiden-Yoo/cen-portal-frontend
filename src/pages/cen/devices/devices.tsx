@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { Helmet } from 'react-helmet';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { gql, useMutation, useQuery } from '@apollo/client';
 import {
@@ -59,7 +60,7 @@ const ALL_BUNDLES_QUERY = gql`
   }
 `;
 
-const DELETE_BUNDLE = gql`
+const DELETE_BUNDLE_MUTATION = gql`
   mutation deleteBundleMutation($input: DeleteBundleInput!) {
     deleteBundle(input: $input) {
       ok
@@ -120,7 +121,7 @@ export const Device = () => {
   const [deleteBundleMutation, { data: deleteBundleData }] = useMutation<
     deleteBundleMutation,
     deleteBundleMutationVariables
-  >(DELETE_BUNDLE, {
+  >(DELETE_BUNDLE_MUTATION, {
     onCompleted,
   });
 
@@ -151,6 +152,11 @@ export const Device = () => {
   const edit = (record: Item) => {
     console.log(record);
   };
+
+  const handleAdd = () => {
+    console.log('handleAdd');
+  };
+
   const handleDelete = () => {
     selectedRowKeys.map((key) => {
       console.log(key);
@@ -189,6 +195,7 @@ export const Device = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
+      sortOrder: 'ascend',
       sorter: (a: { no: number }, b: { no: number }) => a.no - b.no,
     },
     {
@@ -254,22 +261,13 @@ export const Device = () => {
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
-        {' 제품 - Bundles'}
+        {' 제품'}
       </TitleBar>
       <MenuBar>
-        {/* <SButton
-          type="primary"
-          size="small"
-          onClick={() => handleNew()}
-          disabled={user.classification !== "CEN"}
-        >
-          New
-        </SButton> */}
-        <SButton
-          type="primary"
-          size="small"
-          // disabled={data.classification !== "CEN"}
-        >
+        <SButton type="primary" size="small" onClick={() => handleAdd()}>
+          <Link to="/cen/devices/add-bundle">Add</Link>
+        </SButton>
+        <SButton type="primary" size="small">
           <Popconfirm
             title="정말 삭제 하시겠습니까?"
             onConfirm={() => handleDelete()}

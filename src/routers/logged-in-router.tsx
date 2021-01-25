@@ -16,6 +16,8 @@ import { Header } from '../components/header';
 import { Order } from '../pages/cen/orders/orders';
 import { Partner } from '../pages/cen/partners/partners';
 import { Device } from '../pages/cen/devices/devices';
+import { AddBundle } from '../pages/cen/devices/addBundle';
+import { AddOrder } from '../pages/cen/orders/addOrder';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -45,7 +47,7 @@ const Contents = styled.div`
 
 const cenRoutes = [
   { path: '/cen/orders', component: <Order /> },
-  // { path: "/cen/orders/add-order", component: <AddOrder /> },
+  { path: '/cen/orders/add-order', component: <AddOrder /> },
   // { path: "/cen/orders/:id", component: <OrderDetail /> },
   // { path: "/cen/orders/:id/edit-order", component: <EditOrder /> },
   { path: '/cen/partners', component: <Partner /> },
@@ -54,7 +56,7 @@ const cenRoutes = [
   // { path: "/cen/partners/:id/edit-partner", component: <EditPartner /> },
   // { path: "/cen/partners/:id/add-contact", component: <AddContact /> },
   { path: '/cen/devices', component: <Device /> },
-  // { path: "/cen/devices/add-bundle", component: <AddBundle /> },
+  { path: '/cen/devices/add-bundle', component: <AddBundle /> },
   // { path: "/cen/devices/add-part", component: <AddPart /> },
   // { path: "/cen/devices/:id", component: <BundleDetail /> },
   // { path: "/cen/devices/:id/edit-bundle", component: <EditBundle /> },

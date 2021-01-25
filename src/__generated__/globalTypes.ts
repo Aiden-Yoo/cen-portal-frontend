@@ -7,6 +7,34 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum DeliveryMethod {
+  Cargo = "Cargo",
+  Directly = "Directly",
+  Parcel = "Parcel",
+  Quick = "Quick",
+}
+
+export enum DeliveryType {
+  Partial = "Partial",
+  Total = "Total",
+}
+
+export enum OrderClassification {
+  Demo = "Demo",
+  DoA = "DoA",
+  RMA = "RMA",
+  Sale = "Sale",
+}
+
+export enum OrderStatus {
+  Canceled = "Canceled",
+  Completed = "Completed",
+  Created = "Created",
+  Partial = "Partial",
+  Pending = "Pending",
+  Preparing = "Preparing",
+}
+
 export enum UserRole {
   CEN = "CEN",
   CENSE = "CENSE",
@@ -20,6 +48,13 @@ export interface AllBundlesInput {
   take?: number | null;
 }
 
+export interface BundleInputType {
+  name: string;
+  series?: string | null;
+  parts?: PartInputType[] | null;
+  orderItem?: OrderItemInputType | null;
+}
+
 export interface CreateAccountInput {
   email: string;
   password: string;
@@ -31,13 +66,41 @@ export interface CreateAccountInput {
   bio?: string | null;
 }
 
+export interface CreateBundleInput {
+  name: string;
+  series?: string | null;
+  parts?: PartInputType[] | null;
+}
+
 export interface DeleteBundleInput {
   bundleId: number;
+}
+
+export interface DeleteOrderInput {
+  orderId: number;
+}
+
+export interface GetOrdersInput {
+  page?: number | null;
+  take?: number | null;
+  status?: OrderStatus | null;
 }
 
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface OrderItemInputType {
+  bundle: BundleInputType;
+  num: number;
+}
+
+export interface PartInputType {
+  name: string;
+  num?: number | null;
+  description?: string | null;
+  bundle?: BundleInputType | null;
 }
 
 //==============================================================
