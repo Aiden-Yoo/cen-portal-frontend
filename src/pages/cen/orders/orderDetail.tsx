@@ -189,7 +189,7 @@ export const OrderDetail: React.FC = () => {
               {order?.demoReturnDate}
             </Descriptions.Item>
             <Descriptions.Item label="발주서 접수">
-              {order?.orderSheet}
+              {order?.orderSheet === true ? 'O' : 'X'}
             </Descriptions.Item>
             <Descriptions.Item label="거래처">
               {order?.partner?.name}

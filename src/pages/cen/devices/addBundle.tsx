@@ -124,7 +124,7 @@ export const AddBundle = () => {
             name="name"
             label={
               <span>
-                Bundle{' '}
+                {'Bundle '}
                 <Tooltip title="번들명 입력">
                   <QuestionCircleOutlined />
                 </Tooltip>
@@ -139,7 +139,7 @@ export const AddBundle = () => {
             name="series"
             label={
               <span>
-                Series{' '}
+                {'Series '}
                 <Tooltip title="시리즈명 입력">
                   <QuestionCircleOutlined />
                 </Tooltip>

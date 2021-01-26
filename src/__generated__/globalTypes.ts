@@ -48,6 +48,11 @@ export interface AllBundlesInput {
   take?: number | null;
 }
 
+export interface AllPartnersInput {
+  page?: number | null;
+  take?: number | null;
+}
+
 export interface BundleInputType {
   name: string;
   series?: string | null;
