@@ -5,7 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import {
   Table,
   Popconfirm,
@@ -15,15 +15,12 @@ import {
   notification,
 } from 'antd';
 import {
-  allBundlesQuery,
-  allBundlesQueryVariables,
-} from '../../../__generated__/allBundlesQuery';
-import {
   deleteBundleMutation,
   deleteBundleMutationVariables,
 } from '../../../__generated__/deleteBundleMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { Loading } from '../../../components/loading';
+import { useAllBundles } from '../../../hooks/useAllBundles';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -43,22 +40,6 @@ const MenuBar = styled.span`
 
 const SButton = styled(Button)`
   margin-left: 8px;
-`;
-
-const ALL_BUNDLES_QUERY = gql`
-  query allBundlesQuery($input: AllBundlesInput!) {
-    allBundles(input: $input) {
-      ok
-      error
-      totalPages
-      totalResults
-      bundles {
-        id
-        name
-        series
-      }
-    }
-  }
 `;
 
 const DELETE_BUNDLE_MUTATION = gql`
@@ -85,17 +66,10 @@ export const Device = () => {
   const [page, setPage] = useState(1);
   const [take, setTake] = useState(10);
   const [total, setTotal] = useState(0);
-  const { data: bundleData, loading, refetch: reGetData } = useQuery<
-    allBundlesQuery,
-    allBundlesQueryVariables
-  >(ALL_BUNDLES_QUERY, {
-    variables: {
-      input: {
-        page,
-        take,
-      },
-    },
-  });
+  const { data: bundleData, loading, refetch: reGetData } = useAllBundles(
+    page,
+    take,
+  );
 
   const onCompleted = (data: deleteBundleMutation) => {
     const {

@@ -81,13 +81,6 @@ const DELETE_ORDER_MUTATION = gql`
   }
 `;
 
-interface Item {
-  key: string;
-  no: number;
-  series: string;
-  name: string;
-}
-
 export const Order = () => {
   const originData: any[] = [];
   const [form] = Form.useForm();
@@ -139,10 +132,6 @@ export const Order = () => {
     onCompleted,
   });
 
-  // if (loading) {
-  //   return <Loading />;
-  // }
-
   useEffect(() => {
     if (ordersData && !loading) {
       const orders: any = ordersData?.getOrders.orders;
@@ -167,7 +156,6 @@ export const Order = () => {
       }
       setTotal(getTotal);
       setData(originData);
-      console.log(originData);
     }
   }, [ordersData]);
 
@@ -232,17 +220,13 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { series: string }, b: { series: string }) =>
-        a.series.localeCompare(b.series),
+      sorter: (a: any, b: any) => a.createAt.localeCompare(b.createAt),
     },
     {
       title: '프로젝트',
       dataIndex: 'projectName',
       width: '20%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
     },
     {
       title: '구분',
