@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Spin } from 'antd';
 
-export const Loading: React.FC = () => {
+export const Loading = ({ tip }: any) => {
   return (
     <div
       style={{
@@ -11,7 +13,7 @@ export const Loading: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      <Spin />
+      <Spin tip={tip ? tip : ''} />
     </div>
   );
 };

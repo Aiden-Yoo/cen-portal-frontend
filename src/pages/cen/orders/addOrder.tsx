@@ -11,6 +11,7 @@ import {
   Button,
   notification,
   Input,
+  InputNumber,
   Space,
   Select,
   Tooltip,
@@ -39,6 +40,7 @@ import {
 import { useMe } from '../../../hooks/useMe';
 import { useAllBundles } from '../../../hooks/useAllBundles';
 import { useAllPartners } from '../../../hooks/useAllPartners';
+import { Loading } from '../../../components/loading';
 
 const { Option } = Select;
 
@@ -56,6 +58,17 @@ const FormColumn = styled.div`
   margin-top: 40px;
 `;
 
+const ItemList = styled.div`
+  background-color: #ffffff;
+  padding: 20px;
+`;
+
+const ButtonColumn = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`;
+
 const CREATE_ORDER_MUTATION = gql`
   mutation createOrderMutation($input: CreateOrderInput!) {
     createOrder(input: $input) {
@@ -67,16 +80,8 @@ const CREATE_ORDER_MUTATION = gql`
 
 export const AddOrder = () => {
   const { data: meData, loading: meLoading } = useMe();
-  const {
-    data: bundleData,
-    loading: bundleLoading,
-    refetch: bundleFetch,
-  } = useAllBundles();
-  const {
-    data: partnerData,
-    loading: partnerLoading,
-    refetch: partnerFetch,
-  } = useAllPartners();
+  const { data: bundleData, loading: bundleLoading } = useAllBundles();
+  const { data: partnerData, loading: partnerLoading } = useAllPartners();
   const history = useHistory();
   const [form] = Form.useForm();
   const [partners, setPartners] = useState([]);
@@ -89,19 +94,20 @@ export const AddOrder = () => {
   const [newTel, setNewTel] = useState('');
   const [telItem, setTelItem] = useState<string[]>([]);
   const [telItemTemp, setTelItemTemp] = useState<string[]>([]);
+  const [bundles, setBundles] = useState<any[]>([]);
+  const [deliveryDate, setDeliveryDate] = useState<string>();
+  const [demoReturnDate, setDemoReturnDate] = useState<string>();
+  const [orderSheet, setOrderSheet] = useState(false);
 
-  if (meData) {
-    console.log(meData);
-  }
-  if (bundleData) {
-    console.log(bundleData);
-  }
-  // if (partnerData && !partnerLoading) {
-  //   console.log(partnerData.allPartners.partners);
-  //   const allPartners: any = partnerData.allPartners.partners;
-  //   setPartners(allPartners);
-  //   console.log(partners);
+  // if (meData) {
+  //   console.log(meData);
   // }
+
+  useEffect(() => {
+    if (meData) {
+      console.log(meData);
+    }
+  }, [meData]);
 
   useEffect(() => {
     const partnersName: string[] = [];
@@ -113,6 +119,13 @@ export const AddOrder = () => {
       setDestItem(partnersName);
     }
   }, [partnerData]);
+
+  useEffect(() => {
+    if (bundleData) {
+      const allBundles: any = bundleData.allBundles.bundles;
+      setBundles(allBundles);
+    }
+  }, [bundleData]);
 
   const onCompleted = (data: createOrderMutation) => {
     const {
@@ -136,38 +149,63 @@ export const AddOrder = () => {
     }
   };
 
-  const [createOrderMutation, { data: createOrderData }] = useMutation<
+  const [
     createOrderMutation,
-    createOrderMutationVariables
-  >(CREATE_ORDER_MUTATION, {
-    onCompleted,
-  });
+    { data: createOrderData, loading: createOrderLoading },
+  ] = useMutation<createOrderMutation, createOrderMutationVariables>(
+    CREATE_ORDER_MUTATION,
+    {
+      onCompleted,
+    },
+  );
+
+  if (createOrderLoading) {
+    return (
+      <Loading
+        tip={
+          '등록중입니다. 잠시만 기다려주세요... 제품 수량이 많을수록 많은 시간이 소요됩니다.'
+        }
+      />
+    );
+  }
+
+  if (createOrderData && !createOrderLoading) {
+    history.push('/cen/orders');
+    // return <Link to="/cen/orders" />;
+  }
 
   const onFinish = (values: any) => {
-    // console.log('Received values of form:', values);
-    const orderItems: any[] = [];
-    // for (const orderItem in values.orderItems) {
-    //   orderItems.push({
-    //     name: values.orderItems[part].name,
-    //     num: +values.orderItems[part].num,
-    //   });
-    // }
-    // createOrderMutation({
-    //   variables: {
-    //     input: {
-    //       name: values.name,
-    //       series: values.series,
-    //       orderItems: orderItems,
-    //     },
-    //   },
-    // });
-    // history.goBack();
+    console.log('Received values of form:', values);
+    createOrderMutation({
+      variables: {
+        input: {
+          address: values.address,
+          classification: values.classification,
+          contact: values.contact,
+          deliveryDate,
+          deliveryMethod: values.deliveryMethod,
+          deliveryType: values.deliveryType,
+          demoReturnDate,
+          destination: values.destination,
+          items: values.items,
+          orderSheet,
+          partnerId: values.partnerId,
+          projectName: values.projectName,
+          receiver: values.receiver,
+          remark: values.remark,
+          salesPerson: values.salesPerson
+            ? values.salesPerson
+            : meData?.me.name,
+          status: OrderStatus.Created,
+        },
+      },
+    });
   };
 
-  const handleChange = (event: any, option?: any) => {
-    form.setFieldsValue({ parts: [] });
-    console.log(event, option);
-  };
+  // const handleChange = (event: any, option?: any) => {
+  //   form.setFieldsValue({ parts: [] });
+  //   console.log(event, option);
+  // };
 
   const onPartnerIdChange = (event: any, option?: any) => {
     const partner: any = partners[option.key];
@@ -225,6 +263,21 @@ export const AddOrder = () => {
     setNewTel('');
   };
 
+  const onDateChange = (_: any, dateString: string) => {
+    setDeliveryDate(dateString);
+  };
+
+  const onDemoReturnDateChange = (_: any, dateString: string) => {
+    setDemoReturnDate(dateString);
+  };
+
+  const onOrderSheetChange = (event: any) => {
+    const {
+      target: { checked },
+    } = event;
+    setOrderSheet(checked);
+  };
+
   return (
     <Wrapper>
       <Helmet>
@@ -251,7 +304,7 @@ export const AddOrder = () => {
             </Descriptions.Item>
             <Descriptions.Item label="담당영업">
               <Form.Item name="salesPerson">
-                <Input defaultValue={meData?.me.name} />
+                <Input defaultValue={meData?.me.name} value={meData?.me.name} />
               </Form.Item>
             </Descriptions.Item>
             <Descriptions.Item label="작성자">
@@ -266,12 +319,16 @@ export const AddOrder = () => {
             </Descriptions.Item>
             <Descriptions.Item label="상태">
               <Form.Item name="status">
-                <Badge status="processing" text="출고요청" />
+                <Input
+                  prefix={<Badge status="processing" text="출고요청" />}
+                  value={OrderStatus.Created}
+                  disabled
+                />
               </Form.Item>
             </Descriptions.Item>
             <Descriptions.Item label="구분">
               <Form.Item name="classification">
-                <Select onChange={handleChange}>
+                <Select>
                   <Option value={OrderClassification.Sale}>판매</Option>
                   <Option value={OrderClassification.Demo}>Demo</Option>
                   <Option value={OrderClassification.RMA}>RMA</Option>
@@ -282,16 +339,25 @@ export const AddOrder = () => {
             <Descriptions.Item label="Demo 회수일자">
               <Form.Item name="demoReturnDate">
                 <Space direction="vertical">
-                  <DatePicker onChange={handleChange} />
+                  <DatePicker onChange={onDemoReturnDateChange} />
                 </Space>
               </Form.Item>
             </Descriptions.Item>
             <Descriptions.Item label="발주서 접수">
               <Form.Item name="orderSheet">
-                <Checkbox onChange={handleChange} defaultChecked={false} />
+                <Checkbox onChange={onOrderSheetChange} checked={orderSheet} />
               </Form.Item>
             </Descriptions.Item>
-            <Descriptions.Item label="거래처">
+            <Descriptions.Item
+              label={
+                <span>
+                  {'거래처 '}
+                  <Tooltip title="등록한 파트너만 선택 가능">
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </span>
+              }
+            >
               <Form.Item name="partnerId">
                 <Select
                   onChange={onPartnerIdChange}
@@ -323,9 +389,8 @@ export const AddOrder = () => {
                 </span>
               }
             >
-              <Form.Item name="newDestination">
+              <Form.Item name="destination">
                 <Select
-                  onChange={handleChange}
                   placeholder="납품처 입력"
                   dropdownRender={(menu) => (
                     <div>
@@ -377,7 +442,7 @@ export const AddOrder = () => {
             <Descriptions.Item label="납품일">
               <Form.Item name="deliveryDate">
                 <Space direction="vertical">
-                  <DatePicker />
+                  <DatePicker onChange={onDateChange} />
                 </Space>
               </Form.Item>
             </Descriptions.Item>
@@ -399,7 +464,17 @@ export const AddOrder = () => {
                 </Select>
               </Form.Item>
             </Descriptions.Item>
-            <Descriptions.Item label="수령자" span={2}>
+            <Descriptions.Item
+              label={
+                <span>
+                  {'수령자 '}
+                  <Tooltip title="등록한 연락처 입력 혹은 직접입력">
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </span>
+              }
+              span={2}
+            >
               <Form.Item name="receiver">
                 <Select
                   onChange={onReceiverIdChange}
@@ -454,7 +529,6 @@ export const AddOrder = () => {
             <Descriptions.Item label="연락처">
               <Form.Item name="contact">
                 <Select
-                  onChange={handleChange}
                   placeholder="연락처 입력"
                   dropdownRender={(menu) => (
                     <div>
@@ -495,7 +569,7 @@ export const AddOrder = () => {
                     optionA.value.localeCompare(optionB.value)
                   }
                 >
-                  {telItem.map((item, index) => (
+                  {telItem.map((item) => (
                     <Option key={item} value={item}>
                       {item}
                     </Option>
@@ -506,7 +580,6 @@ export const AddOrder = () => {
             <Descriptions.Item label="납품장소" span={3}>
               <Form.Item name="address">
                 <Select
-                  onChange={handleChange}
                   placeholder="납품장소 입력"
                   dropdownRender={(menu) => (
                     <div>
@@ -563,136 +636,108 @@ export const AddOrder = () => {
           </Descriptions>
           <Descriptions layout="vertical" bordered size="small">
             <Descriptions.Item
-              label="출고제품"
-              style={{ backgroundColor: '#F0F2F5' }}
-            >
-              {/* <Descriptions.Item
               label={
                 <span>
-                  {'담당영업 '}
-                  <Tooltip title="담당영업 입력">
+                  {'출고제품 '}
+                  <Tooltip title="등록한 제품만 선택 가능. 'Add Bundles' 버튼을 통해 항목추가 가능.">
                     <QuestionCircleOutlined />
                   </Tooltip>
                 </span>
               }
+              style={{ backgroundColor: '#F0F2F5' }}
             >
-              <Form.Item
-                name="salesPerson"
-                rules={[
-                  { required: true, message: '담당 영업을 입력해주세요.' },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Descriptions.Item> */}
-
-              <Form.List name="items">
-                {(fields, { add, remove }) => (
-                  <>
-                    {fields.map((field) => (
-                      <Space key={field.key} align="baseline">
-                        <Form.Item
-                          noStyle
-                          shouldUpdate={(prevValues, curValues) =>
-                            prevValues.area !== curValues.area ||
-                            prevValues.items !== curValues.items
-                          }
+              <ItemList>
+                <Form.List name="items">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map((field) => (
+                        <Space key={field.key} align="baseline">
+                          <Form.Item
+                            noStyle
+                            shouldUpdate={(prevValues, curValues) =>
+                              prevValues.area !== curValues.area ||
+                              prevValues.items !== curValues.items
+                            }
+                          >
+                            {() => (
+                              <Form.Item
+                                {...field}
+                                label="Bundle"
+                                name={[field.name, 'bundleId']}
+                                fieldKey={[field.fieldKey, 'bundleId']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: '번들 이름을 선택해주세요.',
+                                  },
+                                ]}
+                                style={{ width: 280 }}
+                              >
+                                <Select>
+                                  {bundles.map((item) => (
+                                    <Option key={item.id} value={item.id}>
+                                      {item.name}
+                                    </Option>
+                                  ))}
+                                </Select>
+                              </Form.Item>
+                            )}
+                          </Form.Item>
+                          <Form.Item
+                            {...field}
+                            label="Num"
+                            name={[field.name, 'num']}
+                            fieldKey={[field.fieldKey, 'num']}
+                            rules={[
+                              {
+                                required: true,
+                                message: '수량 입력 필요',
+                              },
+                            ]}
+                            style={{ width: 150 }}
+                          >
+                            <InputNumber />
+                          </Form.Item>
+                          <MinusCircleOutlined
+                            onClick={() => remove(field.name)}
+                          />
+                        </Space>
+                      ))}
+                      <Form.Item>
+                        <Button
+                          type="dashed"
+                          onClick={() => add()}
+                          block
+                          icon={<PlusOutlined />}
                         >
-                          {() => (
-                            <Form.Item
-                              {...field}
-                              label={
-                                <span>
-                                  {'Bundle '}
-                                  <Tooltip title="번들 선택">
-                                    <QuestionCircleOutlined />
-                                  </Tooltip>
-                                </span>
-                              }
-                              name={[field.name, 'name']}
-                              fieldKey={[field.fieldKey, 'name']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: '번들 이름을 선택해주세요.',
-                                },
-                              ]}
-                            >
-                              <Select>
-                                {/* {(sights[form.getFieldValue('area')] || []).map(item => (
-                          <Option key={item} value={item}>
-                            {item}
-                          </Option>
-                        ))} */}
-                                <Option key={1} value={'11'}>
-                                  {'11'}
-                                </Option>
-                                <Option key={2} value={'22'}>
-                                  {'22'}
-                                </Option>
-                              </Select>
-                            </Form.Item>
-                          )}
-                        </Form.Item>
-                        <Form.Item
-                          {...field}
-                          label={
-                            <span>
-                              {'Num '}
-                              <Tooltip title="번들 수 입력">
-                                <QuestionCircleOutlined />
-                              </Tooltip>
-                            </span>
-                          }
-                          name={[field.name, 'num']}
-                          fieldKey={[field.fieldKey, 'num']}
-                          rules={[
-                            {
-                              required: true,
-                              message: '번들 수를 입력해주세요',
-                            },
-                          ]}
-                        >
-                          <Input type="number" />
-                        </Form.Item>
-                        <MinusCircleOutlined
-                          onClick={() => remove(field.name)}
-                        />
-                      </Space>
-                    ))}
-
-                    <Form.Item>
-                      <Button
-                        type="dashed"
-                        onClick={() => add()}
-                        block
-                        icon={<PlusOutlined />}
-                      >
-                        Add Bundles
-                      </Button>
-                    </Form.Item>
-                  </>
-                )}
-              </Form.List>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: 8 }}
-                >
-                  Submit
-                </Button>
-                <Button type="primary">
-                  <Popconfirm
-                    title="정말 취소 하시겠습니까?"
-                    onConfirm={() => history.goBack()}
-                  >
-                    Cancel
-                  </Popconfirm>
-                </Button>
-              </Form.Item>
+                          Add Bundles
+                        </Button>
+                      </Form.Item>
+                    </>
+                  )}
+                </Form.List>
+              </ItemList>
             </Descriptions.Item>
           </Descriptions>
+          <Form.Item>
+            <ButtonColumn>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ marginRight: 8 }}
+              >
+                Submit
+              </Button>
+              <Button type="primary">
+                <Popconfirm
+                  title="정말 취소 하시겠습니까?"
+                  onConfirm={() => history.goBack()}
+                >
+                  Cancel
+                </Popconfirm>
+              </Button>
+            </ButtonColumn>
+          </Form.Item>
         </Form>
       </FormColumn>
     </Wrapper>

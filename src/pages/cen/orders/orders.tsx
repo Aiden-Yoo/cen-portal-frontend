@@ -156,6 +156,7 @@ export const Order = () => {
       }
       setTotal(getTotal);
       setData(originData);
+      reGetData();
     }
   }, [ordersData]);
 
@@ -196,13 +197,13 @@ export const Order = () => {
     console.log(page, take);
   };
 
-  const onShowSizeChange = (current: any, size: any) => {
-    console.log(current, size);
-  };
+  // const onShowSizeChange = (current: any, size: any) => {
+  //   console.log(current, size);
+  // };
 
-  const save = async (key: React.Key) => {
-    console.log(key);
-  };
+  // const save = async (key: React.Key) => {
+  //   console.log(key);
+  // };
 
   const columns: ColumnsType<any> = [
     {
@@ -211,7 +212,7 @@ export const Order = () => {
       width: '5%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sortOrder: 'ascend',
+      defaultSortOrder: 'descend',
       sorter: (a: { no: number }, b: { no: number }) => a.no - b.no,
     },
     {
@@ -234,8 +235,8 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
+      sorter: (a: { classification: string }, b: { classification: string }) =>
+        a.classification.localeCompare(b.classification),
     },
     {
       title: '담당영업',
@@ -243,8 +244,8 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
+      sorter: (a: { salesPerson: string }, b: { salesPerson: string }) =>
+        a.salesPerson.localeCompare(b.salesPerson),
     },
     {
       title: '납품일',
@@ -252,8 +253,8 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
+      sorter: (a: { deliveryDate: string }, b: { deliveryDate: string }) =>
+        a.deliveryDate.localeCompare(b.deliveryDate),
     },
     {
       title: '배송방법',
@@ -261,8 +262,8 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
+      sorter: (a: { deliveryMethod: string }, b: { deliveryMethod: string }) =>
+        a.deliveryMethod.localeCompare(b.deliveryMethod),
     },
     {
       title: '출고형태',
@@ -270,8 +271,8 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
+      sorter: (a: { deliveryType: string }, b: { deliveryType: string }) =>
+        a.deliveryType.localeCompare(b.deliveryType),
     },
     {
       title: '상태',
@@ -279,8 +280,8 @@ export const Order = () => {
       width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
+      sorter: (a: { status: string }, b: { status: string }) =>
+        a.status.localeCompare(b.status),
     },
     {
       title: 'Operation',
@@ -317,10 +318,10 @@ export const Order = () => {
         selectedRows,
       );
     },
-    getCheckboxProps: (record: getOrdersQuery_getOrders_orders) => ({
-      // disabled: record.name === 'Disabled User',
-      // name: record.name,
-    }),
+    // getCheckboxProps: (record: getOrdersQuery_getOrders_orders) => ({
+    //   disabled: record.name === 'Disabled User',
+    //   name: record.name,
+    // }),
   };
 
   return (
