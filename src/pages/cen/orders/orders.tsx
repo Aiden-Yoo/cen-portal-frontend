@@ -1,6 +1,5 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
@@ -15,10 +14,14 @@ import {
   notification,
 } from 'antd';
 import {
+  OrderClassification,
+  DeliveryType,
+  DeliveryMethod,
+  OrderStatus,
+} from '../../../__generated__/globalTypes';
+import {
   getOrdersQuery,
   getOrdersQueryVariables,
-  getOrdersQuery_getOrders_orders,
-  getOrdersQuery_getOrders_orders_partner,
 } from '../../../__generated__/getOrdersQuery';
 import {
   deleteOrderMutation,
@@ -81,15 +84,45 @@ const DELETE_ORDER_MUTATION = gql`
   }
 `;
 
+interface IPartner {
+  name: string;
+}
+
+interface IOrder {
+  id: number;
+  createAt: any;
+  salesPerson: string;
+  classification: OrderClassification;
+  projectName: string;
+  partner: IPartner | null;
+  deliveryType: DeliveryType;
+  deliveryMethod: DeliveryMethod;
+  deliveryDate: any;
+  status: OrderStatus;
+}
+
+interface IGetOrdersOutput {
+  ok: boolean;
+  error: string | null;
+  totalPages: number | null;
+  totalResults: number | null;
+  orders: IOrder[] | null;
+}
+
+interface IDeleteOrderOutput {
+  ok: boolean;
+  error: string | null;
+}
+
 export const Order = () => {
   const originData: any[] = [];
   const [form] = Form.useForm();
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [data, setData] = useState<getOrdersQuery_getOrders_orders[]>([]);
-  const [page, setPage] = useState(1);
-  const [take, setTake] = useState(10);
-  const [total, setTotal] = useState(0);
-  const [status, setStatus] = useState(null);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [data, setData] = useState<IOrder[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+  const [total, setTotal] = useState<number>(0);
+  const [status, setStatus] = useState<OrderStatus | null>(null);
   const { data: ordersData, loading, refetch: reGetData } = useQuery<
     getOrdersQuery,
     getOrdersQueryVariables
@@ -134,9 +167,9 @@ export const Order = () => {
 
   useEffect(() => {
     if (ordersData && !loading) {
-      const orders: any = ordersData?.getOrders.orders;
-      const getTotal: any = ordersData?.getOrders.totalResults;
-      for (let i = 0; i < orders?.length; i++) {
+      const orders = ordersData.getOrders.orders as IOrder[];
+      const getTotal = ordersData.getOrders.totalResults as number;
+      for (let i = 0; i < orders.length; i++) {
         originData.push({
           key: `${orders[i].id}`,
           no: i + 1 + (page - 1) * take,
@@ -166,7 +199,7 @@ export const Order = () => {
     }
   }, [deleteOrderData]);
 
-  const edit = (record: getOrdersQuery_getOrders_orders) => {
+  const edit = (record: IOrder) => {
     console.log(record);
   };
 
@@ -176,34 +209,25 @@ export const Order = () => {
 
   const handleDelete = () => {
     selectedRowKeys.map((key) => {
-      console.log(key);
       deleteOrderMutation({
         variables: { input: { orderId: +key } },
       });
     });
+    reGetData();
   };
 
-  const handleCancel = (key: any) => {
-    console.log(key);
+  const handleRowDelete = (key: number) => {
+    deleteOrderMutation({
+      variables: { input: { orderId: +key } },
+    });
+    reGetData();
   };
 
-  const handleRowDelete = (record: getOrdersQuery_getOrders_orders) => {
-    console.log(record);
-  };
-
-  const handlePageChange = (page: number, take: any) => {
+  const handlePageChange = (page: number, take: number) => {
     setPage(page);
     setTake(take);
     console.log(page, take);
   };
-
-  // const onShowSizeChange = (current: any, size: any) => {
-  //   console.log(current, size);
-  // };
-
-  // const save = async (key: React.Key) => {
-  //   console.log(key);
-  // };
 
   const columns: ColumnsType<any> = [
     {
@@ -287,7 +311,7 @@ export const Order = () => {
       title: 'Operation',
       dataIndex: 'operation',
       align: 'center',
-      render: (_: any, record: any) => {
+      render: (_, record) => {
         return (
           <span>
             <Typography.Link
@@ -296,8 +320,13 @@ export const Order = () => {
             >
               Edit
             </Typography.Link>
-            <Typography.Link href="#!" onClick={() => handleDelete()}>
-              Delete
+            <Typography.Link href="#!">
+              <Popconfirm
+                title="정말 삭제 하시겠습니까?"
+                onConfirm={() => handleRowDelete(record.key)}
+              >
+                Delete
+              </Popconfirm>
             </Typography.Link>
           </span>
         );
@@ -306,11 +335,7 @@ export const Order = () => {
   ];
 
   const rowSelection = {
-    // onChange: (selectedRowKeys: React.Key[], selectedRows: Item[]) => {
-    onChange: (
-      selectedRowKeys: any,
-      selectedRows: getOrdersQuery_getOrders_orders[],
-    ) => {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: IOrder[]) => {
       setSelectedRowKeys(selectedRowKeys);
       console.log(
         `selectedRowKeys: ${selectedRowKeys}`,
@@ -318,7 +343,7 @@ export const Order = () => {
         selectedRows,
       );
     },
-    // getCheckboxProps: (record: getOrdersQuery_getOrders_orders) => ({
+    // getCheckboxProps: (record: IOrder) => ({
     //   disabled: record.name === 'Disabled User',
     //   name: record.name,
     // }),
@@ -350,7 +375,7 @@ export const Order = () => {
         {loading ? (
           <Loading />
         ) : (
-          <Table<getOrdersQuery_getOrders_orders>
+          <Table<IOrder>
             bordered
             rowSelection={rowSelection}
             dataSource={data}
@@ -359,7 +384,7 @@ export const Order = () => {
               total,
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`,
-              onChange: (page, take) => handlePageChange(page, take),
+              onChange: (page, take) => handlePageChange(page, take as number),
             }}
           />
         )}
