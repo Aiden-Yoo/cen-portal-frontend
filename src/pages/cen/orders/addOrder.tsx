@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import {
-  Table,
   Popconfirm,
   Form,
-  Typography,
   Button,
   notification,
   Input,
@@ -78,30 +76,64 @@ const CREATE_ORDER_MUTATION = gql`
   }
 `;
 
-export const AddOrder = () => {
-  const { data: meData, loading: meLoading } = useMe();
-  const { data: bundleData, loading: bundleLoading } = useAllBundles();
-  const { data: partnerData, loading: partnerLoading } = useAllPartners();
+interface IPartner {
+  id: number;
+  name: string;
+  address: string;
+  zip: string | null;
+  tel: string | null;
+  contactsCount: number;
+  contacts: IContact[] | null;
+}
+
+interface IContact {
+  id: number;
+  name: string;
+  jobTitle: string | null;
+  tel: string;
+}
+
+interface IPart {
+  id: number;
+  name: string;
+  num: number | null;
+}
+
+interface IBundle {
+  id: number;
+  name: string;
+  series: string | null;
+  parts: IPart[] | null;
+}
+
+// interface IAllBundlesOutput {
+//   ok: boolean;
+//   error: string | null;
+//   totalPages: number | null;
+//   totalResults: number | null;
+//   bundles: IBundle[] | null;
+// }
+
+export const AddOrder: React.FC = () => {
+  const { data: meData } = useMe();
+  const { data: bundleData } = useAllBundles();
+  const { data: partnerData } = useAllPartners();
   const history = useHistory();
   const [form] = Form.useForm();
-  const [partners, setPartners] = useState([]);
-  const [newDestination, setNewDestination] = useState('');
+  const [partners, setPartners] = useState<IPartner[]>([]);
+  const [newDestination, setNewDestination] = useState<string>('');
   const [destItem, setDestItem] = useState<string[]>([]);
-  const [newAddress, setNewAddress] = useState('');
+  const [newAddress, setNewAddress] = useState<string>('');
   const [addrItem, setAddrItem] = useState<string[]>([]);
-  const [newReceiver, setNewReceiver] = useState('');
+  const [newReceiver, setNewReceiver] = useState<string>('');
   const [recvItem, setRecvItem] = useState<string[]>([]);
-  const [newTel, setNewTel] = useState('');
+  const [newTel, setNewTel] = useState<string>('');
   const [telItem, setTelItem] = useState<string[]>([]);
   const [telItemTemp, setTelItemTemp] = useState<string[]>([]);
-  const [bundles, setBundles] = useState<any[]>([]);
+  const [bundles, setBundles] = useState<IBundle[]>([]);
   const [deliveryDate, setDeliveryDate] = useState<string>();
   const [demoReturnDate, setDemoReturnDate] = useState<string>();
-  const [orderSheet, setOrderSheet] = useState(false);
-
-  // if (meData) {
-  //   console.log(meData);
-  // }
+  const [orderSheet, setOrderSheet] = useState<boolean>(false);
 
   useEffect(() => {
     if (meData) {
@@ -113,16 +145,16 @@ export const AddOrder = () => {
     const partnersName: string[] = [];
     if (partnerData) {
       console.log(partnerData);
-      const allPartners: any = partnerData.allPartners.partners;
+      const allPartners = partnerData.allPartners.partners as IPartner[];
       setPartners(allPartners);
-      allPartners.map((partner: any) => partnersName.push(partner.name));
+      allPartners?.map((partner) => partnersName.push(partner.name));
       setDestItem(partnersName);
     }
   }, [partnerData]);
 
   useEffect(() => {
     if (bundleData) {
-      const allBundles: any = bundleData.allBundles.bundles;
+      const allBundles = bundleData.allBundles.bundles as IBundle[];
       setBundles(allBundles);
     }
   }, [bundleData]);
@@ -138,7 +170,6 @@ export const AddOrder = () => {
         placement: 'topRight',
         duration: 1,
       });
-      // setSelectedRowKeys([]);
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -171,7 +202,6 @@ export const AddOrder = () => {
 
   if (createOrderData && !createOrderLoading) {
     history.push('/cen/orders');
-    // return <Link to="/cen/orders" />;
   }
 
   const onFinish = (values: any) => {
@@ -202,19 +232,15 @@ export const AddOrder = () => {
     });
   };
 
-  // const handleChange = (event: any, option?: any) => {
-  //   form.setFieldsValue({ parts: [] });
-  //   console.log(event, option);
-  // };
-
-  const onPartnerIdChange = (event: any, option?: any) => {
-    const partner: any = partners[option.key];
+  const onPartnerIdChange = (_: string, option?: any) => {
+    const partner = partners[option.key];
     const recvTemp: string[] = [];
     const telTemp: string[] = [];
     setRecvItem([]);
     setTelItem([]);
     setAddrItem([partner.address]);
-    partner.contacts.map((contact: any) => {
+    if (!partner.contacts) return;
+    partner.contacts.map((contact) => {
       recvTemp.push(contact.name + ' ' + contact.jobTitle);
       telTemp.push(contact.tel);
     });
@@ -222,7 +248,7 @@ export const AddOrder = () => {
     setTelItemTemp(telTemp);
   };
 
-  const onReceiverIdChange = (event: any, option?: any) => {
+  const onReceiverIdChange = (_: string, option?: any) => {
     const telTemp: string = telItemTemp[option.key];
     setTelItem([telTemp]);
   };
