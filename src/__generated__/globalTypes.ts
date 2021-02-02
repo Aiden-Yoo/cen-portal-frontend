@@ -109,6 +109,11 @@ export interface DeleteOrderInput {
   orderId: number;
 }
 
+export interface EditOrderInput {
+  id: number;
+  status: OrderStatus;
+}
+
 export interface GetOrderInput {
   id: number;
 }

@@ -34,6 +34,10 @@ import {
   deleteOrderMutation,
   deleteOrderMutationVariables,
 } from '../../../__generated__/deleteOrderMutation';
+import {
+  editOrderMutation,
+  editOrderMutationVariables,
+} from '../../../__generated__/editOrderMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
 
@@ -85,6 +89,15 @@ const GET_ORDERS_QUERY = gql`
 const DELETE_ORDER_MUTATION = gql`
   mutation deleteOrderMutation($input: DeleteOrderInput!) {
     deleteOrder(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
+const EDIT_ORDER_MUTATION = gql`
+  mutation editOrderMutation($input: EditOrderInput!) {
+    editOrder(input: $input) {
       ok
       error
     }
@@ -185,7 +198,6 @@ export const Order = () => {
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [status, setStatus] = useState<OrderStatus | null>(null);
-  const [sortNo, setSortNo] = useState<string>('descend');
   const { data: ordersData, loading, refetch: reGetData } = useQuery<
     getOrdersQuery,
     getOrdersQueryVariables
@@ -199,7 +211,7 @@ export const Order = () => {
     },
   });
 
-  const onCompleted = (data: deleteOrderMutation) => {
+  const onDeleteCompleted = (data: deleteOrderMutation) => {
     const {
       deleteOrder: { ok, error },
     } = data;
@@ -221,11 +233,39 @@ export const Order = () => {
     }
   };
 
+  const onEditCompleted = (data: editOrderMutation) => {
+    const {
+      editOrder: { ok, error },
+    } = data;
+    if (ok) {
+      notification.success({
+        message: 'Success!',
+        description: `변경 성공(${status})`,
+        placement: 'topRight',
+        duration: 1,
+      });
+    } else if (error) {
+      notification.error({
+        message: 'Error',
+        description: `변경 실패. ${error}`,
+        placement: 'topRight',
+        duration: 1,
+      });
+    }
+  };
+
   const [deleteOrderMutation, { data: deleteOrderData }] = useMutation<
     deleteOrderMutation,
     deleteOrderMutationVariables
   >(DELETE_ORDER_MUTATION, {
-    onCompleted,
+    onCompleted: onDeleteCompleted,
+  });
+
+  const [editOrderMutation, { data: editOrderData }] = useMutation<
+    editOrderMutation,
+    editOrderMutationVariables
+  >(EDIT_ORDER_MUTATION, {
+    onCompleted: onEditCompleted,
   });
 
   useEffect(() => {
@@ -253,18 +293,12 @@ export const Order = () => {
       setTotal(getTotal);
       setData(originData);
     }
+    reGetData();
   }, [ordersData]);
-
-  useEffect(() => {
-    if (deleteOrderData) {
-      reGetData();
-    }
-  }, [deleteOrderData]);
 
   const isEditing = (record: IOrder) => record.key === editingKey;
 
   const edit = (record: Partial<IOrder> & { key: React.Key }) => {
-    console.log(record);
     form.setFieldsValue({
       status: '',
       ...record,
@@ -273,15 +307,12 @@ export const Order = () => {
   };
 
   const cancel = () => {
-    // console.log('cancel');
     setEditingKey('');
   };
 
   const save = async (key: React.Key) => {
-    console.log('save');
     try {
       const row = (await form.validateFields()) as IOrder;
-      // const row = await form?.validateFields();
 
       const newData = [...data];
       const index = newData?.findIndex((item) => key === item.key);
@@ -293,11 +324,20 @@ export const Order = () => {
         });
         setData(newData);
         setEditingKey('');
+        editOrderMutation({
+          variables: {
+            input: {
+              id: +key,
+              status: row.status,
+            },
+          },
+        });
       } else {
         newData.push(row);
         setData(newData);
         setEditingKey('');
       }
+      reGetData();
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
     }
