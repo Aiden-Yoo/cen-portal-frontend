@@ -366,18 +366,12 @@ export const Order = () => {
       dataIndex: 'classification',
       width: '10%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { classification: string }, b: { classification: string }) =>
-        a.classification.localeCompare(b.classification),
     },
     {
       title: '담당영업',
       dataIndex: 'salesPerson',
       width: '12%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { salesPerson: string }, b: { salesPerson: string }) =>
-        a.salesPerson.localeCompare(b.salesPerson),
     },
     {
       title: '납품일',
@@ -390,9 +384,6 @@ export const Order = () => {
       dataIndex: 'deliveryMethod',
       width: '12%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { deliveryMethod: string }, b: { deliveryMethod: string }) =>
-        a.deliveryMethod.localeCompare(b.deliveryMethod),
       render: (deliveryMethod: DeliveryMethod) => {
         if (deliveryMethod === 'Parcel') return '택배';
         else if (deliveryMethod === 'Quick') return '퀵';
@@ -406,8 +397,11 @@ export const Order = () => {
       width: '11%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { deliveryType: string }, b: { deliveryType: string }) =>
-        a.deliveryType.localeCompare(b.deliveryType),
+      sorter: {
+        compare: (a: { deliveryType: string }, b: { deliveryType: string }) =>
+          a.deliveryType.localeCompare(b.deliveryType),
+        multiple: 2,
+      },
       render: (deliveryType: DeliveryType) => {
         let color = '';
         let text = '';
