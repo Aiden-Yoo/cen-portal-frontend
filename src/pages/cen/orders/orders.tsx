@@ -240,7 +240,7 @@ export const Order = () => {
     if (ok) {
       notification.success({
         message: 'Success!',
-        description: `변경 성공(${status})`,
+        description: `변경 성공`,
         placement: 'topRight',
         duration: 1,
       });
@@ -364,7 +364,6 @@ export const Order = () => {
   };
 
   const handlePageChange = (page: number, take: number) => {
-    console.log(page, take);
     setPage(page);
     setTake(take);
   };
@@ -380,7 +379,7 @@ export const Order = () => {
     {
       title: 'No',
       dataIndex: 'no',
-      width: '5%',
+      width: '1%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
       defaultSortOrder: 'descend',
@@ -392,7 +391,7 @@ export const Order = () => {
     {
       title: '작성일',
       dataIndex: 'createAt',
-      width: '11%',
+      width: '10%',
       align: 'center',
     },
     {
@@ -404,25 +403,25 @@ export const Order = () => {
     {
       title: '구분',
       dataIndex: 'classification',
-      width: '10%',
+      width: '7%',
       align: 'center',
     },
     {
       title: '담당영업',
       dataIndex: 'salesPerson',
-      width: '12%',
+      width: '10%',
       align: 'center',
     },
     {
       title: '납품일',
       dataIndex: 'deliveryDate',
-      width: '11%',
+      width: '10%',
       align: 'center',
     },
     {
       title: '배송방법',
       dataIndex: 'deliveryMethod',
-      width: '12%',
+      width: '10%',
       align: 'center',
       render: (deliveryMethod: DeliveryMethod) => {
         if (deliveryMethod === 'Parcel') return '택배';
@@ -434,7 +433,7 @@ export const Order = () => {
     {
       title: '출고형태',
       dataIndex: 'deliveryType',
-      width: '11%',
+      width: '10%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
       sorter: {
@@ -462,7 +461,7 @@ export const Order = () => {
     {
       title: '상태',
       dataIndex: 'status',
-      width: '10%',
+      width: '1%',
       editable: true,
       align: 'center',
       render: (status: OrderStatus) => {
@@ -498,6 +497,7 @@ export const Order = () => {
       title: 'Operation',
       dataIndex: 'operation',
       align: 'center',
+      width: '1%',
       render: (_: string, record: any) => {
         const editable = isEditing(record);
         return (
@@ -568,11 +568,11 @@ export const Order = () => {
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: IOrder[]) => {
       setSelectedRowKeys(selectedRowKeys);
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        'selectedRows: ',
-        selectedRows,
-      );
+      // console.log(
+      //   `selectedRowKeys: ${selectedRowKeys}`,
+      //   'selectedRows: ',
+      //   selectedRows,
+      // );
     },
     // getCheckboxProps: (record: IOrder) => ({
     //   disabled: record.name === 'Disabled User',
@@ -634,6 +634,7 @@ export const Order = () => {
             showSizeChanger: true,
           }}
           loading={loading}
+          size="small"
         />
       </Form>
       <BackTop style={{ right: 10, bottom: 10 }} />

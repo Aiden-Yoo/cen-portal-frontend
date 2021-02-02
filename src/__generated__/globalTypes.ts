@@ -109,9 +109,21 @@ export interface DeleteOrderInput {
   orderId: number;
 }
 
+export interface DeletePartnerInput {
+  partnerId: number;
+}
+
 export interface EditOrderInput {
   id: number;
   status: OrderStatus;
+}
+
+export interface EditPartnerInput {
+  name?: string | null;
+  address?: string | null;
+  zip?: string | null;
+  tel?: string | null;
+  partnerId: number;
 }
 
 export interface GetOrderInput {
