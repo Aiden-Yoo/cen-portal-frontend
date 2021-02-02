@@ -1,6 +1,6 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
-import { ColumnsType } from 'antd/es/table';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,12 +12,19 @@ import {
   Typography,
   Button,
   notification,
+  Radio,
+  RadioChangeEvent,
+  BackTop,
+  Tag,
+  Input,
+  Select,
 } from 'antd';
 import {
   OrderClassification,
   DeliveryType,
   DeliveryMethod,
   OrderStatus,
+  UserRole,
 } from '../../../__generated__/globalTypes';
 import {
   getOrdersQuery,
@@ -28,7 +35,7 @@ import {
   deleteOrderMutationVariables,
 } from '../../../__generated__/deleteOrderMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
-import { Loading } from '../../../components/loading';
+import { useMe } from '../../../hooks/useMe';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -89,40 +96,96 @@ interface IPartner {
 }
 
 interface IOrder {
-  id: number;
-  createAt: any;
+  key?: string;
+  no?: number;
+  id?: number;
+  createAt: string;
   salesPerson: string;
   classification: OrderClassification;
-  projectName: string;
-  partner: IPartner | null;
+  projectName: string | JSX.Element;
+  partner?: IPartner | null;
   deliveryType: DeliveryType;
   deliveryMethod: DeliveryMethod;
-  deliveryDate: any;
+  deliveryDate: string;
   status: OrderStatus;
 }
 
-interface IGetOrdersOutput {
-  ok: boolean;
-  error: string | null;
-  totalPages: number | null;
-  totalResults: number | null;
-  orders: IOrder[] | null;
+interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
+  editing?: boolean;
+  dataIndex: string;
+  title: string;
+  inputType?: 'select' | 'text';
+  record?: IOrder;
+  index?: number;
+  children?: React.ReactNode;
+  width?: string;
+  editable?: boolean;
+  align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined;
+  sortDirections?: string[];
+  defaultSortOrder?: string;
+  sorter?: unknown;
+  render?: unknown;
 }
 
-interface IDeleteOrderOutput {
-  ok: boolean;
-  error: string | null;
-}
+const EditableCell: React.FC<EditableCellProps> = ({
+  editing,
+  dataIndex,
+  title,
+  inputType,
+  record,
+  index,
+  children,
+  ...restProps
+}) => {
+  const { Option } = Select;
+  const inputNode =
+    inputType === 'select' ? (
+      <Select style={{ width: 100 }}>
+        <Option value={OrderStatus.Created}>출고요청</Option>
+        <Option value={OrderStatus.Pending}>보류</Option>
+        <Option value={OrderStatus.Canceled}>취소</Option>
+        <Option value={OrderStatus.Preparing}>준비중</Option>
+        <Option value={OrderStatus.Partial}>부분출고</Option>
+        <Option value={OrderStatus.Completed}>출고완료</Option>
+      </Select>
+    ) : (
+      <Input />
+    );
+
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{ margin: 0 }}
+          rules={[
+            {
+              required: true,
+              message: `Please Input ${title}!`,
+            },
+          ]}
+        >
+          {inputNode}
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
+  );
+};
 
 export const Order = () => {
-  const originData: any[] = [];
+  const originData: IOrder[] = [];
+  const { data: meData } = useMe();
   const [form] = Form.useForm();
+  const [editingKey, setEditingKey] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [data, setData] = useState<IOrder[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [status, setStatus] = useState<OrderStatus | null>(null);
+  const [sortNo, setSortNo] = useState<string>('descend');
   const { data: ordersData, loading, refetch: reGetData } = useQuery<
     getOrdersQuery,
     getOrdersQueryVariables
@@ -172,7 +235,7 @@ export const Order = () => {
       for (let i = 0; i < orders.length; i++) {
         originData.push({
           key: `${orders[i].id}`,
-          no: i + 1 + (page - 1) * take,
+          no: 1 + i,
           createAt: new Date(orders[i].createAt).toLocaleDateString(),
           projectName: (
             <Link
@@ -189,7 +252,6 @@ export const Order = () => {
       }
       setTotal(getTotal);
       setData(originData);
-      reGetData();
     }
   }, [ordersData]);
 
@@ -199,8 +261,46 @@ export const Order = () => {
     }
   }, [deleteOrderData]);
 
-  const edit = (record: IOrder) => {
+  const isEditing = (record: IOrder) => record.key === editingKey;
+
+  const edit = (record: Partial<IOrder> & { key: React.Key }) => {
     console.log(record);
+    form.setFieldsValue({
+      status: '',
+      ...record,
+    });
+    setEditingKey(record.key);
+  };
+
+  const cancel = () => {
+    // console.log('cancel');
+    setEditingKey('');
+  };
+
+  const save = async (key: React.Key) => {
+    console.log('save');
+    try {
+      const row = (await form.validateFields()) as IOrder;
+      // const row = await form?.validateFields();
+
+      const newData = [...data];
+      const index = newData?.findIndex((item) => key === item.key);
+      if (index > -1) {
+        const item = newData[index];
+        newData.splice(index, 1, {
+          ...item,
+          ...row,
+        });
+        setData(newData);
+        setEditingKey('');
+      } else {
+        newData.push(row);
+        setData(newData);
+        setEditingKey('');
+      }
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
   };
 
   const handleAdd = () => {
@@ -224,12 +324,19 @@ export const Order = () => {
   };
 
   const handlePageChange = (page: number, take: number) => {
+    console.log(page, take);
     setPage(page);
     setTake(take);
-    console.log(page, take);
   };
 
-  const columns: ColumnsType<any> = [
+  const handleStatusChange = (event: RadioChangeEvent) => {
+    const {
+      target: { value },
+    } = event;
+    setStatus(value);
+  };
+
+  const columns: EditableCellProps[] = [
     {
       title: 'No',
       dataIndex: 'no',
@@ -237,15 +344,16 @@ export const Order = () => {
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
       defaultSortOrder: 'descend',
-      sorter: (a: { no: number }, b: { no: number }) => a.no - b.no,
+      sorter: {
+        compare: (a: { no: number }, b: { no: number }) => a.no - b.no,
+        multiple: 1,
+      },
     },
     {
       title: '작성일',
       dataIndex: 'createAt',
-      width: '10%',
+      width: '11%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: any, b: any) => a.createAt.localeCompare(b.createAt),
     },
     {
       title: '프로젝트',
@@ -265,7 +373,7 @@ export const Order = () => {
     {
       title: '담당영업',
       dataIndex: 'salesPerson',
-      width: '10%',
+      width: '12%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
       sorter: (a: { salesPerson: string }, b: { salesPerson: string }) =>
@@ -274,52 +382,125 @@ export const Order = () => {
     {
       title: '납품일',
       dataIndex: 'deliveryDate',
-      width: '10%',
+      width: '11%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { deliveryDate: string }, b: { deliveryDate: string }) =>
-        a.deliveryDate.localeCompare(b.deliveryDate),
     },
     {
       title: '배송방법',
       dataIndex: 'deliveryMethod',
-      width: '10%',
+      width: '12%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
       sorter: (a: { deliveryMethod: string }, b: { deliveryMethod: string }) =>
         a.deliveryMethod.localeCompare(b.deliveryMethod),
+      render: (deliveryMethod: DeliveryMethod) => {
+        if (deliveryMethod === 'Parcel') return '택배';
+        else if (deliveryMethod === 'Quick') return '퀵';
+        else if (deliveryMethod === 'Cargo') return '화물';
+        else if (deliveryMethod === 'Directly') return '직접전달';
+      },
     },
     {
       title: '출고형태',
       dataIndex: 'deliveryType',
-      width: '10%',
+      width: '11%',
       align: 'center',
       sortDirections: ['ascend', 'descend', 'ascend'],
       sorter: (a: { deliveryType: string }, b: { deliveryType: string }) =>
         a.deliveryType.localeCompare(b.deliveryType),
+      render: (deliveryType: DeliveryType) => {
+        let color = '';
+        let text = '';
+        if (deliveryType === 'Partial') {
+          color = 'blue';
+          text = '부분출고';
+        } else if (deliveryType === 'Total') {
+          color = 'geekblue';
+          text = '전체출고';
+        }
+        return (
+          <Tag color={color} key={deliveryType}>
+            {text}
+          </Tag>
+        );
+      },
     },
     {
       title: '상태',
       dataIndex: 'status',
       width: '10%',
+      editable: true,
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { status: string }, b: { status: string }) =>
-        a.status.localeCompare(b.status),
+      render: (status: OrderStatus) => {
+        let color = '';
+        let text = '';
+        if (status === 'Created') {
+          color = 'orange';
+          text = '출고요청';
+        } else if (status === 'Canceled') {
+          color = 'red';
+          text = '취소됨';
+        } else if (status === 'Pending') {
+          color = 'volcano';
+          text = '보류';
+        } else if (status === 'Preparing') {
+          color = 'green';
+          text = '준비중';
+        } else if (status === 'Partial') {
+          color = 'blue';
+          text = '부분출고';
+        } else if (status === 'Completed') {
+          color = 'geekblue';
+          text = '출고완료';
+        }
+        return (
+          <Tag color={color} key={status}>
+            {text}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Operation',
       dataIndex: 'operation',
       align: 'center',
-      render: (_, record) => {
+      render: (_: string, record: any) => {
+        const editable = isEditing(record);
         return (
           <span>
-            <Typography.Link
-              onClick={() => edit(record)}
-              style={{ marginRight: 8 }}
-            >
-              Edit
-            </Typography.Link>
+            {editable ? (
+              <>
+                <Popconfirm
+                  title="정말 변경 하시겠습니까?"
+                  onConfirm={() => save(record.key)}
+                >
+                  <Typography.Link
+                    style={{
+                      marginRight: 8,
+                    }}
+                  >
+                    Save
+                  </Typography.Link>
+                </Popconfirm>
+                <Typography.Link
+                  onClick={cancel}
+                  style={{
+                    marginRight: 8,
+                  }}
+                >
+                  Cancel
+                </Typography.Link>
+              </>
+            ) : (
+              <Typography.Link
+                onClick={() => edit(record)}
+                style={{ marginRight: 8 }}
+                disabled={meData?.me.role !== UserRole.CENSE}
+              >
+                Edit
+              </Typography.Link>
+            )}
+
             <Typography.Link href="#!">
               <Popconfirm
                 title="정말 삭제 하시겠습니까?"
@@ -333,6 +514,22 @@ export const Order = () => {
       },
     },
   ];
+
+  const mergedColumns = columns.map((col: any) => {
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: (record: IOrder) => ({
+        record,
+        inputType: col.dataIndex === 'status' ? 'select' : 'text',
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: IOrder[]) => {
@@ -359,6 +556,19 @@ export const Order = () => {
         {' 출고요청서'}
       </TitleBar>
       <MenuBar>
+        <Radio.Group
+          defaultValue={null}
+          size="small"
+          onChange={handleStatusChange}
+        >
+          <Radio.Button value={null}>All</Radio.Button>
+          <Radio.Button value={OrderStatus.Created}>출고요청</Radio.Button>
+          <Radio.Button value={OrderStatus.Canceled}>출고취소</Radio.Button>
+          <Radio.Button value={OrderStatus.Pending}>보류</Radio.Button>
+          <Radio.Button value={OrderStatus.Preparing}>준비중</Radio.Button>
+          <Radio.Button value={OrderStatus.Partial}>부분출고</Radio.Button>
+          <Radio.Button value={OrderStatus.Completed}>출고완료</Radio.Button>
+        </Radio.Group>
         <SButton type="primary" size="small" onClick={() => handleAdd()}>
           <Link to="/cen/orders/add-order">Add</Link>
         </SButton>
@@ -372,23 +582,27 @@ export const Order = () => {
         </SButton>
       </MenuBar>
       <Form form={form} component={false}>
-        {loading ? (
-          <Loading />
-        ) : (
-          <Table<IOrder>
-            bordered
-            rowSelection={rowSelection}
-            dataSource={data}
-            columns={columns}
-            pagination={{
-              total,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} items`,
-              onChange: (page, take) => handlePageChange(page, take as number),
-            }}
-          />
-        )}
+        <Table<IOrder>
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          rowSelection={rowSelection}
+          dataSource={data}
+          columns={mergedColumns}
+          pagination={{
+            total,
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} of ${total} items`,
+            onChange: (page, take) => handlePageChange(page, take as number),
+            showSizeChanger: true,
+          }}
+          loading={loading}
+        />
       </Form>
+      <BackTop style={{ right: 10, bottom: 10 }} />
     </Wrapper>
   );
 };
