@@ -101,6 +101,13 @@ export interface CreateOrderItemInput {
   num: number;
 }
 
+export interface CreatePartnerInput {
+  name: string;
+  address: string;
+  zip?: string | null;
+  tel?: string | null;
+}
+
 export interface DeleteBundleInput {
   bundleId: number;
 }

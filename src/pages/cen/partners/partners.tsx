@@ -73,6 +73,7 @@ interface IPartner {
   address: string;
   zip: string;
   tel: string;
+  contactsCount: number;
 }
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
@@ -200,11 +201,14 @@ export const Partner = () => {
   useEffect(() => {
     if (allPartnersData && !allPartnersLoading) {
       const partners = allPartnersData.allPartners.partners as IPartner[];
-      const getTotal = allPartnersData.allPartners.totalResults as number;
+      const getTotalPages = allPartnersData.allPartners.totalPages as number;
+      const getTotalResults = allPartnersData.allPartners
+        .totalResults as number;
       for (let i = 0; i < partners.length; i++) {
         originData.push({
           key: `${partners[i].id}`,
-          no: 1 + i,
+          // no: i + 1 + (getTotalPages - page) * (getTotalResults % take),
+          no: (getTotalPages - page) * take + (getTotalResults % take) - i,
           name: (
             <Link
               to={`/cen/partners/${partners[i].id}`}
@@ -213,9 +217,10 @@ export const Partner = () => {
           address: partners[i].address,
           zip: partners[i].zip,
           tel: partners[i].tel,
+          contactsCount: partners[i].contactsCount,
         });
       }
-      setTotal(getTotal);
+      setTotal(getTotalResults);
       setData(originData);
     }
     reGetData();
@@ -271,7 +276,7 @@ export const Partner = () => {
   };
 
   const handleAdd = () => {
-    console.log('handleAdd');
+    // console.log('handleAdd');
   };
 
   const handleDelete = () => {
@@ -333,6 +338,12 @@ export const Partner = () => {
       width: '12%',
       align: 'center',
       editable: true,
+    },
+    {
+      title: '연락처 수',
+      dataIndex: 'contactsCount',
+      width: '9%',
+      align: 'center',
     },
     {
       title: 'Operation',
@@ -431,7 +442,7 @@ export const Partner = () => {
       </TitleBar>
       <MenuBar>
         <SButton type="primary" size="small" onClick={() => handleAdd()}>
-          <Link to="/cen/orders/add-order">Add</Link>
+          <Link to="/cen/partners/add-partner">Add</Link>
         </SButton>
         <SButton type="primary" size="small">
           <Popconfirm
