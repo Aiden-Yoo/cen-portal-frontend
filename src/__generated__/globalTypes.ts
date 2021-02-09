@@ -77,6 +77,13 @@ export interface CreateBundleInput {
   parts?: PartInputType[] | null;
 }
 
+export interface CreateContactInput {
+  name: string;
+  jobTitle?: string | null;
+  tel: string;
+  partnerId: number;
+}
+
 export interface CreateOrderInput {
   salesPerson: string;
   projectName: string;
@@ -112,12 +119,24 @@ export interface DeleteBundleInput {
   bundleId: number;
 }
 
+export interface DeleteContactInput {
+  contactId: number;
+}
+
 export interface DeleteOrderInput {
   orderId: number;
 }
 
 export interface DeletePartnerInput {
   partnerId: number;
+}
+
+export interface EditContactInput {
+  name?: string | null;
+  team?: string | null;
+  jobTitle?: string | null;
+  tel?: string | null;
+  contactId: number;
 }
 
 export interface EditOrderInput {
@@ -158,6 +177,10 @@ export interface PartInputType {
   num?: number | null;
   description?: string | null;
   bundle?: BundleInputType | null;
+}
+
+export interface PartnerInput {
+  partnerId: number;
 }
 
 //==============================================================
