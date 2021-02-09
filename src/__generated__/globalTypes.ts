@@ -79,6 +79,7 @@ export interface CreateBundleInput {
 
 export interface CreateContactInput {
   name: string;
+  team?: string | null;
   jobTitle?: string | null;
   tel: string;
   partnerId: number;

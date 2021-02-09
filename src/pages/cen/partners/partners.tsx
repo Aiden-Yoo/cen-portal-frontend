@@ -275,10 +275,6 @@ export const Partner = () => {
     }
   };
 
-  const handleAdd = () => {
-    // console.log('handleAdd');
-  };
-
   const handleDelete = () => {
     selectedRowKeys.map((key) => {
       deletePartnerMutation({
@@ -441,7 +437,7 @@ export const Partner = () => {
         {' 파트너'}
       </TitleBar>
       <MenuBar>
-        <SButton type="primary" size="small" onClick={() => handleAdd()}>
+        <SButton type="primary" size="small">
           <Link to="/cen/partners/add-partner">Add</Link>
         </SButton>
         <SButton type="primary" size="small">

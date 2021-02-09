@@ -17,15 +17,10 @@ import {
   Badge,
   Input,
 } from 'antd';
-// import { PartnerInput } from '../../../__generated__/globalTypes';
 import {
   getPartnerQuery,
   getPartnerQueryVariables,
 } from '../../../__generated__/getPartnerQuery';
-import {
-  createContactMutation,
-  createContactMutationVariables,
-} from '../../../__generated__/createContactMutation';
 import {
   deleteContactMutation,
   deleteContactMutationVariables,
@@ -94,15 +89,6 @@ const GET_PARTNER_QUERY = gql`
           }
         }
       }
-    }
-  }
-`;
-
-const CREATE_CONTACT_MUTATION = gql`
-  mutation createContactMutation($input: CreateContactInput!) {
-    createContact(input: $input) {
-      ok
-      error
     }
   }
 `;
@@ -462,10 +448,6 @@ export const PartnerDetail: React.FC = () => {
     }
   };
 
-  const handleAdd = () => {
-    console.log('handleAdd');
-  };
-
   const handleDelete = () => {
     selectedRowKeys.map((key) => {
       deleteContactMutation({
@@ -538,12 +520,10 @@ export const PartnerDetail: React.FC = () => {
         >
           <TableColumn>
             <MenuBar>
-              <SButton
-                type="primary"
-                size="small"
-                onClick={() => history.goBack()}
-              >
-                Add
+              <SButton type="primary" size="small">
+                <Link to={`/cen/partners/${partnerId.id}/add-contact`}>
+                  Add
+                </Link>
               </SButton>
               <SButton type="primary" size="small">
                 <Popconfirm
@@ -566,6 +546,7 @@ export const PartnerDetail: React.FC = () => {
                 rowSelection={rowSelection}
                 pagination={false}
                 size="small"
+                bordered
                 loading={partnerLoading}
               />
             </Form>

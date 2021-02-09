@@ -21,6 +21,7 @@ import { AddOrder } from '../pages/cen/orders/addOrder';
 import { OrderDetail } from '../pages/cen/orders/orderDetail';
 import { AddPartner } from '../pages/cen/partners/addPartner';
 import { PartnerDetail } from '../pages/cen/partners/partnerDetail';
+import { AddContact } from '../pages/cen/partners/addContact';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -57,7 +58,7 @@ const cenRoutes = [
   { path: '/cen/partners/add-partner', component: <AddPartner /> },
   { path: '/cen/partners/:id', component: <PartnerDetail /> },
   // { path: "/cen/partners/:id/edit-partner", component: <EditPartner /> },
-  // { path: "/cen/partners/:id/add-contact", component: <AddContact /> },
+  { path: '/cen/partners/:id/add-contact', component: <AddContact /> },
   { path: '/cen/devices', component: <Device /> },
   { path: '/cen/devices/add-bundle', component: <AddBundle /> },
   // { path: "/cen/devices/add-part", component: <AddPart /> },
