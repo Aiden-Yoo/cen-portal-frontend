@@ -53,6 +53,11 @@ export interface AllPartnersInput {
   take?: number | null;
 }
 
+export interface AllPartsInput {
+  page?: number | null;
+  take?: number | null;
+}
+
 export interface CreateAccountInput {
   email: string;
   password: string;
@@ -131,6 +136,10 @@ export interface DeleteContactInput {
 
 export interface DeleteOrderInput {
   orderId: number;
+}
+
+export interface DeletePartInput {
+  partId: number;
 }
 
 export interface DeletePartnerInput {

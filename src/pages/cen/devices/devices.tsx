@@ -13,14 +13,20 @@ import {
   Typography,
   Button,
   notification,
+  Radio,
 } from 'antd';
 import {
   deleteBundleMutation,
   deleteBundleMutationVariables,
 } from '../../../__generated__/deleteBundleMutation';
+import {
+  deletePartMutation,
+  deletePartMutationVariables,
+} from '../../../__generated__/deletePartMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { Loading } from '../../../components/loading';
 import { useAllBundles } from '../../../hooks/useAllBundles';
+import { useAllParts } from '../../../hooks/useAllParts';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -51,6 +57,15 @@ const DELETE_BUNDLE_MUTATION = gql`
   }
 `;
 
+const DELETE_PART_MUTATION = gql`
+  mutation deletePartMutation($input: DeletePartInput!) {
+    deletePart(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
 interface Item {
   key: string;
   no: number;
@@ -58,20 +73,74 @@ interface Item {
   name: string;
 }
 
+interface IBundleItem {
+  num: number | null;
+  part: IPart;
+}
+
+interface IBundle {
+  // key?: string;
+  // no?: number;
+  id: number;
+  name: string;
+  series: string | null;
+  description: string | null;
+  parts: IBundleItem[] | null;
+}
+
+interface IAllBundlesOutput {
+  ok: boolean;
+  error: string | null;
+  totalPages: number | null;
+  totalResults: number | null;
+  bundles: IBundle[] | null;
+}
+
+interface IPart {
+  id: number;
+  name: string;
+  series: string;
+  description?: string | null;
+}
+
+interface IAllPartsOutput {
+  ok: boolean;
+  error: string | null;
+  totalPages: number | null;
+  totalResults: number | null;
+  parts: IPart[] | null;
+}
+
 export const Device = () => {
-  const originData: Item[] = [];
+  const originBundleData: Item[] = [];
+  const originPartData: Item[] = [];
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [data, setData] = useState<Item[]>([]);
+  const [radioValue, setRadioValue] = useState('Bundles');
+  const [bundlesData, setBundlesData] = useState<Item[]>([]);
+  const [partsData, setPartsData] = useState<Item[]>([]);
   const [page, setPage] = useState(1);
   const [take, setTake] = useState(10);
   const [total, setTotal] = useState(0);
-  const { data: bundleData, loading, refetch: reGetData } = useAllBundles(
-    page,
-    take,
-  );
+  const [bundlesPage, setBundlesPage] = useState(1);
+  const [bundlesTake, setBundlesTake] = useState(10);
+  const [bundlesTotal, setBundlesTotal] = useState(0);
+  const [partsPage, setPartsPage] = useState(1);
+  const [partsTake, setPartsTake] = useState(10);
+  const [partsTotal, setPartsTotal] = useState(0);
+  const {
+    data: bundleGetData,
+    loading: bundleLoading,
+    refetch: reGetBundles,
+  } = useAllBundles(bundlesPage, bundlesTake);
+  const {
+    data: partGetData,
+    loading: partLoading,
+    refetch: reGetParts,
+  } = useAllParts(partsPage, partsTake);
+  const devicesOptions = ['Bundles', 'Parts'];
 
-  const onCompleted = (data: deleteBundleMutation) => {
+  const onCompletedBundle = (data: deleteBundleMutation) => {
     const {
       deleteBundle: { ok, error },
     } = data;
@@ -93,36 +162,83 @@ export const Device = () => {
     }
   };
 
-  const [deleteBundleMutation, { data: deleteBundleData }] = useMutation<
+  const onCompletedPart = (data: deletePartMutation) => {
+    const {
+      deletePart: { ok, error },
+    } = data;
+    if (ok) {
+      notification.success({
+        message: 'Success!',
+        description: '삭제 성공',
+        placement: 'topRight',
+        duration: 1,
+      });
+      setSelectedRowKeys([]);
+    } else if (error) {
+      notification.error({
+        message: 'Error',
+        description: `삭제 실패. ${error}`,
+        placement: 'topRight',
+        duration: 1,
+      });
+    }
+  };
+
+  const [deleteBundleMutation, { data: deleteBundleGetData }] = useMutation<
     deleteBundleMutation,
     deleteBundleMutationVariables
   >(DELETE_BUNDLE_MUTATION, {
-    onCompleted,
+    onCompleted: onCompletedBundle,
+  });
+
+  const [deletePartMutation, { data: deletePartGetData }] = useMutation<
+    deletePartMutation,
+    deletePartMutationVariables
+  >(DELETE_PART_MUTATION, {
+    onCompleted: onCompletedPart,
   });
 
   useEffect(() => {
-    if (bundleData && !loading) {
-      setData([]);
-      const bundles: any = bundleData?.allBundles.bundles;
-      const getTotal: any = bundleData?.allBundles.totalResults;
-      for (let i = 0; i < bundles?.length; i++) {
-        originData.push({
+    if (bundleGetData && !bundleLoading) {
+      setBundlesData([]);
+      const bundles = bundleGetData.allBundles.bundles as IBundle[];
+      const getTotal = bundleGetData.allBundles.totalResults as number;
+      for (let i = 0; i < bundles.length; i++) {
+        originBundleData.push({
           key: `${bundles[i].id}`,
-          no: i + 1 + (page - 1) * take,
+          no: i + 1 + (bundlesPage - 1) * bundlesTake,
           series: `${bundles[i].series}`,
           name: `${bundles[i].name}`,
         });
       }
-      setTotal(getTotal);
-      setData(originData);
+      setBundlesTotal(getTotal);
+      setBundlesData(originBundleData);
     }
-  }, [bundleData]);
+    if (partGetData && !partLoading) {
+      setPartsData([]);
+      const parts = partGetData.allParts.parts as IPart[];
+      const getTotal = partGetData.allParts.totalResults as number;
+      for (let i = 0; i < parts.length; i++) {
+        originPartData.push({
+          key: `${parts[i].id}`,
+          no: i + 1 + (bundlesPage - 1) * bundlesTake,
+          series: `${parts[i].series}`,
+          name: `${parts[i].name}`,
+        });
+      }
+      setPartsTotal(getTotal);
+      setPartsData(originPartData);
+    }
+  }, [bundleGetData, partGetData]);
 
   useEffect(() => {
-    if (deleteBundleData) {
-      reGetData();
+    if (deleteBundleGetData) {
+      reGetBundles();
     }
-  }, [deleteBundleData]);
+    // if (deletePartGetData) {
+    //   reGetParts();
+    // }
+  }, [deleteBundleGetData]);
 
   const edit = (record: Item) => {
     console.log(record);
@@ -149,9 +265,15 @@ export const Device = () => {
     console.log(record);
   };
 
-  const handlePageChange = (page: number, take: any) => {
-    setPage(page);
-    setTake(take);
+  const handleBundlePageChange = (page: number, take: any) => {
+    setBundlesPage(page);
+    setBundlesTake(take);
+    console.log(page, take);
+  };
+
+  const handlePartPageChange = (page: number, take: any) => {
+    setPartsPage(page);
+    setPartsTake(take);
     console.log(page, take);
   };
 
@@ -161,6 +283,10 @@ export const Device = () => {
 
   const save = async (key: React.Key) => {
     console.log(key);
+  };
+
+  const handleRadioChange = (e: any) => {
+    setRadioValue(e.target.value);
   };
 
   const columns: ColumnsType<Item> = [
@@ -183,7 +309,7 @@ export const Device = () => {
         a.series.localeCompare(b.series),
     },
     {
-      title: 'Bundle Name',
+      title: 'Name',
       dataIndex: 'name',
       width: '45%',
       align: 'center',
@@ -237,10 +363,20 @@ export const Device = () => {
       <TitleBar>
         <FolderOpenOutlined />
         {' 제품'}
+        {radioValue === 'Bundles' ? ' - Bundles' : ' - Parts'}
       </TitleBar>
       <MenuBar>
+        <Radio.Group
+          options={devicesOptions}
+          onChange={handleRadioChange}
+          value={radioValue}
+        />
         <SButton type="primary" size="small" onClick={() => handleAdd()}>
-          <Link to="/cen/devices/add-bundle">Add</Link>
+          {radioValue === 'Bundles' ? (
+            <Link to="/cen/devices/add-bundle">Add</Link>
+          ) : (
+            <Link to="/cen/devices/add-part">Add</Link>
+          )}
         </SButton>
         <SButton type="primary" size="small">
           <Popconfirm
@@ -252,20 +388,39 @@ export const Device = () => {
         </SButton>
       </MenuBar>
       <Form form={form} component={false}>
-        {loading ? (
-          <Loading />
+        {radioValue === 'Bundles' ? (
+          <Table<Item>
+            bordered
+            rowSelection={rowSelection}
+            dataSource={bundlesData}
+            columns={columns}
+            pagination={{
+              total: bundlesTotal,
+              // total,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} of ${total} items`,
+              onChange: (page, take) => handleBundlePageChange(page, take),
+              showSizeChanger: true,
+            }}
+            loading={bundleLoading}
+            size="small"
+          />
         ) : (
           <Table<Item>
             bordered
             rowSelection={rowSelection}
-            dataSource={data}
+            dataSource={partsData}
             columns={columns}
             pagination={{
-              total,
+              total: partsTotal,
+              // total,
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`,
-              onChange: (page, take) => handlePageChange(page, take),
+              onChange: (page, take) => handlePartPageChange(page, take),
+              showSizeChanger: true,
             }}
+            loading={partLoading}
+            size="small"
           />
         )}
       </Form>
