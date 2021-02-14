@@ -15,10 +15,14 @@ const ALL_BUNDLES_QUERY = gql`
         id
         name
         series
+        description
         parts {
-          id
-          name
           num
+          part {
+            id
+            name
+            series
+          }
         }
       }
     }

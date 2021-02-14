@@ -53,13 +53,6 @@ export interface AllPartnersInput {
   take?: number | null;
 }
 
-export interface BundleInputType {
-  name: string;
-  series?: string | null;
-  parts?: PartInputType[] | null;
-  orderItem?: OrderItemInputType | null;
-}
-
 export interface CreateAccountInput {
   email: string;
   password: string;
@@ -74,7 +67,13 @@ export interface CreateAccountInput {
 export interface CreateBundleInput {
   name: string;
   series?: string | null;
-  parts?: PartInputType[] | null;
+  description?: string | null;
+  parts: CreateBundleItemInput[];
+}
+
+export interface CreateBundleItemInput {
+  partId: number;
+  num?: number | null;
 }
 
 export interface CreateContactInput {
@@ -107,6 +106,12 @@ export interface CreateOrderInput {
 export interface CreateOrderItemInput {
   bundleId: number;
   num: number;
+}
+
+export interface CreatePartInput {
+  name: string;
+  series: string;
+  description?: string | null;
 }
 
 export interface CreatePartnerInput {
@@ -166,18 +171,6 @@ export interface GetOrdersInput {
 export interface LoginInput {
   email: string;
   password: string;
-}
-
-export interface OrderItemInputType {
-  bundle: BundleInputType;
-  num: number;
-}
-
-export interface PartInputType {
-  name: string;
-  num?: number | null;
-  description?: string | null;
-  bundle?: BundleInputType | null;
 }
 
 export interface PartnerInput {

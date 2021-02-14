@@ -81,6 +81,7 @@ export const AddContact = () => {
         placement: 'topRight',
         duration: 1,
       });
+      history.go(0);
     }
   };
 

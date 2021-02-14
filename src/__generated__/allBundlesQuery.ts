@@ -9,11 +9,17 @@ import { AllBundlesInput } from "./globalTypes";
 // GraphQL query operation: allBundlesQuery
 // ====================================================
 
-export interface allBundlesQuery_allBundles_bundles_parts {
+export interface allBundlesQuery_allBundles_bundles_parts_part {
   __typename: "Part";
   id: number;
   name: string;
+  series: string;
+}
+
+export interface allBundlesQuery_allBundles_bundles_parts {
+  __typename: "BundleItem";
   num: number | null;
+  part: allBundlesQuery_allBundles_bundles_parts_part;
 }
 
 export interface allBundlesQuery_allBundles_bundles {
@@ -21,6 +27,7 @@ export interface allBundlesQuery_allBundles_bundles {
   id: number;
   name: string;
   series: string | null;
+  description: string | null;
   parts: allBundlesQuery_allBundles_bundles_parts[] | null;
 }
 
