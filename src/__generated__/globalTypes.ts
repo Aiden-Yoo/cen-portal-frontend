@@ -159,6 +159,13 @@ export interface EditOrderInput {
   status: OrderStatus;
 }
 
+export interface EditPartInput {
+  name?: string | null;
+  series?: string | null;
+  description?: string | null;
+  partId: number;
+}
+
 export interface EditPartnerInput {
   name?: string | null;
   address?: string | null;
@@ -180,6 +187,10 @@ export interface GetOrdersInput {
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface PartInput {
+  partId: number;
 }
 
 export interface PartnerInput {

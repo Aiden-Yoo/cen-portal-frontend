@@ -18,15 +18,9 @@ export interface getPartnerQuery_findPartnerById_partner_contacts {
   team: string | null;
 }
 
-export interface getPartnerQuery_findPartnerById_partner_orders_items_bundle {
-  __typename: "Bundle";
-  name: string;
-}
-
 export interface getPartnerQuery_findPartnerById_partner_orders_items {
   __typename: "OrderItem";
   id: number;
-  bundle: getPartnerQuery_findPartnerById_partner_orders_items_bundle;
   num: number;
 }
 

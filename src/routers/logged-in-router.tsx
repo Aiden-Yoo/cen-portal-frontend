@@ -23,6 +23,8 @@ import { AddPartner } from '../pages/cen/partners/addPartner';
 import { PartnerDetail } from '../pages/cen/partners/partnerDetail';
 import { AddContact } from '../pages/cen/partners/addContact';
 import { AddPart } from '../pages/cen/devices/addPart';
+import { BundleDetail } from '../pages/cen/devices/bundleDetail';
+import { PartDetail } from '../pages/cen/devices/partDetail';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -63,9 +65,10 @@ const cenRoutes = [
   { path: '/cen/devices', component: <Device /> },
   { path: '/cen/devices/add-bundle', component: <AddBundle /> },
   { path: '/cen/devices/add-part', component: <AddPart /> },
+  { path: '/cen/devices/bundle/:id', component: <BundleDetail /> },
+  { path: '/cen/devices/part/:id', component: <PartDetail /> },
   // { path: "/cen/devices/:id", component: <BundleDetail /> },
   // { path: "/cen/devices/:id/edit-bundle", component: <EditBundle /> },
-  // { path: "/cen/devices/:id/add-part", component: <AddPart /> },
 ];
 
 const commonRoutes = [

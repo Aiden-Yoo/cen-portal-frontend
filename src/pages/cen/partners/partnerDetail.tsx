@@ -82,9 +82,6 @@ const GET_PARTNER_QUERY = gql`
           projectName
           items {
             id
-            bundle {
-              name
-            }
             num
           }
         }

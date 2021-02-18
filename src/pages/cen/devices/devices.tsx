@@ -5,7 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useApolloClient, useMutation } from '@apollo/client';
 import {
   Table,
   Popconfirm,
@@ -14,6 +14,7 @@ import {
   Button,
   notification,
   Radio,
+  BackTop,
 } from 'antd';
 import {
   deleteBundleMutation,
@@ -27,6 +28,8 @@ import { FolderOpenOutlined } from '@ant-design/icons';
 import { Loading } from '../../../components/loading';
 import { useAllBundles } from '../../../hooks/useAllBundles';
 import { useAllParts } from '../../../hooks/useAllParts';
+import { UserRole } from '../../../__generated__/globalTypes';
+import { useMe } from '../../../hooks/useMe';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -70,7 +73,8 @@ interface Item {
   key: string;
   no: number;
   series: string;
-  name: string;
+  name: string | JSX.Element;
+  sorter?: unknown;
 }
 
 interface IBundleItem {
@@ -79,8 +83,6 @@ interface IBundleItem {
 }
 
 interface IBundle {
-  // key?: string;
-  // no?: number;
   id: number;
   name: string;
   series: string | null;
@@ -112,16 +114,15 @@ interface IAllPartsOutput {
 }
 
 export const Device = () => {
+  const client = useApolloClient();
   const originBundleData: Item[] = [];
   const originPartData: Item[] = [];
+  const { data: meData } = useMe();
   const [form] = Form.useForm();
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [radioValue, setRadioValue] = useState('Bundles');
   const [bundlesData, setBundlesData] = useState<Item[]>([]);
   const [partsData, setPartsData] = useState<Item[]>([]);
-  const [page, setPage] = useState(1);
-  const [take, setTake] = useState(10);
-  const [total, setTotal] = useState(0);
   const [bundlesPage, setBundlesPage] = useState(1);
   const [bundlesTake, setBundlesTake] = useState(10);
   const [bundlesTotal, setBundlesTotal] = useState(0);
@@ -152,6 +153,7 @@ export const Device = () => {
         duration: 1,
       });
       setSelectedRowKeys([]);
+      reGetBundles();
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -174,6 +176,7 @@ export const Device = () => {
         duration: 1,
       });
       setSelectedRowKeys([]);
+      reGetParts();
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -184,14 +187,14 @@ export const Device = () => {
     }
   };
 
-  const [deleteBundleMutation, { data: deleteBundleGetData }] = useMutation<
+  const [deleteBundleMutation, { data: deleteBundleData }] = useMutation<
     deleteBundleMutation,
     deleteBundleMutationVariables
   >(DELETE_BUNDLE_MUTATION, {
     onCompleted: onCompletedBundle,
   });
 
-  const [deletePartMutation, { data: deletePartGetData }] = useMutation<
+  const [deletePartMutation, { data: deletePartData }] = useMutation<
     deletePartMutation,
     deletePartMutationVariables
   >(DELETE_PART_MUTATION, {
@@ -208,7 +211,11 @@ export const Device = () => {
           key: `${bundles[i].id}`,
           no: i + 1 + (bundlesPage - 1) * bundlesTake,
           series: `${bundles[i].series}`,
-          name: `${bundles[i].name}`,
+          name: (
+            <Link
+              to={`/cen/devices/bundle/${bundles[i].id}`}
+            >{`${bundles[i].name}`}</Link>
+          ),
         });
       }
       setBundlesTotal(getTotal);
@@ -223,22 +230,17 @@ export const Device = () => {
           key: `${parts[i].id}`,
           no: i + 1 + (bundlesPage - 1) * bundlesTake,
           series: `${parts[i].series}`,
-          name: `${parts[i].name}`,
+          name: (
+            <Link
+              to={`/cen/devices/part/${parts[i].id}`}
+            >{`${parts[i].name}`}</Link>
+          ),
         });
       }
       setPartsTotal(getTotal);
       setPartsData(originPartData);
     }
   }, [bundleGetData, partGetData]);
-
-  useEffect(() => {
-    if (deleteBundleGetData) {
-      reGetBundles();
-    }
-    // if (deletePartGetData) {
-    //   reGetParts();
-    // }
-  }, [deleteBundleGetData]);
 
   const edit = (record: Item) => {
     console.log(record);
@@ -248,12 +250,28 @@ export const Device = () => {
     console.log('handleAdd');
   };
 
-  const handleDelete = () => {
-    selectedRowKeys.map((key) => {
-      console.log(key);
+  const handleDelete = (key?: number) => {
+    if (key && radioValue === 'Bundles') {
       deleteBundleMutation({
         variables: { input: { bundleId: +key } },
       });
+    }
+    if (key && radioValue === 'Parts') {
+      deletePartMutation({
+        variables: { input: { partId: +key } },
+      });
+    }
+    selectedRowKeys?.map((key) => {
+      if (radioValue === 'Bundles') {
+        deleteBundleMutation({
+          variables: { input: { bundleId: +key } },
+        });
+      }
+      if (radioValue === 'Parts') {
+        deletePartMutation({
+          variables: { input: { partId: +key } },
+        });
+      }
     });
   };
 
@@ -261,24 +279,16 @@ export const Device = () => {
     console.log(key);
   };
 
-  const handleRowDelete = (record: Item) => {
-    console.log(record);
-  };
-
-  const handleBundlePageChange = (page: number, take: any) => {
+  const handleBundlePageChange = (page: number, take: number) => {
     setBundlesPage(page);
     setBundlesTake(take);
     console.log(page, take);
   };
 
-  const handlePartPageChange = (page: number, take: any) => {
+  const handlePartPageChange = (page: number, take: number) => {
     setPartsPage(page);
     setPartsTake(take);
     console.log(page, take);
-  };
-
-  const onShowSizeChange = (current: any, size: any) => {
-    console.log(current, size);
   };
 
   const save = async (key: React.Key) => {
@@ -304,34 +314,34 @@ export const Device = () => {
       dataIndex: 'series',
       width: '20%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { series: string }, b: { series: string }) =>
-        a.series.localeCompare(b.series),
     },
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '45%',
+      width: '30%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: (a: { name: string }, b: { name: string }) =>
-        a.name.localeCompare(b.name),
     },
     {
       title: 'Operation',
       dataIndex: 'operation',
       align: 'center',
-      render: (_: any, record: Item) => {
+      render: (_: string, record: any) => {
         return (
           <span>
             <Typography.Link
               onClick={() => edit(record)}
               style={{ marginRight: 8 }}
+              disabled={meData?.me.role !== UserRole.CENSE}
             >
               Edit
             </Typography.Link>
-            <Typography.Link href="#!" onClick={() => handleDelete()}>
-              Delete
+            <Typography.Link href="#!">
+              <Popconfirm
+                title="정말 삭제 하시겠습니까?"
+                onConfirm={() => handleDelete(record.key)}
+              >
+                Delete
+              </Popconfirm>
             </Typography.Link>
           </span>
         );
@@ -340,25 +350,24 @@ export const Device = () => {
   ];
 
   const rowSelection = {
-    // onChange: (selectedRowKeys: React.Key[], selectedRows: Item[]) => {
-    onChange: (selectedRowKeys: any, selectedRows: Item[]) => {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: Item[]) => {
       setSelectedRowKeys(selectedRowKeys);
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        'selectedRows: ',
-        selectedRows,
-      );
+      // console.log(
+      //   `selectedRowKeys: ${selectedRowKeys}`,
+      //   'selectedRows: ',
+      //   selectedRows,
+      // );
     },
-    getCheckboxProps: (record: Item) => ({
-      disabled: record.name === 'Disabled User',
-      name: record.name,
-    }),
+    // getCheckboxProps: (record: Item) => ({
+    //   disabled: record.name === 'Disabled User',
+    //   name: record.name,
+    // }),
   };
 
   return (
     <Wrapper>
       <Helmet>
-        <title>Bundles | CEN Portal</title>
+        <title>Devices | CEN Portal</title>
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
@@ -396,10 +405,10 @@ export const Device = () => {
             columns={columns}
             pagination={{
               total: bundlesTotal,
-              // total,
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`,
-              onChange: (page, take) => handleBundlePageChange(page, take),
+              onChange: (page, take) =>
+                handleBundlePageChange(page, take as number),
               showSizeChanger: true,
             }}
             loading={bundleLoading}
@@ -413,10 +422,10 @@ export const Device = () => {
             columns={columns}
             pagination={{
               total: partsTotal,
-              // total,
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} items`,
-              onChange: (page, take) => handlePartPageChange(page, take),
+              onChange: (page, take) =>
+                handlePartPageChange(page, take as number),
               showSizeChanger: true,
             }}
             loading={partLoading}
@@ -424,6 +433,7 @@ export const Device = () => {
           />
         )}
       </Form>
+      <BackTop style={{ right: 10, bottom: 10 }} />
     </Wrapper>
   );
 };
