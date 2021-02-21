@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -23,6 +23,7 @@ import {
   createBundleMutation,
   createBundleMutationVariables,
 } from '../../../__generated__/createBundleMutation';
+import { useAllParts } from '../../../hooks/useAllParts';
 
 const { Option } = Select;
 
@@ -49,9 +50,38 @@ const CREATE_BUNDLE_MUTATION = gql`
   }
 `;
 
+interface IPart {
+  id: number;
+  name: string;
+  series: string;
+  description: string | null;
+}
+
+interface IAllPartsOutput {
+  ok: boolean;
+  error: string | null;
+  totalPages: number | null;
+  totalResults: number | null;
+  parts: IPart[] | null;
+}
+
 export const AddBundle = () => {
   const history = useHistory();
   const [form] = Form.useForm();
+  const [parts, setParts] = useState<IPart[]>([]);
+
+  const {
+    data: partData,
+    loading: partLoading,
+    refetch: reGetParts,
+  } = useAllParts();
+
+  useEffect(() => {
+    if (partData && !partLoading) {
+      const parts = partData.allParts.parts as IPart[];
+      setParts(parts);
+    }
+  }, [partData]);
 
   const onCompleted = (data: createBundleMutation) => {
     const {
@@ -87,7 +117,7 @@ export const AddBundle = () => {
     const parts: any[] = [];
     for (const part in values.parts) {
       parts.push({
-        name: values.parts[part].name,
+        partId: +values.parts[part].partId,
         num: +values.parts[part].num,
       });
     }
@@ -148,6 +178,20 @@ export const AddBundle = () => {
           >
             <Input />
           </Form.Item>
+          <Form.Item
+            name="description"
+            label={
+              <span>
+                {'Description '}
+                <Tooltip title="번들 설명 입력">
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            style={{ width: 500 }}
+          >
+            <Input.TextArea />
+          </Form.Item>
           <Form.List name="parts">
             {(fields, { add, remove }) => (
               <>
@@ -171,13 +215,21 @@ export const AddBundle = () => {
                               </Tooltip>
                             </span>
                           }
-                          name={[field.name, 'name']}
-                          fieldKey={[field.fieldKey, 'name']}
+                          name={[field.name, 'partId']}
+                          fieldKey={[field.fieldKey, 'partId']}
                           rules={[
                             { required: true, message: '부품을 입력해주세요.' },
                           ]}
                         >
-                          <Input />
+                          <Select style={{ width: 300 }}>
+                            {parts
+                              ? parts.map((part) => (
+                                  <Option key={part.id} value={part.id}>
+                                    {part.name}
+                                  </Option>
+                                ))
+                              : null}
+                          </Select>
                         </Form.Item>
                       )}
                     </Form.Item>
