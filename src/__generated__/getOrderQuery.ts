@@ -26,7 +26,7 @@ export interface getOrderQuery_getOrder_order_items_bundle {
 
 export interface getOrderQuery_getOrder_order_items {
   __typename: "OrderItem";
-  bundle: getOrderQuery_getOrder_order_items_bundle;
+  bundle: getOrderQuery_getOrder_order_items_bundle | null;
   num: number;
 }
 

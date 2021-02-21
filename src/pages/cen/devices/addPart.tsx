@@ -87,6 +87,9 @@ export const AddPart = () => {
       },
     });
     history.goBack();
+    setTimeout(() => {
+      history.go(0);
+    }, 10);
   };
 
   const handleChange = () => {

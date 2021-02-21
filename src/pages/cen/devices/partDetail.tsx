@@ -5,7 +5,14 @@ import { Helmet } from 'react-helmet';
 import { useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { Form, Button, notification, Descriptions, Input } from 'antd';
+import {
+  Form,
+  Button,
+  notification,
+  Descriptions,
+  Input,
+  Popconfirm,
+} from 'antd';
 import {
   editPartMutation,
   editPartMutationVariables,
@@ -96,7 +103,7 @@ export const PartDetail: React.FC = () => {
     if (ok) {
       notification.success({
         message: 'Success!',
-        description: '수정 성공',
+        description: '변경 성공',
         placement: 'topRight',
         duration: 1,
       });
@@ -104,7 +111,7 @@ export const PartDetail: React.FC = () => {
     } else if (error) {
       notification.error({
         message: 'Error',
-        description: `수정 실패. ${error}`,
+        description: `변경 실패. ${error}`,
         placement: 'topRight',
         duration: 1,
       });
@@ -165,6 +172,10 @@ export const PartDetail: React.FC = () => {
     }
   };
 
+  const handleCancel = () => {
+    setIsEdit(!isEdit);
+  };
+
   return (
     <Wrapper>
       <Helmet>
@@ -176,9 +187,16 @@ export const PartDetail: React.FC = () => {
       </TitleBar>
       <MenuBar>
         {isEdit ? (
-          <SButton type="primary" size="small" onClick={handleSave}>
-            Save
-          </SButton>
+          <>
+            <Popconfirm title="정말 변경 하시겠습니까?" onConfirm={handleSave}>
+              <SButton type="primary" size="small">
+                Save
+              </SButton>
+            </Popconfirm>
+            <SButton type="primary" size="small" onClick={handleCancel}>
+              Cancel
+            </SButton>
+          </>
         ) : (
           <SButton
             type="primary"
@@ -190,7 +208,12 @@ export const PartDetail: React.FC = () => {
           </SButton>
         )}
 
-        <SButton type="primary" size="small" onClick={() => history.goBack()}>
+        <SButton
+          type="primary"
+          size="small"
+          disabled={isEdit}
+          onClick={() => history.goBack()}
+        >
           Back
         </SButton>
       </MenuBar>

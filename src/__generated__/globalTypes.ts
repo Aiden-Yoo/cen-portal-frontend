@@ -58,6 +58,10 @@ export interface AllPartsInput {
   take?: number | null;
 }
 
+export interface BundleInput {
+  bundleId: number;
+}
+
 export interface CreateAccountInput {
   email: string;
   password: string;
@@ -144,6 +148,14 @@ export interface DeletePartInput {
 
 export interface DeletePartnerInput {
   partnerId: number;
+}
+
+export interface EditBundleInput {
+  name?: string | null;
+  series?: string | null;
+  description?: string | null;
+  parts?: CreateBundleItemInput[] | null;
+  bundleId: number;
 }
 
 export interface EditContactInput {
