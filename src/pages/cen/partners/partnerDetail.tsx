@@ -367,7 +367,7 @@ export const PartnerDetail: React.FC = () => {
               </Typography.Link>
             )}
 
-            <Typography.Link href="#!">
+            <Typography.Link href="#!" disabled={editingKey !== ''}>
               <Popconfirm
                 title="정말 삭제 하시겠습니까?"
                 onConfirm={() => handleRowDelete(record.key)}
@@ -522,7 +522,7 @@ export const PartnerDetail: React.FC = () => {
                   Add
                 </Link>
               </SButton>
-              <SButton type="primary" size="small">
+              <SButton type="primary" size="small" disabled={editingKey !== ''}>
                 <Popconfirm
                   title="정말 삭제 하시겠습니까?"
                   onConfirm={() => handleDelete()}

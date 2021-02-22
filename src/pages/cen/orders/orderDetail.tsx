@@ -17,8 +17,6 @@ import {
 import {
   getOrderQuery,
   getOrderQueryVariables,
-  getOrderQuery_getOrder_order,
-  getOrderQuery_getOrder_order_partner,
 } from '../../../__generated__/getOrderQuery';
 import {
   deleteOrderMutation,
@@ -27,6 +25,12 @@ import {
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { Loading } from '../../../components/loading';
 import { AnyNaptrRecord } from 'dns';
+import {
+  DeliveryMethod,
+  DeliveryType,
+  OrderClassification,
+  OrderStatus,
+} from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -88,14 +92,63 @@ const GET_ORDER_QUERY = gql`
   }
 `;
 
+interface IUser {
+  name: string;
+}
+
+interface IPartner {
+  name: string;
+}
+
+interface IBundle {
+  name: string;
+}
+
+interface IOrderItem {
+  bundle: IBundle | null;
+  num: number;
+}
+
+interface IOrder {
+  id: number;
+  createAt: any;
+  updateAt: any;
+  writer: IUser | null;
+  salesPerson: string;
+  projectName: string;
+  classification: OrderClassification;
+  demoReturnDate: any | null;
+  orderSheet: boolean;
+  partner: IPartner | null;
+  destination: string;
+  receiver: string;
+  contact: string;
+  address: string;
+  deliveryDate: any;
+  deliveryType: DeliveryType;
+  deliveryMethod: DeliveryMethod;
+  remark: string | null;
+  items: IOrderItem[];
+  status: OrderStatus;
+}
+
+interface IOrderItemData {
+  key: number;
+  no: number;
+  name: string | undefined;
+  num: number;
+}
+
 export const OrderDetail: React.FC = () => {
-  const originData: any[] = [];
+  const originData: IOrderItemData[] = [];
   const history = useHistory();
   const orderId: any = useParams();
-  const [order, setOrder] = useState<getOrderQuery_getOrder_order>();
-  const [data, setData] = useState<any[]>([]);
+  const [order, setOrder] = useState<IOrder>();
+  const [data, setData] = useState<IOrderItemData[]>([]);
+  const [orderText, setOrderText] = useState('');
+  const [orderColor, setOrderColor] = useState('');
 
-  const { data: orderData, loading } = useQuery<
+  const { data: orderData, loading, refetch } = useQuery<
     getOrderQuery,
     getOrderQueryVariables
   >(GET_ORDER_QUERY, {
@@ -129,18 +182,39 @@ export const OrderDetail: React.FC = () => {
 
   useEffect(() => {
     if (orderData && !loading) {
-      const orderInfo: any = orderData.getOrder.order;
+      const orderInfo = orderData.getOrder.order as IOrder;
       setOrder(orderInfo);
-      for (let i = 0; i < orderInfo.items.length; i++) {
+      const orderItems = orderInfo.items as IOrderItem[];
+      for (let i = 0; i < orderItems.length; i++) {
         originData.push({
           key: i + 1,
           no: i + 1,
-          name: orderInfo.items[i].bundle.name,
-          num: orderInfo.items[i].num,
+          name: orderItems[i].bundle?.name,
+          num: orderItems[i].num,
         });
       }
       setData(originData);
+      if (orderInfo.status === OrderStatus.Created) {
+        setOrderText('출고요청');
+        setOrderColor('orange');
+      } else if (orderInfo.status === OrderStatus.Canceled) {
+        setOrderText('취소됨');
+        setOrderColor('red');
+      } else if (orderInfo.status === OrderStatus.Pending) {
+        setOrderText('보류');
+        setOrderColor('volcano');
+      } else if (orderInfo.status === OrderStatus.Preparing) {
+        setOrderText('준비중');
+        setOrderColor('green');
+      } else if (orderInfo.status === OrderStatus.Partial) {
+        setOrderText('부분출고');
+        setOrderColor('blue');
+      } else if (orderInfo.status === OrderStatus.Completed) {
+        setOrderText('출고완료');
+        setOrderColor('geekblue');
+      }
     }
+    refetch();
   }, [orderData]);
 
   return (
@@ -180,13 +254,17 @@ export const OrderDetail: React.FC = () => {
               {order?.projectName}
             </Descriptions.Item>
             <Descriptions.Item label="상태">
-              <Badge status="processing" text="Create" />
+              <Badge color={orderColor} text={orderText} />
             </Descriptions.Item>
             <Descriptions.Item label="구분">
-              {order?.classification + ''}
+              {order?.classification === OrderClassification.Sale
+                ? '판매'
+                : order?.classification === OrderClassification.Demo
+                ? '데모'
+                : `${order?.classification}`}
             </Descriptions.Item>
             <Descriptions.Item label="Demo 회수일자">
-              {order?.demoReturnDate}
+              {new Date(`${order?.demoReturnDate}`).toLocaleDateString()}
             </Descriptions.Item>
             <Descriptions.Item label="발주서 접수">
               {order?.orderSheet === true ? 'O' : 'X'}
@@ -201,10 +279,18 @@ export const OrderDetail: React.FC = () => {
               {new Date(order?.deliveryDate).toLocaleDateString()}
             </Descriptions.Item>
             <Descriptions.Item label="출고형태" span={2}>
-              {order?.deliveryType + ''}
+              {order?.deliveryType === DeliveryType.Total
+                ? '전체출고'
+                : '부분출고'}
             </Descriptions.Item>
             <Descriptions.Item label="배송방법">
-              {order?.deliveryMethod + ''}
+              {order?.deliveryMethod === DeliveryMethod.Parcel
+                ? '택배'
+                : order?.deliveryMethod === DeliveryMethod.Cargo
+                ? '화물'
+                : order?.deliveryMethod === DeliveryMethod.Quick
+                ? '퀵'
+                : '직접배송'}
             </Descriptions.Item>
             <Descriptions.Item label="수령자" span={2}>
               {order?.receiver}
