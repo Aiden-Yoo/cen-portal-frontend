@@ -4,27 +4,13 @@ import { Helmet } from 'react-helmet';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { gql, useMutation, useQuery } from '@apollo/client';
-import {
-  Table,
-  Popconfirm,
-  Form,
-  Typography,
-  Button,
-  notification,
-  Descriptions,
-  Badge,
-} from 'antd';
+import { Table, Button, Descriptions, Badge } from 'antd';
 import {
   getOrderQuery,
   getOrderQueryVariables,
 } from '../../../__generated__/getOrderQuery';
-import {
-  deleteOrderMutation,
-  deleteOrderMutationVariables,
-} from '../../../__generated__/deleteOrderMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { Loading } from '../../../components/loading';
-import { AnyNaptrRecord } from 'dns';
 import {
   DeliveryMethod,
   DeliveryType,
@@ -227,6 +213,11 @@ export const OrderDetail: React.FC = () => {
         {` 출고요청서`}
       </TitleBar>
       <MenuBar>
+        <SButton type="primary" size="small">
+          <Link to={`/cen/orders/${orderId.id}/serial-number`}>
+            Serial Number
+          </Link>
+        </SButton>
         <SButton type="primary" size="small" onClick={() => history.goBack()}>
           Back
         </SButton>

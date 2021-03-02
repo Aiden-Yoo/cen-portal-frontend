@@ -12,6 +12,7 @@ import {
   Space,
   Select,
   Tooltip,
+  TreeSelect,
 } from 'antd';
 import {
   FolderOpenOutlined,
@@ -26,6 +27,7 @@ import {
 import { useAllParts } from '../../../hooks/useAllParts';
 
 const { Option } = Select;
+const { TreeNode } = TreeSelect;
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -69,6 +71,7 @@ export const AddBundle = () => {
   const history = useHistory();
   const [form] = Form.useForm();
   const [parts, setParts] = useState<IPart[]>([]);
+  const parentList: string[] = [];
 
   const {
     data: partData,
@@ -80,6 +83,11 @@ export const AddBundle = () => {
     if (partData && !partLoading) {
       const parts = partData.allParts.parts as IPart[];
       setParts(parts);
+      parts.map((part) => {
+        if (parentList.indexOf(part.series) === -1) {
+          parentList.push(part.series);
+        }
+      });
     }
   }, [partData]);
 
@@ -221,18 +229,41 @@ export const AddBundle = () => {
                           name={[field.name, 'partId']}
                           fieldKey={[field.fieldKey, 'partId']}
                           rules={[
-                            { required: true, message: '부품을 입력해주세요.' },
+                            { required: true, message: '부품을 선택해주세요.' },
                           ]}
                         >
-                          <Select style={{ width: 300 }}>
+                          <TreeSelect
+                            showSearch
+                            placeholder="Please select"
+                            allowClear
+                            style={{ width: '300px' }}
+                            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                          >
                             {parts
-                              ? parts.map((part) => (
-                                  <Option key={part.id} value={part.id}>
-                                    {part.name}
-                                  </Option>
+                              ? parentList.map((parent) => (
+                                  // parent list.
+                                  <TreeNode
+                                    key={parent}
+                                    value={parent}
+                                    title={parent}
+                                    selectable={false}
+                                  >
+                                    {parts.map((part) => {
+                                      // children list.
+                                      if (part.series === parent) {
+                                        return (
+                                          <TreeNode
+                                            key={part.id}
+                                            value={part.id}
+                                            title={part.name}
+                                          />
+                                        );
+                                      }
+                                    })}
+                                  </TreeNode>
                                 ))
                               : null}
-                          </Select>
+                          </TreeSelect>
                         </Form.Item>
                       )}
                     </Form.Item>
@@ -246,6 +277,7 @@ export const AddBundle = () => {
                           </Tooltip>
                         </span>
                       }
+                      style={{ width: '200px' }}
                       name={[field.name, 'num']}
                       fieldKey={[field.fieldKey, 'num']}
                       rules={[

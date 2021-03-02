@@ -166,6 +166,11 @@ export interface EditContactInput {
   contactId: number;
 }
 
+export interface EditItemInfoInput {
+  serialNumber?: string | null;
+  itemInfoId: number;
+}
+
 export interface EditOrderInput {
   id: number;
   status: OrderStatus;
@@ -188,6 +193,12 @@ export interface EditPartnerInput {
 
 export interface GetOrderInput {
   id: number;
+}
+
+export interface GetOrderItemsInput {
+  page?: number | null;
+  take?: number | null;
+  orderId: number;
 }
 
 export interface GetOrdersInput {

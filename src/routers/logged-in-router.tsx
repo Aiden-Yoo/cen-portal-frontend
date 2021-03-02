@@ -25,6 +25,7 @@ import { AddContact } from '../pages/cen/partners/addContact';
 import { AddPart } from '../pages/cen/devices/addPart';
 import { BundleDetail } from '../pages/cen/devices/bundleDetail';
 import { PartDetail } from '../pages/cen/devices/partDetail';
+import { OrderSerial } from '../pages/cen/orders/orderSerial';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -56,19 +57,16 @@ const cenRoutes = [
   { path: '/cen/orders', component: <Order /> },
   { path: '/cen/orders/add-order', component: <AddOrder /> },
   { path: '/cen/orders/:id', component: <OrderDetail /> },
-  // { path: "/cen/orders/:id/edit-order", component: <EditOrder /> },
+  { path: '/cen/orders/:id/serial-number', component: <OrderSerial /> },
   { path: '/cen/partners', component: <Partner /> },
   { path: '/cen/partners/add-partner', component: <AddPartner /> },
   { path: '/cen/partners/:id', component: <PartnerDetail /> },
-  // { path: "/cen/partners/:id/edit-partner", component: <EditPartner /> },
   { path: '/cen/partners/:id/add-contact', component: <AddContact /> },
   { path: '/cen/devices', component: <Device /> },
   { path: '/cen/devices/add-bundle', component: <AddBundle /> },
   { path: '/cen/devices/add-part', component: <AddPart /> },
   { path: '/cen/devices/bundle/:id', component: <BundleDetail /> },
   { path: '/cen/devices/part/:id', component: <PartDetail /> },
-  // { path: "/cen/devices/:id", component: <BundleDetail /> },
-  // { path: "/cen/devices/:id/edit-bundle", component: <EditBundle /> },
 ];
 
 const commonRoutes = [
@@ -99,14 +97,10 @@ const siderRoutes = [
             <Link to="/cen/devices">제품</Link>
           </Menu.Item>
         </SubMenu>
-        <Menu.Item key="6" icon={<VideoCameraOutlined />}>
-          nav 2
-        </Menu.Item>
-        <Menu.Item key="7" icon={<UploadOutlined />}>
-          nav 3
-        </Menu.Item>
-        <Menu.Item key="8" icon={<UserOutlined />}>
-          nav 4
+        <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+          {/* <Link to=""> */}
+          회원관리
+          {/* </Link> */}
         </Menu.Item>
       </Menu>
     ),
@@ -114,7 +108,7 @@ const siderRoutes = [
   {
     path: '/partner',
     component: (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
+      <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
         <Menu.Item key="1" icon={<UserOutlined />}>
           partner 1
         </Menu.Item>
