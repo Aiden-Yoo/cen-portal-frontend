@@ -1,11 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { isLoggedInVar } from '../apollo';
 import { Layout, Menu } from 'antd';
 import { UserRole } from '../__generated__/globalTypes';
 import { useMe } from '../hooks/useMe';
+import { LOCALSTORAGE_TOKEN } from '../constants';
+
+const { SubMenu } = Menu;
 
 export const Header: React.FC = () => {
   const { data } = useMe();
+
   return (
     <>
       <Layout.Header>
@@ -22,9 +27,23 @@ export const Header: React.FC = () => {
           <Menu.Item key="partner">
             <Link to="/partner">Partner</Link>
           </Menu.Item>
-          <Menu.Item key="mypage">
-            {!data?.me ? <Link to="/">MyPage</Link> : data.me.name}
-          </Menu.Item>
+          <SubMenu
+            key="mypage"
+            title={!data?.me ? <Link to="/">MyPage</Link> : data.me.name}
+          >
+            <Menu.Item key="mypage">
+              <Link to="/mypage">프로필</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="logout"
+              onClick={() => {
+                localStorage.removeItem(LOCALSTORAGE_TOKEN);
+                isLoggedInVar(false);
+              }}
+            >
+              로그아웃
+            </Menu.Item>
+          </SubMenu>
         </Menu>
       </Layout.Header>
     </>

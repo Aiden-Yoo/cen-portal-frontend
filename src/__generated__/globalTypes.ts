@@ -191,6 +191,13 @@ export interface EditPartnerInput {
   partnerId: number;
 }
 
+export interface EditProfileInput {
+  password?: string | null;
+  team?: string | null;
+  jobTitle?: string | null;
+  bio?: string | null;
+}
+
 export interface GetOrderInput {
   id: number;
 }

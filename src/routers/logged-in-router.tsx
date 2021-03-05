@@ -26,6 +26,7 @@ import { AddPart } from '../pages/cen/devices/addPart';
 import { BundleDetail } from '../pages/cen/devices/bundleDetail';
 import { PartDetail } from '../pages/cen/devices/partDetail';
 import { OrderSerial } from '../pages/cen/orders/orderSerial';
+import { MyPage } from '../pages/cen/user/mypage';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -73,7 +74,7 @@ const commonRoutes = [
   { path: '/', component: 'home' },
   // { path: '/', component: <Home /> },
   // { path: "/confirm", component: <ConfirmEmail /> },
-  // { path: "/edit-profile", component: <EditProfile /> },
+  { path: '/mypage', component: <MyPage /> },
 ];
 
 const siderRoutes = [
