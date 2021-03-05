@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
             </Menu.Item>
           )}
           <Menu.Item key="partner">
-            <Link to="/partner">Partner</Link>
+            <Link to="/partner/recommand">Partner</Link>
           </Menu.Item>
           <SubMenu
             key="mypage"

@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import { useMe } from '../hooks/useMe';
 import { Layout, Menu } from 'antd';
 import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
+  InboxOutlined,
+  FileOutlined,
+  UsergroupAddOutlined,
+  DesktopOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 import { UserRole } from '../__generated__/globalTypes';
 import logo from '../images/CoreEdge_logo.png';
@@ -68,13 +70,18 @@ const cenRoutes = [
   { path: '/cen/devices/add-part', component: <AddPart /> },
   { path: '/cen/devices/bundle/:id', component: <BundleDetail /> },
   { path: '/cen/devices/part/:id', component: <PartDetail /> },
+  // { path: '/cen/users', component: <User /> },
 ];
 
 const commonRoutes = [
   { path: '/', component: 'home' },
   // { path: '/', component: <Home /> },
-  // { path: "/confirm", component: <ConfirmEmail /> },
+  // { path: "/confirm-email", component: <ConfirmEmail /> },
   { path: '/mypage', component: <MyPage /> },
+  // { path: '/partner/recommand', component: <RecommandedFirmware /> },
+  // { path: '/partner/firmware', component: <FirmwareDownload /> },
+  // { path: '/partner/documents', component: <Document /> },
+  // { path: '/partner/issues', component: <Issue /> },
 ];
 
 const siderRoutes = [
@@ -87,7 +94,7 @@ const siderRoutes = [
         defaultSelectedKeys={['1-1']}
         defaultOpenKeys={['sub1']}
       >
-        <SubMenu key="sub1" icon={<UserOutlined />} title="출고요청">
+        <SubMenu key="sub1" icon={<InboxOutlined />} title="출고요청">
           <Menu.Item key="1-1">
             <Link to="/cen/orders">출고요청서</Link>
           </Menu.Item>
@@ -98,10 +105,8 @@ const siderRoutes = [
             <Link to="/cen/devices">제품</Link>
           </Menu.Item>
         </SubMenu>
-        <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-          {/* <Link to=""> */}
-          회원관리
-          {/* </Link> */}
+        <Menu.Item key="2" icon={<UsergroupAddOutlined />}>
+          <Link to="/cen/users">회원관리</Link>
         </Menu.Item>
       </Menu>
     ),
@@ -109,18 +114,25 @@ const siderRoutes = [
   {
     path: '/partner',
     component: (
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-        <Menu.Item key="1" icon={<UserOutlined />}>
-          partner 1
+      <Menu
+        theme="dark"
+        mode="inline"
+        defaultSelectedKeys={['1-1']}
+        defaultOpenKeys={['sub1']}
+      >
+        <SubMenu key="sub1" icon={<DesktopOutlined />} title="펌웨어">
+          <Menu.Item key="1-1">
+            <Link to="/partner/recommand">권장펌웨어</Link>
+          </Menu.Item>
+          <Menu.Item key="1-2">
+            <Link to="/partner/firmware">다운로드</Link>
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Item key="2" icon={<FileOutlined />}>
+          <Link to="/partner/documents">각종문서</Link>
         </Menu.Item>
-        <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-          nav 2
-        </Menu.Item>
-        <Menu.Item key="3" icon={<UploadOutlined />}>
-          nav 3
-        </Menu.Item>
-        <Menu.Item key="4" icon={<UserOutlined />}>
-          nav 4
+        <Menu.Item key="3" icon={<ToolOutlined />}>
+          <Link to="/partner/issues">이슈</Link>
         </Menu.Item>
       </Menu>
     ),
