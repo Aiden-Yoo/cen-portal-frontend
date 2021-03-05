@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { isLoggedInVar } from '../apollo';
 import { Layout, Menu } from 'antd';
 import { UserRole } from '../__generated__/globalTypes';
@@ -10,6 +10,7 @@ const { SubMenu } = Menu;
 
 export const Header: React.FC = () => {
   const { data } = useMe();
+  const history = useHistory();
 
   return (
     <>
@@ -39,6 +40,7 @@ export const Header: React.FC = () => {
               onClick={() => {
                 localStorage.removeItem(LOCALSTORAGE_TOKEN);
                 isLoggedInVar(false);
+                history.push('/');
               }}
             >
               로그아웃
