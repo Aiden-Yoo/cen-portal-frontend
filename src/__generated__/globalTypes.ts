@@ -93,6 +93,10 @@ export interface CreateContactInput {
   partnerId: number;
 }
 
+export interface CreateHomeNoticeInput {
+  content: string;
+}
+
 export interface CreateOrderInput {
   salesPerson: string;
   projectName: string;

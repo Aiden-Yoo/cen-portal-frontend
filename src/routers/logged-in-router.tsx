@@ -29,6 +29,7 @@ import { BundleDetail } from '../pages/cen/devices/bundleDetail';
 import { PartDetail } from '../pages/cen/devices/partDetail';
 import { OrderSerial } from '../pages/cen/orders/orderSerial';
 import { MyPage } from '../pages/cen/user/mypage';
+import { Home } from '../pages/home/home';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -74,8 +75,7 @@ const cenRoutes = [
 ];
 
 const commonRoutes = [
-  { path: '/', component: 'home' },
-  // { path: '/', component: <Home /> },
+  { path: '/', component: <Home /> },
   // { path: "/confirm-email", component: <ConfirmEmail /> },
   { path: '/mypage', component: <MyPage /> },
   // { path: '/partner/recommand', component: <RecommandedFirmware /> },
