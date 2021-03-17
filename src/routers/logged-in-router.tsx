@@ -30,6 +30,7 @@ import { PartDetail } from '../pages/cen/devices/partDetail';
 import { OrderSerial } from '../pages/cen/orders/orderSerial';
 import { MyPage } from '../pages/cen/user/mypage';
 import { Home } from '../pages/home/home';
+import { Case } from '../pages/partner/cases/cases';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -81,7 +82,7 @@ const commonRoutes = [
   // { path: '/partner/recommand', component: <RecommandedFirmware /> },
   // { path: '/partner/firmware', component: <FirmwareDownload /> },
   // { path: '/partner/documents', component: <Document /> },
-  // { path: '/partner/issues', component: <Issue /> },
+  { path: '/partner/cases', component: <Case /> },
 ];
 
 const siderRoutes = [
@@ -114,25 +115,15 @@ const siderRoutes = [
   {
     path: '/partner',
     component: (
-      <Menu
-        theme="dark"
-        mode="inline"
-        defaultSelectedKeys={['1-1']}
-        defaultOpenKeys={['sub1']}
-      >
-        <SubMenu key="sub1" icon={<DesktopOutlined />} title="펌웨어">
-          <Menu.Item key="1-1">
-            <Link to="/partner/recommand">권장펌웨어</Link>
-          </Menu.Item>
-          <Menu.Item key="1-2">
-            <Link to="/partner/firmware">다운로드</Link>
-          </Menu.Item>
-        </SubMenu>
+      <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+        <Menu.Item key="1" icon={<DesktopOutlined />}>
+          <Link to="/partner/firmwares">Firmwares</Link>
+        </Menu.Item>
         <Menu.Item key="2" icon={<FileOutlined />}>
-          <Link to="/partner/documents">각종문서</Link>
+          <Link to="/partner/documents">Documents</Link>
         </Menu.Item>
         <Menu.Item key="3" icon={<ToolOutlined />}>
-          <Link to="/partner/issues">이슈</Link>
+          <Link to="/partner/cases">Cases</Link>
         </Menu.Item>
       </Menu>
     ),

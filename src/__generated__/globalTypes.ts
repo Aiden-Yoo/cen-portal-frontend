@@ -48,6 +48,11 @@ export interface AllBundlesInput {
   take?: number | null;
 }
 
+export interface AllIssuesInput {
+  page?: number | null;
+  take?: number | null;
+}
+
 export interface AllPartnersInput {
   page?: number | null;
   take?: number | null;
@@ -140,6 +145,10 @@ export interface DeleteBundleInput {
 
 export interface DeleteContactInput {
   contactId: number;
+}
+
+export interface DeleteIssueInput {
+  issueId: number;
 }
 
 export interface DeleteOrderInput {
