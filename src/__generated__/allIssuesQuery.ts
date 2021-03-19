@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { AllIssuesInput } from "./globalTypes";
+import { AllIssuesInput, KindRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: allIssuesQuery
@@ -27,7 +27,7 @@ export interface allIssuesQuery_allIssues_issues {
   id: number;
   writer: allIssuesQuery_allIssues_issues_writer | null;
   locked: boolean | null;
-  kind: string | null;
+  kind: KindRole;
   title: string;
   files: allIssuesQuery_allIssues_issues_files[] | null;
   createAt: any;

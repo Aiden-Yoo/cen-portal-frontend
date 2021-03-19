@@ -31,6 +31,7 @@ import { OrderSerial } from '../pages/cen/orders/orderSerial';
 import { MyPage } from '../pages/cen/user/mypage';
 import { Home } from '../pages/home/home';
 import { Case } from '../pages/partner/cases/cases';
+import { AddCase } from '../pages/partner/cases/addCase';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -83,6 +84,7 @@ const commonRoutes = [
   // { path: '/partner/firmware', component: <FirmwareDownload /> },
   // { path: '/partner/documents', component: <Document /> },
   { path: '/partner/cases', component: <Case /> },
+  { path: '/partner/cases/add-case', component: <AddCase /> },
 ];
 
 const siderRoutes = [

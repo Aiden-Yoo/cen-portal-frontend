@@ -19,6 +19,12 @@ export enum DeliveryType {
   Total = "Total",
 }
 
+export enum KindRole {
+  Case = "Case",
+  ETC = "ETC",
+  Question = "Question",
+}
+
 export enum OrderClassification {
   Demo = "Demo",
   DoA = "DoA",
@@ -67,6 +73,28 @@ export interface BundleInput {
   bundleId: number;
 }
 
+export interface BundleInputType {
+  name: string;
+  series?: string | null;
+  parts?: BundleItemInputType[] | null;
+  description?: string | null;
+  orderItem?: OrderItemInputType | null;
+}
+
+export interface BundleItemInputType {
+  part: PartInputType;
+  num?: number | null;
+  bundle?: BundleInputType | null;
+}
+
+export interface ContactInputType {
+  name: string;
+  team?: string | null;
+  jobTitle?: string | null;
+  tel: string;
+  partner: PartnerInputType;
+}
+
 export interface CreateAccountInput {
   email: string;
   password: string;
@@ -100,6 +128,14 @@ export interface CreateContactInput {
 
 export interface CreateHomeNoticeInput {
   content: string;
+}
+
+export interface CreateIssueInput {
+  locked?: boolean | null;
+  kind: KindRole;
+  title: string;
+  content: string;
+  files?: IssueFilesInputType[] | null;
 }
 
 export interface CreateOrderInput {
@@ -145,10 +181,6 @@ export interface DeleteBundleInput {
 
 export interface DeleteContactInput {
   contactId: number;
-}
-
-export interface DeleteIssueInput {
-  issueId: number;
 }
 
 export interface DeleteOrderInput {
@@ -227,17 +259,105 @@ export interface GetOrdersInput {
   status?: OrderStatus | null;
 }
 
+export interface IssueCommentsInputType {
+  writer?: UserInputType | null;
+  comment: string;
+  post: IssuesInputType;
+  depth: number;
+  order: number;
+  groupNum: number;
+  deleteAt?: any | null;
+}
+
+export interface IssueFilesInputType {
+  path: string;
+  issue?: IssuesInputType | null;
+}
+
+export interface IssuesInputType {
+  writer?: UserInputType | null;
+  locked?: boolean | null;
+  kind: KindRole;
+  title: string;
+  content: string;
+  files?: IssueFilesInputType[] | null;
+  comment?: IssueCommentsInputType[] | null;
+  deleteAt?: any | null;
+}
+
+export interface ItemInfoInputType {
+  name: string;
+  serialNumber?: string | null;
+  order: OrderInputType;
+}
+
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface OrderInputType {
+  writer?: UserInputType | null;
+  salesPerson: string;
+  projectName: string;
+  classification: OrderClassification;
+  demoReturnDate?: any | null;
+  orderSheet: boolean;
+  partner?: PartnerInputType | null;
+  destination: string;
+  receiver: string;
+  contact: string;
+  address: string;
+  deliveryDate: any;
+  deliveryType: DeliveryType;
+  deliveryMethod: DeliveryMethod;
+  remark?: string | null;
+  itemInfos?: ItemInfoInputType[] | null;
+  items: OrderItemInputType[];
+  status: OrderStatus;
+}
+
+export interface OrderItemInputType {
+  bundle?: BundleInputType | null;
+  num: number;
+  order: OrderInputType;
 }
 
 export interface PartInput {
   partId: number;
 }
 
+export interface PartInputType {
+  name: string;
+  series: string;
+  description?: string | null;
+}
+
 export interface PartnerInput {
   partnerId: number;
+}
+
+export interface PartnerInputType {
+  name: string;
+  address: string;
+  zip?: string | null;
+  tel?: string | null;
+  contacts?: ContactInputType[] | null;
+  orders?: OrderInputType[] | null;
+}
+
+export interface UserInputType {
+  email: string;
+  password: string;
+  role: UserRole;
+  name: string;
+  company: string;
+  team?: string | null;
+  jobTitle?: string | null;
+  bio?: string | null;
+  verified: boolean;
+  isLocked: boolean;
+  orders: OrderInputType[];
 }
 
 //==============================================================

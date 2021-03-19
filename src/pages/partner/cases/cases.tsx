@@ -145,7 +145,7 @@ export const Case: React.FC = () => {
     {
       title: '제목',
       dataIndex: 'title',
-      width: '60%',
+      width: '50%',
       align: 'center',
     },
     {
@@ -163,7 +163,7 @@ export const Case: React.FC = () => {
     {
       title: '작성일',
       dataIndex: 'createAt',
-      width: '10%',
+      width: '20%',
       align: 'center',
     },
   ];
@@ -179,7 +179,7 @@ export const Case: React.FC = () => {
       </TitleBar>
       <MenuBar>
         <SButton type="primary" size="small">
-          <Link to="/cen/cases/add-case">New</Link>
+          <Link to="/partner/cases/add-case">New</Link>
         </SButton>
       </MenuBar>
       <Table<ICasesData>
