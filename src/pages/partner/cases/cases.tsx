@@ -4,7 +4,12 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Table, Typography, Button, BackTop } from 'antd';
-import { ToolOutlined, CommentOutlined, LockOutlined } from '@ant-design/icons';
+import {
+  ToolOutlined,
+  CommentOutlined,
+  LockOutlined,
+  FileZipOutlined,
+} from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { useMe } from '../../../hooks/useMe';
 import { useAllCases } from '../../../hooks/useAllCases';
@@ -98,6 +103,13 @@ export const Case: React.FC = () => {
                 }
                 href={`/partner/cases/${cases[i].id}`}
               >{`${cases[i].title}`}</Typography.Link>
+              {cases[i].files?.length !== 0 ? (
+                <span style={{ fontSize: '11px' }}>
+                  {' '}
+                  <FileZipOutlined />
+                  {cases[i].files?.length}
+                </span>
+              ) : null}
               {cases[i].commentsNum ? (
                 <span style={{ fontSize: '11px' }}>
                   {' '}
