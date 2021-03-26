@@ -25,12 +25,13 @@ import {
   Popconfirm,
   Upload,
   Select,
+  Checkbox,
 } from 'antd';
 import {
   getIssueQuery,
   getIssueQueryVariables,
 } from '../../../__generated__/getIssueQuery';
-import { InboxOutlined, ToolOutlined, StarOutlined } from '@ant-design/icons';
+import { InboxOutlined, ToolOutlined, LockOutlined } from '@ant-design/icons';
 import { Loading } from '../../../components/loading';
 import {
   DeliveryMethod,
@@ -323,6 +324,7 @@ export const CaseDetail: React.FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [uploadedFile, setUploadedFile] = useState<IUploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [checkLocked, setCheckLocked] = useState<boolean>(false);
   const [defaultFileList, setDefaultFileList] = useState<any[]>([]);
   const {
     data: caseDetailData,
@@ -464,6 +466,7 @@ export const CaseDetail: React.FC = () => {
       setWriter(issue.writer as ICommentUser);
       setFiles(issue.files as IIssueFiles[]);
       setLoadedData(issue as IIssues);
+      setCheckLocked(issue.locked as boolean);
       viewerRef.current?.getInstance().setMarkdown(issue.content as string);
       issueComment.map((comment, index) => {
         originComment.push({
@@ -606,9 +609,15 @@ export const CaseDetail: React.FC = () => {
           content: getContent,
           kind: values.kind,
           files: newFileForm,
+          locked: checkLocked,
         },
       },
     });
+  };
+
+  const handleCheckChange = () => {
+    setCheckLocked(!checkLocked);
+    console.log(checkLocked);
   };
 
   const uploadProps = {
@@ -746,7 +755,7 @@ export const CaseDetail: React.FC = () => {
                 style={{
                   display: 'inline-block',
                   width: '20%',
-                  margin: '0 8px 0 0',
+                  marginRight: '8px',
                 }}
                 rules={[{ required: true, message: '입력 필수' }]}
                 initialValue={loadedData?.kind}
@@ -763,11 +772,25 @@ export const CaseDetail: React.FC = () => {
               </Form.Item>
               <Form.Item
                 name="title"
-                style={{ display: 'inline-block', width: 'calc(80% - 8px)' }}
+                style={{
+                  display: 'inline-block',
+                  width: '70%',
+                  marginRight: '8px',
+                }}
                 rules={[{ required: true, message: '입력 필수' }]}
                 initialValue={loadedData?.title}
               >
                 <Input placeholder="제목" defaultValue={loadedData?.title} />
+              </Form.Item>
+              <Form.Item
+                style={{ display: 'inline-block', width: 'calc(10% - 16px)' }}
+              >
+                <Checkbox
+                  defaultChecked={checkLocked}
+                  onChange={handleCheckChange}
+                >
+                  <LockOutlined />
+                </Checkbox>
               </Form.Item>
             </>
           ) : (
