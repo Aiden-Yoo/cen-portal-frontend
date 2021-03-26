@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { gql, useMutation } from '@apollo/client';
+import 'codemirror/lib/codemirror.css';
+import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import {
   Popconfirm,
@@ -21,7 +23,6 @@ import {
 } from '../../../__generated__/createIssueMutation';
 import { KindRole } from '../../../__generated__/globalTypes';
 import { useMe } from '../../../hooks/useMe';
-import { Loading } from '../../../components/loading';
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -77,11 +78,6 @@ export const AddCase: React.FC = () => {
   const editorRef = React.createRef<any>();
   const [content, setContent] = useState<string>();
 
-  // useEffect(() => {
-  //   console.log(uploadedFile);
-  //   console.log(`isUploading:${isUploading}`);
-  // }, [uploadedFile]);
-
   const onCompleted = (data: createIssueMutation) => {
     const {
       createIssue: { ok, error, issue },
@@ -114,7 +110,16 @@ export const AddCase: React.FC = () => {
 
   const onFinish = async (values: any) => {
     const getContent = await editorRef.current.getInstance().getMarkdown();
-    if (isUploading === true) {
+    if (isUploading) {
+      notification.error({
+        message: 'Error',
+        description: `파일 업로드 중입니다. 잠시 후에 시도해주세요.`,
+        placement: 'topRight',
+        duration: 1,
+      });
+      return;
+    }
+    if (!getContent) {
       notification.error({
         message: 'Error',
         description: `내용을 입력해 주세요.`,
@@ -123,34 +128,24 @@ export const AddCase: React.FC = () => {
       });
       return;
     }
-    if (getContent === '') {
-      notification.error({
-        message: 'Error',
-        description: `내용을 입력해 주세요.`,
-        placement: 'topRight',
-        duration: 1,
+    setContent(getContent);
+    // console.log('Received values of form:', values);
+    const newFileForm: any[] = [];
+    if (uploadedFile.length !== 0) {
+      uploadedFile.map((file) => {
+        newFileForm.push({ path: file.filename });
       });
-      return;
-    } else {
-      setContent(getContent);
-      console.log('Received values of form:', values);
-      const newFileForm: any[] = [];
-      if (uploadedFile.length !== 0) {
-        uploadedFile.map((file) => {
-          newFileForm.push({ path: file.filename });
-        });
-      }
-      createIssueMutation({
-        variables: {
-          input: {
-            title: values.title,
-            content: getContent,
-            kind: values.kind,
-            files: newFileForm,
-          },
+    }
+    createIssueMutation({
+      variables: {
+        input: {
+          title: values.title,
+          content: getContent,
+          kind: values.kind,
+          files: newFileForm,
         },
-      });
-    }
+      },
+    });
   };
 
   const uploadProps = {
@@ -166,27 +161,36 @@ export const AddCase: React.FC = () => {
           'content-type': 'multipart/form-data',
         },
       };
-      axios
-        .post(options.action, data, config)
-        .then((res: any) => {
-          options.onSuccess(res.data, options.file);
-          uploadedFile.push(res.data.data[0]);
-          setUploadedFile(uploadedFile);
-          notification.success({
-            message: 'Success!',
-            description: `업로드 성공(${options.file.name})`,
-            placement: 'topRight',
-            duration: 1.5,
-          });
-        })
-        .catch((err: Error) => {
-          notification.error({
-            message: 'Error',
-            description: `업로드 실패`,
-            placement: 'topRight',
-            duration: 1.5,
-          });
+      if (uploadedFile.length >= 5) {
+        notification.error({
+          message: 'Error',
+          description: `업로드는 최대 5개만 가능합니다.`,
+          placement: 'topRight',
+          duration: 1.5,
         });
+      } else {
+        axios
+          .post(options.action, data, config)
+          .then((res: any) => {
+            options.onSuccess(res.data, options.file);
+            uploadedFile.push(res.data.data[0]);
+            setUploadedFile(uploadedFile);
+            notification.success({
+              message: 'Success!',
+              description: `업로드 성공(${options.file.name})`,
+              placement: 'topRight',
+              duration: 1.5,
+            });
+          })
+          .catch((err: Error) => {
+            notification.error({
+              message: 'Error',
+              description: `업로드 실패`,
+              placement: 'topRight',
+              duration: 1.5,
+            });
+          });
+      }
     },
     progress: {
       strokeColor: {
@@ -196,17 +200,8 @@ export const AddCase: React.FC = () => {
       strokeWidth: 3,
       format: (percent: any) => `${parseFloat(percent.toFixed(2))}%`,
     },
-    onChange(info: any) {
-      const newFile: IUploadedFile[] = [];
-      info.fileList.map((file: any) => {
-        uploadedFile.map((uploaded) => {
-          if (uploaded.filename === file.response?.data[0].filename) {
-            newFile.push(uploaded);
-          }
-        });
-      });
-      setUploadedFile(newFile);
-      if (info.file.status === 'uploading') {
+    async onChange(info: any) {
+      if (info.file.status === 'uploading' && uploadedFile.length < 5) {
         setIsUploading(true);
       } else {
         setIsUploading(false);
@@ -229,7 +224,7 @@ export const AddCase: React.FC = () => {
             name="kind"
             style={{
               display: 'inline-block',
-              width: '10%',
+              width: '20%',
               margin: '0 8px 0 0',
             }}
             rules={[{ required: true, message: '입력 필수' }]}
@@ -242,7 +237,7 @@ export const AddCase: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="title"
-            style={{ display: 'inline-block', width: 'calc(90% - 8px)' }}
+            style={{ display: 'inline-block', width: 'calc(80% - 8px)' }}
             rules={[{ required: true, message: '입력 필수' }]}
           >
             <Input placeholder="제목" />

@@ -8,45 +8,45 @@
 //==============================================================
 
 export enum DeliveryMethod {
-  Cargo = "Cargo",
-  Directly = "Directly",
-  Parcel = "Parcel",
-  Quick = "Quick",
+  Cargo = 'Cargo',
+  Directly = 'Directly',
+  Parcel = 'Parcel',
+  Quick = 'Quick',
 }
 
 export enum DeliveryType {
-  Partial = "Partial",
-  Total = "Total",
+  Partial = 'Partial',
+  Total = 'Total',
 }
 
 export enum KindRole {
-  Case = "Case",
-  ETC = "ETC",
-  Question = "Question",
+  Case = 'Case',
+  ETC = 'ETC',
+  Question = 'Question',
 }
 
 export enum OrderClassification {
-  Demo = "Demo",
-  DoA = "DoA",
-  RMA = "RMA",
-  Sale = "Sale",
+  Demo = 'Demo',
+  DoA = 'DoA',
+  RMA = 'RMA',
+  Sale = 'Sale',
 }
 
 export enum OrderStatus {
-  Canceled = "Canceled",
-  Completed = "Completed",
-  Created = "Created",
-  Partial = "Partial",
-  Pending = "Pending",
-  Preparing = "Preparing",
+  Canceled = 'Canceled',
+  Completed = 'Completed',
+  Created = 'Created',
+  Partial = 'Partial',
+  Pending = 'Pending',
+  Preparing = 'Preparing',
 }
 
 export enum UserRole {
-  CEN = "CEN",
-  CENSE = "CENSE",
-  Client = "Client",
-  Distributor = "Distributor",
-  Partner = "Partner",
+  CEN = 'CEN',
+  CENSE = 'CENSE',
+  Client = 'Client',
+  Distributor = 'Distributor',
+  Partner = 'Partner',
 }
 
 export interface AllBundlesInput {
@@ -130,6 +130,14 @@ export interface CreateHomeNoticeInput {
   content: string;
 }
 
+export interface CreateIssueCommentInput {
+  comment?: string | null;
+  depth?: number | null;
+  order?: number | null;
+  groupNum?: number | null;
+  issueId: number;
+}
+
 export interface CreateIssueInput {
   locked?: boolean | null;
   kind: KindRole;
@@ -183,6 +191,14 @@ export interface DeleteContactInput {
   contactId: number;
 }
 
+export interface DeleteIssueCommentInput {
+  commentId: number;
+}
+
+export interface DeleteIssueInput {
+  issueId: number;
+}
+
 export interface DeleteOrderInput {
   orderId: number;
 }
@@ -209,6 +225,15 @@ export interface EditContactInput {
   jobTitle?: string | null;
   tel?: string | null;
   contactId: number;
+}
+
+export interface EditIssueInput {
+  locked?: boolean | null;
+  kind?: KindRole | null;
+  title?: string | null;
+  content?: string | null;
+  files?: IssueFilesInputType[] | null;
+  issueId: number;
 }
 
 export interface EditItemInfoInput {
@@ -243,6 +268,10 @@ export interface EditProfileInput {
   bio?: string | null;
 }
 
+export interface GetIssueInput {
+  id: number;
+}
+
 export interface GetOrderInput {
   id: number;
 }
@@ -265,7 +294,7 @@ export interface IssueCommentsInputType {
   post: IssuesInputType;
   depth: number;
   order: number;
-  groupNum: number;
+  groupNum?: number | null;
   deleteAt?: any | null;
 }
 
