@@ -33,6 +33,9 @@ import { Home } from '../pages/home/home';
 import { Case } from '../pages/partner/cases/cases';
 import { AddCase } from '../pages/partner/cases/addCase';
 import { CaseDetail } from '../pages/partner/cases/caseDetail';
+import { Workaround } from '../pages/partner/workarounds/workarounds';
+import { AddWorkaround } from '../pages/partner/workarounds/addWorkaround';
+import { WorkaroundDetail } from '../pages/partner/workarounds/workaroundDetail';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -87,6 +90,9 @@ const commonRoutes = [
   { path: '/partner/cases', component: <Case /> },
   { path: '/partner/cases/add-case', component: <AddCase /> },
   { path: '/partner/cases/:id', component: <CaseDetail /> },
+  { path: '/partner/workarounds', component: <Workaround /> },
+  { path: '/partner/workarounds/add-workaround', component: <AddWorkaround /> },
+  { path: '/partner/workarounds/:id', component: <WorkaroundDetail /> },
 ];
 
 const siderRoutes = [
@@ -97,9 +103,9 @@ const siderRoutes = [
         theme="dark"
         mode="inline"
         defaultSelectedKeys={['1-1']}
-        defaultOpenKeys={['sub1']}
+        defaultOpenKeys={['1']}
       >
-        <SubMenu key="sub1" icon={<InboxOutlined />} title="출고요청">
+        <SubMenu key="1" icon={<InboxOutlined />} title="출고요청">
           <Menu.Item key="1-1">
             <Link to="/cen/orders">출고요청서</Link>
           </Menu.Item>
@@ -126,9 +132,14 @@ const siderRoutes = [
         <Menu.Item key="2" icon={<FileOutlined />}>
           <Link to="/partner/documents">Documents</Link>
         </Menu.Item>
-        <Menu.Item key="3" icon={<ToolOutlined />}>
-          <Link to="/partner/cases">Cases</Link>
-        </Menu.Item>
+        <SubMenu key="3" icon={<ToolOutlined />} title="Technical">
+          <Menu.Item key="3-1">
+            <Link to="/partner/cases">Cases</Link>
+          </Menu.Item>
+          <Menu.Item key="3-2">
+            <Link to="/partner/workarounds">Workarounds</Link>
+          </Menu.Item>
+        </SubMenu>
       </Menu>
     ),
   },

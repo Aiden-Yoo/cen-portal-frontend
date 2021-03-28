@@ -21,29 +21,29 @@ import {
   Checkbox,
 } from 'antd';
 import {
-  getIssueQuery,
-  getIssueQueryVariables,
-} from '../../../__generated__/getIssueQuery';
+  getWorkaroundQuery,
+  getWorkaroundQueryVariables,
+} from '../../../__generated__/getWorkaroundQuery';
 import { InboxOutlined, ToolOutlined, LockOutlined } from '@ant-design/icons';
-import { KindRole, UserRole } from '../../../__generated__/globalTypes';
+import { KindWorkaround, UserRole } from '../../../__generated__/globalTypes';
 import moment from 'moment';
 import { useMe } from '../../../hooks/useMe';
 import {
-  deleteIssueCommentMutation,
-  deleteIssueCommentMutationVariables,
-} from '../../../__generated__/deleteIssueCommentMutation';
+  deleteWorkaroundCommentMutation,
+  deleteWorkaroundCommentMutationVariables,
+} from '../../../__generated__/deleteWorkaroundCommentMutation';
 import {
-  createIssueCommentMutation,
-  createIssueCommentMutationVariables,
-} from '../../../__generated__/createIssueCommentMutation';
+  createWorkaroundCommentMutation,
+  createWorkaroundCommentMutationVariables,
+} from '../../../__generated__/createWorkaroundCommentMutation';
 import {
-  deleteIssueMutation,
-  deleteIssueMutationVariables,
-} from '../../../__generated__/deleteIssueMutation';
+  deleteWorkaroundMutation,
+  deleteWorkaroundMutationVariables,
+} from '../../../__generated__/deleteWorkaroundMutation';
 import {
-  editIssueMutation,
-  editIssueMutationVariables,
-} from '../../../__generated__/editIssueMutation';
+  editWorkaroundMutation,
+  editWorkaroundMutationVariables,
+} from '../../../__generated__/editWorkaroundMutation';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -98,12 +98,12 @@ const SButton = styled(Button)`
   margin-left: 8px;
 `;
 
-const GET_ISSUE_QUERY = gql`
-  query getIssueQuery($input: GetIssueInput!) {
-    getIssue(input: $input) {
+const GET_WORKAROUND_QUERY = gql`
+  query getWorkaroundQuery($input: GetWorkaroundInput!) {
+    getWorkaround(input: $input) {
       ok
       error
-      issue {
+      workaround {
         id
         title
         kind
@@ -138,8 +138,10 @@ const GET_ISSUE_QUERY = gql`
 `;
 
 const DELETE_COMMENT_MUTATION = gql`
-  mutation deleteIssueCommentMutation($input: DeleteIssueCommentInput!) {
-    deleteIssueComment(input: $input) {
+  mutation deleteWorkaroundCommentMutation(
+    $input: DeleteWorkaroundCommentInput!
+  ) {
+    deleteWorkaroundComment(input: $input) {
       ok
       error
     }
@@ -147,39 +149,41 @@ const DELETE_COMMENT_MUTATION = gql`
 `;
 
 const CREATE_COMMENT_MUTATION = gql`
-  mutation createIssueCommentMutation($input: CreateIssueCommentInput!) {
-    createIssueComment(input: $input) {
+  mutation createWorkaroundCommentMutation(
+    $input: CreateWorkaroundCommentInput!
+  ) {
+    createWorkaroundComment(input: $input) {
       ok
       error
     }
   }
 `;
 
-const DELETE_ISSUE_MUTATION = gql`
-  mutation deleteIssueMutation($input: DeleteIssueInput!) {
-    deleteIssue(input: $input) {
+const DELETE_WORKAROUND_MUTATION = gql`
+  mutation deleteWorkaroundMutation($input: DeleteWorkaroundInput!) {
+    deleteWorkaround(input: $input) {
       ok
       error
     }
   }
 `;
 
-const EDIT_ISSUE_MUTATION = gql`
-  mutation editIssueMutation($input: EditIssueInput!) {
-    editIssue(input: $input) {
+const EDIT_WORKAROUND_MUTATION = gql`
+  mutation editWorkaroundMutation($input: EditWorkaroundInput!) {
+    editWorkaround(input: $input) {
       ok
       error
     }
   }
 `;
 
-interface IIssueUser {
+interface IWorkaroundUser {
   id: number;
   company: string;
   name: string;
 }
 
-interface IIssueFiles {
+interface IWorkaroundFiles {
   id: number;
   path: string;
 }
@@ -190,7 +194,7 @@ interface ICommentUser {
   name: string;
 }
 
-interface IIssueComments {
+interface IWorkaroundComments {
   id: number;
   writer: ICommentUser | null;
   comment: string;
@@ -211,15 +215,15 @@ interface IOriginComment {
   isReply?: boolean;
 }
 
-interface IIssues {
+interface IWorkarounds {
   id: number;
   title: string;
-  kind: KindRole;
+  kind: KindWorkaround;
   content: string;
   locked: boolean | null;
-  writer: IIssueUser | null;
-  files: IIssueFiles[] | null;
-  comment: IIssueComments[] | null;
+  writer: IWorkaroundUser | null;
+  files: IWorkaroundFiles[] | null;
+  comment: IWorkaroundComments[] | null;
 }
 
 interface IUploadedFile {
@@ -287,19 +291,19 @@ const CommentEditor = ({ onChange, onSubmit, submitting, value }: any) => (
   </>
 );
 
-export const CaseDetail: React.FC = () => {
+export const WorkaroundDetail: React.FC = () => {
   const { data: meData } = useMe();
   const originComment: IOriginComment[] = [];
   const history = useHistory();
-  const caseId: any = useParams();
+  const workaroundId: any = useParams();
   const viewerRef = useRef<Viewer>();
   const editorRef = React.createRef<any>();
   const [form] = Form.useForm();
   const [content, setContent] = useState<string>();
   const [writer, setWriter] = useState<ICommentUser>();
-  const [loadedData, setLoadedData] = useState<IIssues>();
+  const [loadedData, setLoadedData] = useState<IWorkarounds>();
   const [commentData, setCommentData] = useState<IOriginComment[]>([]);
-  const [files, setFiles] = useState<IIssueFiles[]>([]);
+  const [files, setFiles] = useState<IWorkaroundFiles[]>([]);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [commentValue, setCommentValue] = useState<string>();
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -308,20 +312,23 @@ export const CaseDetail: React.FC = () => {
   const [checkLocked, setCheckLocked] = useState<boolean>(false);
   const [defaultFileList, setDefaultFileList] = useState<any[]>([]);
   const {
-    data: caseDetailData,
-    loading: caseDetailLoading,
+    data: workaroundDetailData,
+    loading: workaroundDetailLoading,
     refetch,
-  } = useQuery<getIssueQuery, getIssueQueryVariables>(GET_ISSUE_QUERY, {
-    variables: {
-      input: {
-        id: +caseId.id,
+  } = useQuery<getWorkaroundQuery, getWorkaroundQueryVariables>(
+    GET_WORKAROUND_QUERY,
+    {
+      variables: {
+        input: {
+          id: +workaroundId.id,
+        },
       },
     },
-  });
+  );
 
-  const onCommentDeleteCompleted = (data: deleteIssueCommentMutation) => {
+  const onCommentDeleteCompleted = (data: deleteWorkaroundCommentMutation) => {
     const {
-      deleteIssueComment: { ok, error },
+      deleteWorkaroundComment: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -341,9 +348,9 @@ export const CaseDetail: React.FC = () => {
     }
   };
 
-  const onCommentCreateCompleted = (data: createIssueCommentMutation) => {
+  const onCommentCreateCompleted = (data: createWorkaroundCommentMutation) => {
     const {
-      createIssueComment: { ok, error },
+      createWorkaroundComment: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -364,9 +371,9 @@ export const CaseDetail: React.FC = () => {
     }
   };
 
-  const onIssueDeleteCompleted = (data: deleteIssueMutation) => {
+  const onWorkaroundDeleteCompleted = (data: deleteWorkaroundMutation) => {
     const {
-      deleteIssue: { ok, error },
+      deleteWorkaround: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -375,7 +382,7 @@ export const CaseDetail: React.FC = () => {
         placement: 'topRight',
         duration: 1,
       });
-      history.push('/partner/cases/');
+      history.push('/partner/workarounds/');
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -386,9 +393,9 @@ export const CaseDetail: React.FC = () => {
     }
   };
 
-  const onIssueEditCompleted = (data: editIssueMutation) => {
+  const onWorkaroundEditCompleted = (data: editWorkaroundMutation) => {
     const {
-      editIssue: { ok, error },
+      editWorkaround: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -397,7 +404,7 @@ export const CaseDetail: React.FC = () => {
         placement: 'topRight',
         duration: 1,
       });
-      history.push(`/partner/cases/${caseId.id}`);
+      history.push(`/partner/workarounds/${workaroundId.id}`);
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -410,46 +417,49 @@ export const CaseDetail: React.FC = () => {
   };
 
   const [
-    deleteIssueCommentMutation,
-    { data: deleteIssueCommentData },
+    deleteWorkaroundCommentMutation,
+    { data: deleteWorkaroundCommentData },
   ] = useMutation<
-    deleteIssueCommentMutation,
-    deleteIssueCommentMutationVariables
+    deleteWorkaroundCommentMutation,
+    deleteWorkaroundCommentMutationVariables
   >(DELETE_COMMENT_MUTATION, { onCompleted: onCommentDeleteCompleted });
 
   const [
-    createIssueCommentMutation,
-    { data: createIssueCommentData },
+    createWorkaroundCommentMutation,
+    { data: createWorkaroundCommentData },
   ] = useMutation<
-    createIssueCommentMutation,
-    createIssueCommentMutationVariables
+    createWorkaroundCommentMutation,
+    createWorkaroundCommentMutationVariables
   >(CREATE_COMMENT_MUTATION, { onCompleted: onCommentCreateCompleted });
 
-  const [deleteIssueMutation] = useMutation<
-    deleteIssueMutation,
-    deleteIssueMutationVariables
-  >(DELETE_ISSUE_MUTATION, {
-    onCompleted: onIssueDeleteCompleted,
+  const [deleteWorkaroundMutation] = useMutation<
+    deleteWorkaroundMutation,
+    deleteWorkaroundMutationVariables
+  >(DELETE_WORKAROUND_MUTATION, {
+    onCompleted: onWorkaroundDeleteCompleted,
   });
 
-  const [editIssueMutation] = useMutation<
-    editIssueMutation,
-    editIssueMutationVariables
-  >(EDIT_ISSUE_MUTATION, {
-    onCompleted: onIssueEditCompleted,
+  const [editWorkaroundMutation] = useMutation<
+    editWorkaroundMutation,
+    editWorkaroundMutationVariables
+  >(EDIT_WORKAROUND_MUTATION, {
+    onCompleted: onWorkaroundEditCompleted,
   });
 
   useEffect(() => {
-    if (viewerRef.current && caseDetailData) {
-      const issue = caseDetailData.getIssue.issue as IIssues;
-      const issueComment = issue.comment as IIssueComments[];
-      setContent(issue.content);
-      setWriter(issue.writer as ICommentUser);
-      setFiles(issue.files as IIssueFiles[]);
-      setLoadedData(issue as IIssues);
-      setCheckLocked(issue.locked as boolean);
-      viewerRef.current?.getInstance().setMarkdown(issue.content as string);
-      issueComment.map((comment, index) => {
+    if (viewerRef.current && workaroundDetailData) {
+      const workaround = workaroundDetailData.getWorkaround
+        .workaround as IWorkarounds;
+      const workaroundComment = workaround.comment as IWorkaroundComments[];
+      setContent(workaround.content);
+      setWriter(workaround.writer as ICommentUser);
+      setFiles(workaround.files as IWorkaroundFiles[]);
+      setLoadedData(workaround as IWorkarounds);
+      setCheckLocked(workaround.locked as boolean);
+      viewerRef.current
+        ?.getInstance()
+        .setMarkdown(workaround.content as string);
+      workaroundComment.map((comment, index) => {
         originComment.push({
           key: `${comment.id}`,
           actions: [
@@ -499,27 +509,27 @@ export const CaseDetail: React.FC = () => {
           uid: `${index + 1}`,
           name: `${file.path}`,
           status: 'done',
-          url: `http://localhost:4000/uploads/issues/${file.path}`,
+          url: `http://localhost:4000/uploads/workarounds/${file.path}`,
         });
       });
       setDefaultFileList(uploadedList);
     }
     refetch();
-  }, [caseDetailData, loadedData]);
+  }, [workaroundDetailData, loadedData]);
 
   const handleEditClick = (event: any) => {
     console.log(event.target.attributes[0].value);
   };
 
   const handleCommentDelete = (id: number) => {
-    deleteIssueCommentMutation({
+    deleteWorkaroundCommentMutation({
       variables: { input: { commentId: id } },
     });
   };
 
-  const handleIssueDelete = () => {
-    deleteIssueMutation({
-      variables: { input: { issueId: +caseId.id } },
+  const handleWorkaroundDelete = () => {
+    deleteWorkaroundMutation({
+      variables: { input: { workaroundId: +workaroundId.id } },
     });
   };
 
@@ -535,10 +545,10 @@ export const CaseDetail: React.FC = () => {
       return;
     }
     setSubmitting(true);
-    createIssueCommentMutation({
+    createWorkaroundCommentMutation({
       variables: {
         input: {
-          issueId: +caseId.id,
+          workaroundId: +workaroundId.id,
           comment: commentValue,
         },
       },
@@ -582,10 +592,10 @@ export const CaseDetail: React.FC = () => {
       });
     }
     setFiles(newFileForm); // for render files
-    editIssueMutation({
+    editWorkaroundMutation({
       variables: {
         input: {
-          issueId: +caseId.id,
+          workaroundId: +workaroundId.id,
           title: values.title,
           content: getContent,
           kind: values.kind,
@@ -605,7 +615,7 @@ export const CaseDetail: React.FC = () => {
     name: 'file',
     multiple: true,
     maxCount: 5,
-    action: 'http://localhost:4000/uploads/issues',
+    action: 'http://localhost:4000/uploads/workarounds',
     customRequest: (options: any) => {
       const data = new FormData();
       data.append('file', options.file);
@@ -676,11 +686,11 @@ export const CaseDetail: React.FC = () => {
   return (
     <Wrapper>
       <Helmet>
-        <title>Cases | CEN Portal</title>
+        <title>Workarounds | CEN Portal</title>
       </Helmet>
       <TitleBar>
         <ToolOutlined />
-        {` Cases`}
+        {` Workarounds`}
       </TitleBar>
       <Form form={form} onFinish={handleSave} autoComplete="off">
         <MenuBar>
@@ -703,6 +713,7 @@ export const CaseDetail: React.FC = () => {
               type="primary"
               size="small"
               onClick={() => setIsEdit(true)}
+              disabled={UserRole.CENSE !== meData?.me.role}
             >
               Edit
             </SButton>
@@ -710,15 +721,11 @@ export const CaseDetail: React.FC = () => {
           <SButton
             type="primary"
             size="small"
-            disabled={
-              isEdit ||
-              meData?.me.id !== writer?.id ||
-              meData?.me.role !== UserRole.CENSE
-            }
+            disabled={isEdit || meData?.me.role !== UserRole.CENSE}
           >
             <Popconfirm
               title="정말 삭제 하시겠습니까?"
-              onConfirm={handleIssueDelete}
+              onConfirm={handleWorkaroundDelete}
             >
               Delete
             </Popconfirm>
@@ -746,9 +753,14 @@ export const CaseDetail: React.FC = () => {
                   allowClear
                   defaultValue={loadedData?.kind}
                 >
-                  <Option value={KindRole.Case}>Case</Option>
-                  <Option value={KindRole.Question}>문의</Option>
-                  <Option value={KindRole.ETC}>ETC</Option>
+                  <Option value={KindWorkaround.C2000}>C2000</Option>
+                  <Option value={KindWorkaround.C3000}>C3000</Option>
+                  <Option value={KindWorkaround.C3100}>C3100</Option>
+                  <Option value={KindWorkaround.C3300}>C3300</Option>
+                  <Option value={KindWorkaround.C5000}>C5000</Option>
+                  <Option value={KindWorkaround.C7000}>C7000</Option>
+                  <Option value={KindWorkaround.C9000}>C9000</Option>
+                  <Option value={KindWorkaround.ETC}>ETC</Option>
                 </Select>
               </Form.Item>
               <Form.Item
@@ -775,12 +787,7 @@ export const CaseDetail: React.FC = () => {
               </Form.Item>
             </>
           ) : (
-            <>
-              {loadedData?.kind === KindRole.Question
-                ? `[문의] `
-                : `[${loadedData?.kind}] `}
-              {loadedData?.title}
-            </>
+            <>{`[${loadedData?.kind}] ${loadedData?.title}`}</>
           )}
         </TitleColumn>
 
@@ -827,7 +834,7 @@ export const CaseDetail: React.FC = () => {
                   <a
                     key={file.id}
                     title={`첨부${index + 1} 다운로드`}
-                    href={`http://localhost:4000/uploads/issues/${file.path}`}
+                    href={`http://localhost:4000/uploads/workarounds/${file.path}`}
                     target="_blank"
                     rel="noreferrer"
                     download

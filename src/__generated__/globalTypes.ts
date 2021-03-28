@@ -8,45 +8,56 @@
 //==============================================================
 
 export enum DeliveryMethod {
-  Cargo = 'Cargo',
-  Directly = 'Directly',
-  Parcel = 'Parcel',
-  Quick = 'Quick',
+  Cargo = "Cargo",
+  Directly = "Directly",
+  Parcel = "Parcel",
+  Quick = "Quick",
 }
 
 export enum DeliveryType {
-  Partial = 'Partial',
-  Total = 'Total',
+  Partial = "Partial",
+  Total = "Total",
 }
 
 export enum KindRole {
-  Case = 'Case',
-  ETC = 'ETC',
-  Question = 'Question',
+  Case = "Case",
+  ETC = "ETC",
+  Question = "Question",
+}
+
+export enum KindWorkaround {
+  C2000 = "C2000",
+  C3000 = "C3000",
+  C3100 = "C3100",
+  C3300 = "C3300",
+  C5000 = "C5000",
+  C7000 = "C7000",
+  C9000 = "C9000",
+  ETC = "ETC",
 }
 
 export enum OrderClassification {
-  Demo = 'Demo',
-  DoA = 'DoA',
-  RMA = 'RMA',
-  Sale = 'Sale',
+  Demo = "Demo",
+  DoA = "DoA",
+  RMA = "RMA",
+  Sale = "Sale",
 }
 
 export enum OrderStatus {
-  Canceled = 'Canceled',
-  Completed = 'Completed',
-  Created = 'Created',
-  Partial = 'Partial',
-  Pending = 'Pending',
-  Preparing = 'Preparing',
+  Canceled = "Canceled",
+  Completed = "Completed",
+  Created = "Created",
+  Partial = "Partial",
+  Pending = "Pending",
+  Preparing = "Preparing",
 }
 
 export enum UserRole {
-  CEN = 'CEN',
-  CENSE = 'CENSE',
-  Client = 'Client',
-  Distributor = 'Distributor',
-  Partner = 'Partner',
+  CEN = "CEN",
+  CENSE = "CENSE",
+  Client = "Client",
+  Distributor = "Distributor",
+  Partner = "Partner",
 }
 
 export interface AllBundlesInput {
@@ -65,6 +76,11 @@ export interface AllPartnersInput {
 }
 
 export interface AllPartsInput {
+  page?: number | null;
+  take?: number | null;
+}
+
+export interface AllWorkaroundsInput {
   page?: number | null;
   take?: number | null;
 }
@@ -183,6 +199,22 @@ export interface CreatePartnerInput {
   tel?: string | null;
 }
 
+export interface CreateWorkaroundCommentInput {
+  comment?: string | null;
+  depth?: number | null;
+  order?: number | null;
+  groupNum?: number | null;
+  workaroundId: number;
+}
+
+export interface CreateWorkaroundInput {
+  locked?: boolean | null;
+  kind: KindWorkaround;
+  title: string;
+  content: string;
+  files?: WorkaroundFilesInputType[] | null;
+}
+
 export interface DeleteBundleInput {
   bundleId: number;
 }
@@ -209,6 +241,14 @@ export interface DeletePartInput {
 
 export interface DeletePartnerInput {
   partnerId: number;
+}
+
+export interface DeleteWorkaroundCommentInput {
+  commentId: number;
+}
+
+export interface DeleteWorkaroundInput {
+  workaroundId: number;
 }
 
 export interface EditBundleInput {
@@ -268,6 +308,15 @@ export interface EditProfileInput {
   bio?: string | null;
 }
 
+export interface EditWorkaroundInput {
+  locked?: boolean | null;
+  kind?: KindWorkaround | null;
+  title?: string | null;
+  content?: string | null;
+  files?: WorkaroundFilesInputType[] | null;
+  workaroundId: number;
+}
+
 export interface GetIssueInput {
   id: number;
 }
@@ -286,6 +335,10 @@ export interface GetOrdersInput {
   page?: number | null;
   take?: number | null;
   status?: OrderStatus | null;
+}
+
+export interface GetWorkaroundInput {
+  id: number;
 }
 
 export interface IssueCommentsInputType {
@@ -387,6 +440,32 @@ export interface UserInputType {
   verified: boolean;
   isLocked: boolean;
   orders: OrderInputType[];
+}
+
+export interface WorkaroundCommentsInputType {
+  writer?: UserInputType | null;
+  comment: string;
+  post: WorkaroundsInputType;
+  depth: number;
+  order: number;
+  groupNum?: number | null;
+  deleteAt?: any | null;
+}
+
+export interface WorkaroundFilesInputType {
+  path: string;
+  workaround?: WorkaroundsInputType | null;
+}
+
+export interface WorkaroundsInputType {
+  writer?: UserInputType | null;
+  locked?: boolean | null;
+  kind: KindWorkaround;
+  title: string;
+  content: string;
+  files?: WorkaroundFilesInputType[] | null;
+  comment?: WorkaroundCommentsInputType[] | null;
+  deleteAt?: any | null;
 }
 
 //==============================================================

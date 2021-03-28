@@ -12,12 +12,8 @@ import {
 } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { useMe } from '../../../hooks/useMe';
-import { useAllCases } from '../../../hooks/useAllCases';
-import {
-  KindRole,
-  KindWorkaround,
-  UserRole,
-} from '../../../__generated__/globalTypes';
+import { useAllWorkarounds } from '../../../hooks/useAllWorkarounds';
+import { UserRole } from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -45,24 +41,24 @@ interface IUser {
   company: string;
 }
 
-interface IIssueFiles {
+interface IWorkaroundFiles {
   id: number;
   path: string;
 }
 
-interface IIssues {
+interface IWorkarounds {
   id: number;
   writer: IUser | null;
   locked: boolean | null;
   kind: string | null;
   title: string;
-  files: IIssueFiles[] | null;
+  files: IWorkaroundFiles[] | null;
   createAt: any;
   updateAt: any;
   commentsNum: number;
 }
 
-interface ICasesData {
+interface IWorkaroundsData {
   key: string;
   no: number;
   title: string | JSX.Element;
@@ -75,56 +71,56 @@ interface ICasesData {
   createAt: string;
 }
 
-export const Case: React.FC = () => {
-  const originData: ICasesData[] = [];
-  const [data, setData] = useState<ICasesData[]>([]);
+export const Workaround: React.FC = () => {
+  const originData: IWorkaroundsData[] = [];
+  const [data, setData] = useState<IWorkaroundsData[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const { data: meData } = useMe();
   const {
-    data: allCasesData,
-    loading: allCasesLoading,
+    data: allWorkaroundsData,
+    loading: allWorkaroundsLoading,
     refetch: reGetData,
-  } = useAllCases(page, take);
+  } = useAllWorkarounds(page, take);
 
   useEffect(() => {
-    if (allCasesData && !allCasesLoading) {
-      const cases = allCasesData.allIssues.issues as IIssues[];
-      const getTotalResults = allCasesData.allIssues.totalResults as number;
-      for (let i = 0; i < cases.length; i++) {
+    if (allWorkaroundsData && !allWorkaroundsLoading) {
+      const workarounds = allWorkaroundsData.allWorkarounds
+        .workarounds as IWorkarounds[];
+      const getTotalResults = allWorkaroundsData.allWorkarounds
+        .totalResults as number;
+      for (let i = 0; i < workarounds.length; i++) {
         originData.push({
-          key: `${cases[i].id}`,
-          no: cases[i].id,
+          key: `${workarounds[i].id}`,
+          no: workarounds[i].id,
           title: (
             <>
-              {cases[i].kind === KindRole.Question
-                ? `[문의] `
-                : `[${cases[i].kind}] `}
+              {`[${workarounds[i].kind}] `}
               <Typography.Link
                 disabled={
                   meData?.me.role === UserRole.CENSE ||
-                  cases[i].writer?.id === meData?.me.id
+                  workarounds[i].writer?.id === meData?.me.id
                     ? false
-                    : (cases[i].locked as boolean)
+                    : (workarounds[i].locked as boolean)
                 }
-                href={`/partner/cases/${cases[i].id}`}
-              >{`${cases[i].title}`}</Typography.Link>
-              {cases[i].files?.length !== 0 ? (
+                href={`/partner/workarounds/${workarounds[i].id}`}
+              >{`${workarounds[i].title}`}</Typography.Link>
+              {workarounds[i].files?.length !== 0 ? (
                 <span style={{ fontSize: '11px' }}>
                   {' '}
                   <FileZipOutlined />
-                  {cases[i].files?.length}
+                  {workarounds[i].files?.length}
                 </span>
               ) : null}
-              {cases[i].commentsNum ? (
+              {workarounds[i].commentsNum ? (
                 <span style={{ fontSize: '11px' }}>
                   {' '}
                   <CommentOutlined />
-                  {cases[i].commentsNum}
+                  {workarounds[i].commentsNum}
                 </span>
               ) : null}
-              {cases[i].locked ? (
+              {workarounds[i].locked ? (
                 <span style={{ fontSize: '11px' }}>
                   {' '}
                   <LockOutlined />
@@ -132,29 +128,29 @@ export const Case: React.FC = () => {
               ) : null}
             </>
           ),
-          kind: cases[i].kind,
-          locked: cases[i].locked,
-          writer: cases[i].writer?.name as string,
-          company: cases[i].writer?.company as string,
-          filesCount: cases[i].files?.length as number,
-          commentsNum: cases[i].commentsNum,
-          createAt: new Date(cases[i].createAt).toLocaleDateString(),
+          kind: workarounds[i].kind,
+          locked: workarounds[i].locked,
+          writer: workarounds[i].writer?.name as string,
+          company: workarounds[i].writer?.company as string,
+          filesCount: workarounds[i].files?.length as number,
+          commentsNum: workarounds[i].commentsNum,
+          createAt: new Date(workarounds[i].createAt).toLocaleDateString(),
         });
       }
       setTotal(getTotalResults);
       setData(originData);
     }
     reGetData();
-    console.log(allCasesData);
+    console.log(allWorkaroundsData);
     console.log(originData);
-  }, [allCasesData]);
+  }, [allWorkaroundsData]);
 
   const handlePageChange = (page: number, take: number) => {
     setPage(page);
     setTake(take);
   };
 
-  const columns: ColumnsType<ICasesData> = [
+  const columns: ColumnsType<IWorkaroundsData> = [
     {
       title: 'No',
       dataIndex: 'no',
@@ -190,18 +186,22 @@ export const Case: React.FC = () => {
   return (
     <Wrapper>
       <Helmet>
-        <title>Cases | CEN Portal</title>
+        <title>Workarounds | CEN Portal</title>
       </Helmet>
       <TitleBar>
         <ToolOutlined />
-        {' Cases'}
+        {' Workarounds'}
       </TitleBar>
       <MenuBar>
-        <SButton type="primary" size="small">
-          <Link to="/partner/cases/add-case">New</Link>
+        <SButton
+          type="primary"
+          size="small"
+          disabled={UserRole.CENSE !== meData?.me.role}
+        >
+          <Link to="/partner/workarounds/add-workaround">New</Link>
         </SButton>
       </MenuBar>
-      <Table<ICasesData>
+      <Table<IWorkaroundsData>
         bordered
         dataSource={data}
         columns={columns}
@@ -212,7 +212,7 @@ export const Case: React.FC = () => {
           onChange: (page, take) => handlePageChange(page, take as number),
           showSizeChanger: true,
         }}
-        loading={allCasesLoading}
+        loading={allWorkaroundsLoading}
         size="small"
       />
       <BackTop style={{ right: 10, bottom: 10 }} />
