@@ -21,25 +21,21 @@ import {
   Checkbox,
 } from 'antd';
 import {
-  getFirmwareQuery,
-  getFirmwareQueryVariables,
-} from '../../../__generated__/getFirmwareQuery';
-import {
-  InboxOutlined,
-  DesktopOutlined,
-  LockOutlined,
-} from '@ant-design/icons';
-import { KindFirmware, UserRole } from '../../../__generated__/globalTypes';
+  getDocumentQuery,
+  getDocumentQueryVariables,
+} from '../../../__generated__/getDocumentQuery';
+import { InboxOutlined, FileOutlined, LockOutlined } from '@ant-design/icons';
+import { KindDocument, UserRole } from '../../../__generated__/globalTypes';
 import moment from 'moment';
 import { useMe } from '../../../hooks/useMe';
 import {
-  deleteFirmwareMutation,
-  deleteFirmwareMutationVariables,
-} from '../../../__generated__/deleteFirmwareMutation';
+  deleteDocumentMutation,
+  deleteDocumentMutationVariables,
+} from '../../../__generated__/deleteDocumentMutation';
 import {
-  editFirmwareMutation,
-  editFirmwareMutationVariables,
-} from '../../../__generated__/editFirmwareMutation';
+  editDocumentMutation,
+  editDocumentMutationVariables,
+} from '../../../__generated__/editDocumentMutation';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -95,11 +91,11 @@ const SButton = styled(Button)`
 `;
 
 const GET_WORKAROUND_QUERY = gql`
-  query getFirmwareQuery($input: GetFirmwareInput!) {
-    getFirmware(input: $input) {
+  query getDocumentQuery($input: GetDocumentInput!) {
+    getDocument(input: $input) {
       ok
       error
-      firmware {
+      document {
         id
         title
         kind
@@ -120,8 +116,8 @@ const GET_WORKAROUND_QUERY = gql`
 `;
 
 const DELETE_WORKAROUND_MUTATION = gql`
-  mutation deleteFirmwareMutation($input: DeleteFirmwareInput!) {
-    deleteFirmware(input: $input) {
+  mutation deleteDocumentMutation($input: DeleteDocumentInput!) {
+    deleteDocument(input: $input) {
       ok
       error
     }
@@ -129,33 +125,33 @@ const DELETE_WORKAROUND_MUTATION = gql`
 `;
 
 const EDIT_WORKAROUND_MUTATION = gql`
-  mutation editFirmwareMutation($input: EditFirmwareInput!) {
-    editFirmware(input: $input) {
+  mutation editDocumentMutation($input: EditDocumentInput!) {
+    editDocument(input: $input) {
       ok
       error
     }
   }
 `;
 
-interface IFirmwareUser {
+interface IDocumentUser {
   id: number;
   company: string;
   name: string;
 }
 
-interface IFirmwareFiles {
+interface IDocumentFiles {
   id: number;
   path: string;
 }
 
-interface IFirmwares {
+interface IDocuments {
   id: number;
   title: string;
-  kind: KindFirmware;
+  kind: KindDocument;
   content: string;
   locked: boolean | null;
-  writer: IFirmwareUser | null;
-  files: IFirmwareFiles[] | null;
+  writer: IDocumentUser | null;
+  files: IDocumentFiles[] | null;
 }
 
 interface IUploadedFile {
@@ -170,39 +166,39 @@ interface IDefaultFileList {
   url: string;
 }
 
-export const FirmwareDetail: React.FC = () => {
+export const DocumentDetail: React.FC = () => {
   const { data: meData } = useMe();
   const history = useHistory();
-  const firmwareId: any = useParams();
+  const documentId: any = useParams();
   const viewerRef = useRef<Viewer>();
   const editorRef = React.createRef<any>();
   const [form] = Form.useForm();
   const [content, setContent] = useState<string>();
-  const [loadedData, setLoadedData] = useState<IFirmwares>();
-  const [files, setFiles] = useState<IFirmwareFiles[]>([]);
+  const [loadedData, setLoadedData] = useState<IDocuments>();
+  const [files, setFiles] = useState<IDocumentFiles[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [uploadedFile, setUploadedFile] = useState<IUploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [checkLocked, setCheckLocked] = useState<boolean>(false);
   const [defaultFileList, setDefaultFileList] = useState<any[]>([]);
   const {
-    data: firmwareDetailData,
-    loading: firmwareDetailLoading,
+    data: documentDetailData,
+    loading: documentDetailLoading,
     refetch,
-  } = useQuery<getFirmwareQuery, getFirmwareQueryVariables>(
+  } = useQuery<getDocumentQuery, getDocumentQueryVariables>(
     GET_WORKAROUND_QUERY,
     {
       variables: {
         input: {
-          id: +firmwareId.id,
+          id: +documentId.id,
         },
       },
     },
   );
 
-  const onFirmwareDeleteCompleted = (data: deleteFirmwareMutation) => {
+  const onDocumentDeleteCompleted = (data: deleteDocumentMutation) => {
     const {
-      deleteFirmware: { ok, error },
+      deleteDocument: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -211,7 +207,7 @@ export const FirmwareDetail: React.FC = () => {
         placement: 'topRight',
         duration: 1,
       });
-      history.push('/partner/firmwares/');
+      history.push('/partner/documents/');
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -222,9 +218,9 @@ export const FirmwareDetail: React.FC = () => {
     }
   };
 
-  const onFirmwareEditCompleted = (data: editFirmwareMutation) => {
+  const onDocumentEditCompleted = (data: editDocumentMutation) => {
     const {
-      editFirmware: { ok, error },
+      editDocument: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -233,7 +229,7 @@ export const FirmwareDetail: React.FC = () => {
         placement: 'topRight',
         duration: 1,
       });
-      history.push(`/partner/firmwares/${firmwareId.id}`);
+      history.push(`/partner/documents/${documentId.id}`);
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -245,49 +241,49 @@ export const FirmwareDetail: React.FC = () => {
     refetch();
   };
 
-  const [deleteFirmwareMutation] = useMutation<
-    deleteFirmwareMutation,
-    deleteFirmwareMutationVariables
+  const [deleteDocumentMutation] = useMutation<
+    deleteDocumentMutation,
+    deleteDocumentMutationVariables
   >(DELETE_WORKAROUND_MUTATION, {
-    onCompleted: onFirmwareDeleteCompleted,
+    onCompleted: onDocumentDeleteCompleted,
   });
 
-  const [editFirmwareMutation] = useMutation<
-    editFirmwareMutation,
-    editFirmwareMutationVariables
+  const [editDocumentMutation] = useMutation<
+    editDocumentMutation,
+    editDocumentMutationVariables
   >(EDIT_WORKAROUND_MUTATION, {
-    onCompleted: onFirmwareEditCompleted,
+    onCompleted: onDocumentEditCompleted,
   });
 
   useEffect(() => {
-    if (viewerRef.current && firmwareDetailData) {
-      const firmware = firmwareDetailData.getFirmware.firmware as IFirmwares;
-      setContent(firmware.content);
-      setFiles(firmware.files as IFirmwareFiles[]);
-      setLoadedData(firmware as IFirmwares);
-      setCheckLocked(firmware.locked as boolean);
-      viewerRef.current?.getInstance().setMarkdown(firmware.content as string);
+    if (viewerRef.current && documentDetailData) {
+      const document = documentDetailData.getDocument.document as IDocuments;
+      setContent(document.content);
+      setFiles(document.files as IDocumentFiles[]);
+      setLoadedData(document as IDocuments);
+      setCheckLocked(document.locked as boolean);
+      viewerRef.current?.getInstance().setMarkdown(document.content as string);
       const uploadedList: IDefaultFileList[] = [];
       files.map((file, index) => {
         uploadedList.push({
           uid: `${index + 1}`,
           name: `${file.path}`,
           status: 'done',
-          url: `http://localhost:4000/uploads/firmwares/${file.path}`,
+          url: `http://localhost:4000/uploads/documents/${file.path}`,
         });
       });
       setDefaultFileList(uploadedList);
     }
     refetch();
-  }, [firmwareDetailData, loadedData]);
+  }, [documentDetailData, loadedData]);
 
   const handleEditClick = (event: any) => {
     console.log(event.target.attributes[0].value);
   };
 
-  const handleFirmwareDelete = () => {
-    deleteFirmwareMutation({
-      variables: { input: { firmwareId: +firmwareId.id } },
+  const handleDocumentDelete = () => {
+    deleteDocumentMutation({
+      variables: { input: { documentId: +documentId.id } },
     });
   };
 
@@ -327,10 +323,10 @@ export const FirmwareDetail: React.FC = () => {
       });
     }
     setFiles(newFileForm); // for render files
-    editFirmwareMutation({
+    editDocumentMutation({
       variables: {
         input: {
-          firmwareId: +firmwareId.id,
+          documentId: +documentId.id,
           title: values.title,
           content: getContent,
           kind: values.kind,
@@ -350,7 +346,7 @@ export const FirmwareDetail: React.FC = () => {
     name: 'file',
     multiple: true,
     maxCount: 5,
-    action: 'http://localhost:4000/uploads/firmwares',
+    action: 'http://localhost:4000/uploads/documents',
     customRequest: (options: any) => {
       const data = new FormData();
       data.append('file', options.file);
@@ -421,11 +417,11 @@ export const FirmwareDetail: React.FC = () => {
   return (
     <Wrapper>
       <Helmet>
-        <title>Firmwares | CEN Portal</title>
+        <title>Documents | CEN Portal</title>
       </Helmet>
       <TitleBar>
-        <DesktopOutlined />
-        {` Firmwares`}
+        <FileOutlined />
+        {` Documents`}
       </TitleBar>
       <Form form={form} onFinish={handleSave} autoComplete="off">
         <MenuBar>
@@ -460,7 +456,7 @@ export const FirmwareDetail: React.FC = () => {
           >
             <Popconfirm
               title="정말 삭제 하시겠습니까?"
-              onConfirm={handleFirmwareDelete}
+              onConfirm={handleDocumentDelete}
             >
               Delete
             </Popconfirm>
@@ -488,14 +484,12 @@ export const FirmwareDetail: React.FC = () => {
                   allowClear
                   defaultValue={loadedData?.kind}
                 >
-                  <Option value={KindFirmware.C2000}>C2000</Option>
-                  <Option value={KindFirmware.C3000}>C3000</Option>
-                  <Option value={KindFirmware.C3100}>C3100</Option>
-                  <Option value={KindFirmware.C3300}>C3300</Option>
-                  <Option value={KindFirmware.C5000}>C5000</Option>
-                  <Option value={KindFirmware.C7000}>C7000</Option>
-                  <Option value={KindFirmware.C9000}>C9000</Option>
-                  <Option value={KindFirmware.ETC}>ETC</Option>
+                  <Option value={KindDocument.Datasheet}>데이터시트</Option>
+                  <Option value={KindDocument.Proposal}>표준제안서</Option>
+                  <Option value={KindDocument.Certificate}>인증서</Option>
+                  <Option value={KindDocument.TestReport}>시험성적서</Option>
+                  <Option value={KindDocument.Brochure}>브로셔</Option>
+                  <Option value={KindDocument.ETC}>ETC</Option>
                 </Select>
               </Form.Item>
               <Form.Item
@@ -522,7 +516,19 @@ export const FirmwareDetail: React.FC = () => {
               </Form.Item>
             </>
           ) : (
-            <>{`[${loadedData?.kind}] ${loadedData?.title}`}</>
+            <>
+              {loadedData?.kind === KindDocument.Datasheet
+                ? `[데이터시트] ${loadedData?.title}`
+                : loadedData?.kind === KindDocument.Proposal
+                ? `[표준제안서] ${loadedData?.title}`
+                : loadedData?.kind === KindDocument.Certificate
+                ? `[인증서] ${loadedData?.title}`
+                : loadedData?.kind === KindDocument.TestReport
+                ? `[시험성적서] ${loadedData?.title}`
+                : loadedData?.kind === KindDocument.Brochure
+                ? `[브로셔] ${loadedData?.title}`
+                : `[${loadedData?.kind}] ${loadedData?.title}`}
+            </>
           )}
         </TitleColumn>
 
@@ -569,7 +575,7 @@ export const FirmwareDetail: React.FC = () => {
                   <a
                     key={file.id}
                     title={`첨부${index + 1} 다운로드`}
-                    href={`http://localhost:4000/uploads/firmwares/${file.path}`}
+                    href={`http://localhost:4000/uploads/documents/${file.path}`}
                     target="_blank"
                     rel="noreferrer"
                     download

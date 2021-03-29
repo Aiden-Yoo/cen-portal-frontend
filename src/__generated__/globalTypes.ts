@@ -19,6 +19,15 @@ export enum DeliveryType {
   Total = "Total",
 }
 
+export enum KindDocument {
+  Brochure = "Brochure",
+  Certificate = "Certificate",
+  Datasheet = "Datasheet",
+  ETC = "ETC",
+  Proposal = "Proposal",
+  TestReport = "TestReport",
+}
+
 export enum KindFirmware {
   C2000 = "C2000",
   C3000 = "C3000",
@@ -72,6 +81,11 @@ export enum UserRole {
 }
 
 export interface AllBundlesInput {
+  page?: number | null;
+  take?: number | null;
+}
+
+export interface AllDocumentsInput {
   page?: number | null;
   take?: number | null;
 }
@@ -156,6 +170,14 @@ export interface CreateContactInput {
   jobTitle?: string | null;
   tel: string;
   partnerId: number;
+}
+
+export interface CreateDocumentInput {
+  locked?: boolean | null;
+  kind: KindDocument;
+  title: string;
+  content: string;
+  files?: DocumentFilesInputType[] | null;
 }
 
 export interface CreateFirmwareInput {
@@ -247,6 +269,10 @@ export interface DeleteContactInput {
   contactId: number;
 }
 
+export interface DeleteDocumentInput {
+  documentId: number;
+}
+
 export interface DeleteFirmwareInput {
   firmwareId: number;
 }
@@ -279,6 +305,21 @@ export interface DeleteWorkaroundInput {
   workaroundId: number;
 }
 
+export interface DocumentFilesInputType {
+  path: string;
+  document?: DocumentsInputType | null;
+}
+
+export interface DocumentsInputType {
+  writer?: UserInputType | null;
+  locked?: boolean | null;
+  kind: KindDocument;
+  title: string;
+  content: string;
+  files?: DocumentFilesInputType[] | null;
+  deleteAt?: any | null;
+}
+
 export interface EditBundleInput {
   name?: string | null;
   series?: string | null;
@@ -293,6 +334,15 @@ export interface EditContactInput {
   jobTitle?: string | null;
   tel?: string | null;
   contactId: number;
+}
+
+export interface EditDocumentInput {
+  locked?: boolean | null;
+  kind?: KindDocument | null;
+  title?: string | null;
+  content?: string | null;
+  files?: DocumentFilesInputType[] | null;
+  documentId: number;
 }
 
 export interface EditFirmwareInput {
@@ -367,6 +417,10 @@ export interface FirmwaresInputType {
   content: string;
   files?: FirmwareFilesInputType[] | null;
   deleteAt?: any | null;
+}
+
+export interface GetDocumentInput {
+  id: number;
 }
 
 export interface GetFirmwareInput {

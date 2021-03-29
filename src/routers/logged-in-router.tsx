@@ -39,6 +39,9 @@ import { WorkaroundDetail } from '../pages/partner/workarounds/workaroundDetail'
 import { Firmware } from '../pages/partner/firmwares/firmwares';
 import { AddFirmware } from '../pages/partner/firmwares/addFirmware';
 import { FirmwareDetail } from '../pages/partner/firmwares/firmwareDetail';
+import { Document } from '../pages/partner/documents/documents';
+import { AddDocument } from '../pages/partner/documents/addDocument';
+import { DocumentDetail } from '../pages/partner/documents/documentDetail';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -87,12 +90,12 @@ const commonRoutes = [
   { path: '/', component: <Home /> },
   // { path: "/confirm-email", component: <ConfirmEmail /> },
   { path: '/mypage', component: <MyPage /> },
-  // { path: '/partner/recommand', component: <RecommandedFirmware /> },
-  // { path: '/partner/firmware', component: <FirmwareDownload /> },
-  // { path: '/partner/documents', component: <Document /> },
   { path: '/partner/firmwares', component: <Firmware /> },
   { path: '/partner/firmwares/add-firmware', component: <AddFirmware /> },
   { path: '/partner/firmwares/:id', component: <FirmwareDetail /> },
+  { path: '/partner/documents', component: <Document /> },
+  { path: '/partner/documents/add-document', component: <AddDocument /> },
+  { path: '/partner/documents/:id', component: <DocumentDetail /> },
   { path: '/partner/cases', component: <Case /> },
   { path: '/partner/cases/add-case', component: <AddCase /> },
   { path: '/partner/cases/:id', component: <CaseDetail /> },

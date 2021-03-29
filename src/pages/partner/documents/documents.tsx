@@ -4,15 +4,11 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Table, Typography, Button, BackTop } from 'antd';
-import {
-  DesktopOutlined,
-  LockOutlined,
-  FileZipOutlined,
-} from '@ant-design/icons';
+import { FileOutlined, LockOutlined, FileZipOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { useMe } from '../../../hooks/useMe';
-import { useAllFirmwares } from '../../../hooks/useAllFirmwares';
-import { UserRole } from '../../../__generated__/globalTypes';
+import { useAllDocuments } from '../../../hooks/useAllDocuments';
+import { KindDocument, UserRole } from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -40,23 +36,23 @@ interface IUser {
   company: string;
 }
 
-interface IFirmwareFiles {
+interface IDocumentFiles {
   id: number;
   path: string;
 }
 
-interface IFirmwares {
+interface IDocuments {
   id: number;
   writer: IUser | null;
   locked: boolean | null;
   kind: string | null;
   title: string;
-  files: IFirmwareFiles[] | null;
+  files: IDocumentFiles[] | null;
   createAt: any;
   updateAt: any;
 }
 
-interface IFirmwaresData {
+interface IDocumentsData {
   key: string;
   no: number;
   title: string | JSX.Element;
@@ -68,48 +64,58 @@ interface IFirmwaresData {
   createAt: string;
 }
 
-export const Firmware: React.FC = () => {
-  const originData: IFirmwaresData[] = [];
-  const [data, setData] = useState<IFirmwaresData[]>([]);
+export const Document: React.FC = () => {
+  const originData: IDocumentsData[] = [];
+  const [data, setData] = useState<IDocumentsData[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const { data: meData } = useMe();
   const {
-    data: allFirmwaresData,
-    loading: allFirmwaresLoading,
+    data: allDocumentsData,
+    loading: allDocumentsLoading,
     refetch: reGetData,
-  } = useAllFirmwares(page, take);
+  } = useAllDocuments(page, take);
 
   useEffect(() => {
-    if (allFirmwaresData && !allFirmwaresLoading) {
-      const firmwares = allFirmwaresData.allFirmwares.firmwares as IFirmwares[];
-      const getTotalResults = allFirmwaresData.allFirmwares
+    if (allDocumentsData && !allDocumentsLoading) {
+      const documents = allDocumentsData.allDocuments.documents as IDocuments[];
+      const getTotalResults = allDocumentsData.allDocuments
         .totalResults as number;
-      for (let i = 0; i < firmwares.length; i++) {
+      for (let i = 0; i < documents.length; i++) {
         originData.push({
-          key: `${firmwares[i].id}`,
-          no: firmwares[i].id,
+          key: `${documents[i].id}`,
+          no: documents[i].id,
           title: (
             <>
-              {`[${firmwares[i].kind}] `}
+              {documents[i].kind === KindDocument.Datasheet
+                ? `[데이터시트] `
+                : documents[i].kind === KindDocument.Proposal
+                ? `[표준제안서] `
+                : documents[i].kind === KindDocument.Certificate
+                ? `[인증서] `
+                : documents[i].kind === KindDocument.TestReport
+                ? `[시험성적서] `
+                : documents[i].kind === KindDocument.Brochure
+                ? `[브로셔] `
+                : `[${documents[i].kind}] `}
               <Typography.Link
                 disabled={
                   meData?.me.role === UserRole.CENSE ||
-                  firmwares[i].writer?.id === meData?.me.id
+                  documents[i].writer?.id === meData?.me.id
                     ? false
-                    : (firmwares[i].locked as boolean)
+                    : (documents[i].locked as boolean)
                 }
-                href={`/partner/firmwares/${firmwares[i].id}`}
-              >{`${firmwares[i].title}`}</Typography.Link>
-              {firmwares[i].files?.length !== 0 ? (
+                href={`/partner/documents/${documents[i].id}`}
+              >{`${documents[i].title}`}</Typography.Link>
+              {documents[i].files?.length !== 0 ? (
                 <span style={{ fontSize: '11px' }}>
                   {' '}
                   <FileZipOutlined />
-                  {firmwares[i].files?.length}
+                  {documents[i].files?.length}
                 </span>
               ) : null}
-              {firmwares[i].locked ? (
+              {documents[i].locked ? (
                 <span style={{ fontSize: '11px' }}>
                   {' '}
                   <LockOutlined />
@@ -117,28 +123,28 @@ export const Firmware: React.FC = () => {
               ) : null}
             </>
           ),
-          kind: firmwares[i].kind,
-          locked: firmwares[i].locked,
-          writer: firmwares[i].writer?.name as string,
-          company: firmwares[i].writer?.company as string,
-          filesCount: firmwares[i].files?.length as number,
-          createAt: new Date(firmwares[i].createAt).toLocaleDateString(),
+          kind: documents[i].kind,
+          locked: documents[i].locked,
+          writer: documents[i].writer?.name as string,
+          company: documents[i].writer?.company as string,
+          filesCount: documents[i].files?.length as number,
+          createAt: new Date(documents[i].createAt).toLocaleDateString(),
         });
       }
       setTotal(getTotalResults);
       setData(originData);
     }
     reGetData();
-    console.log(allFirmwaresData);
+    console.log(allDocumentsData);
     console.log(originData);
-  }, [allFirmwaresData]);
+  }, [allDocumentsData]);
 
   const handlePageChange = (page: number, take: number) => {
     setPage(page);
     setTake(take);
   };
 
-  const columns: ColumnsType<IFirmwaresData> = [
+  const columns: ColumnsType<IDocumentsData> = [
     {
       title: 'No',
       dataIndex: 'no',
@@ -174,11 +180,11 @@ export const Firmware: React.FC = () => {
   return (
     <Wrapper>
       <Helmet>
-        <title>Firmwares | CEN Portal</title>
+        <title>Documents | CEN Portal</title>
       </Helmet>
       <TitleBar>
-        <DesktopOutlined />
-        {' Firmwares'}
+        <FileOutlined />
+        {' Documents'}
       </TitleBar>
       <MenuBar>
         <SButton
@@ -186,10 +192,10 @@ export const Firmware: React.FC = () => {
           size="small"
           disabled={UserRole.CENSE !== meData?.me.role}
         >
-          <Link to="/partner/firmwares/add-firmware">New</Link>
+          <Link to="/partner/documents/add-document">New</Link>
         </SButton>
       </MenuBar>
-      <Table<IFirmwaresData>
+      <Table<IDocumentsData>
         bordered
         dataSource={data}
         columns={columns}
@@ -200,7 +206,7 @@ export const Firmware: React.FC = () => {
           onChange: (page, take) => handlePageChange(page, take as number),
           showSizeChanger: true,
         }}
-        loading={allFirmwaresLoading}
+        loading={allDocumentsLoading}
         size="small"
       />
       <BackTop style={{ right: 10, bottom: 10 }} />
