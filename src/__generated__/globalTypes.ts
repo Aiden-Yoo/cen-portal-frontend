@@ -19,6 +19,17 @@ export enum DeliveryType {
   Total = "Total",
 }
 
+export enum KindFirmware {
+  C2000 = "C2000",
+  C3000 = "C3000",
+  C3100 = "C3100",
+  C3300 = "C3300",
+  C5000 = "C5000",
+  C7000 = "C7000",
+  C9000 = "C9000",
+  ETC = "ETC",
+}
+
 export enum KindRole {
   Case = "Case",
   ETC = "ETC",
@@ -61,6 +72,11 @@ export enum UserRole {
 }
 
 export interface AllBundlesInput {
+  page?: number | null;
+  take?: number | null;
+}
+
+export interface AllFirmwaresInput {
   page?: number | null;
   take?: number | null;
 }
@@ -140,6 +156,14 @@ export interface CreateContactInput {
   jobTitle?: string | null;
   tel: string;
   partnerId: number;
+}
+
+export interface CreateFirmwareInput {
+  locked?: boolean | null;
+  kind: KindFirmware;
+  title: string;
+  content: string;
+  files?: FirmwareFilesInputType[] | null;
 }
 
 export interface CreateHomeNoticeInput {
@@ -223,6 +247,10 @@ export interface DeleteContactInput {
   contactId: number;
 }
 
+export interface DeleteFirmwareInput {
+  firmwareId: number;
+}
+
 export interface DeleteIssueCommentInput {
   commentId: number;
 }
@@ -265,6 +293,15 @@ export interface EditContactInput {
   jobTitle?: string | null;
   tel?: string | null;
   contactId: number;
+}
+
+export interface EditFirmwareInput {
+  locked?: boolean | null;
+  kind?: KindFirmware | null;
+  title?: string | null;
+  content?: string | null;
+  files?: FirmwareFilesInputType[] | null;
+  firmwareId: number;
 }
 
 export interface EditIssueInput {
@@ -315,6 +352,25 @@ export interface EditWorkaroundInput {
   content?: string | null;
   files?: WorkaroundFilesInputType[] | null;
   workaroundId: number;
+}
+
+export interface FirmwareFilesInputType {
+  path: string;
+  firmware?: FirmwaresInputType | null;
+}
+
+export interface FirmwaresInputType {
+  writer?: UserInputType | null;
+  locked?: boolean | null;
+  kind: KindFirmware;
+  title: string;
+  content: string;
+  files?: FirmwareFilesInputType[] | null;
+  deleteAt?: any | null;
+}
+
+export interface GetFirmwareInput {
+  id: number;
 }
 
 export interface GetIssueInput {
