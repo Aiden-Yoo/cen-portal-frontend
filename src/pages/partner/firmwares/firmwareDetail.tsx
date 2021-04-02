@@ -465,7 +465,11 @@ export const FirmwareDetail: React.FC = () => {
               Delete
             </Popconfirm>
           </SButton>
-          <SButton type="primary" size="small" onClick={() => history.goBack()}>
+          <SButton
+            type="primary"
+            size="small"
+            onClick={() => history.push('/partner/firmwares/')}
+          >
             Back
           </SButton>
         </MenuBar>

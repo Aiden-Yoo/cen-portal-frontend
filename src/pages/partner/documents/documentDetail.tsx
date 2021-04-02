@@ -461,7 +461,11 @@ export const DocumentDetail: React.FC = () => {
               Delete
             </Popconfirm>
           </SButton>
-          <SButton type="primary" size="small" onClick={() => history.goBack()}>
+          <SButton
+            type="primary"
+            size="small"
+            onClick={() => history.push('/partner/documents/')}
+          >
             Back
           </SButton>
         </MenuBar>

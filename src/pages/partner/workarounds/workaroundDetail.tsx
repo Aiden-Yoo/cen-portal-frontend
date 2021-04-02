@@ -730,7 +730,11 @@ export const WorkaroundDetail: React.FC = () => {
               Delete
             </Popconfirm>
           </SButton>
-          <SButton type="primary" size="small" onClick={() => history.goBack()}>
+          <SButton
+            type="primary"
+            size="small"
+            onClick={() => history.push('/partner/workarounds/')}
+          >
             Back
           </SButton>
         </MenuBar>

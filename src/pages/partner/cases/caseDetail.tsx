@@ -723,7 +723,11 @@ export const CaseDetail: React.FC = () => {
               Delete
             </Popconfirm>
           </SButton>
-          <SButton type="primary" size="small" onClick={() => history.goBack()}>
+          <SButton
+            type="primary"
+            size="small"
+            onClick={() => history.push('/partner/cases/')}
+          >
             Back
           </SButton>
         </MenuBar>
