@@ -105,7 +105,7 @@ export const Home: React.FC = () => {
   useEffect(() => {
     if (viewerRef.current && homeNoticeData) {
       const notice = homeNoticeData.getHomeNotice.notice as IHomeNotice;
-      setContent(notice.content);
+      notice && setContent(notice.content);
       viewerRef.current?.getInstance().setMarkdown(content as string);
     }
     refetch();

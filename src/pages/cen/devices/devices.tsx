@@ -242,14 +242,6 @@ export const Device = () => {
     }
   }, [bundleGetData, partGetData]);
 
-  const edit = (record: Item) => {
-    console.log(record);
-  };
-
-  const handleAdd = () => {
-    console.log('handleAdd');
-  };
-
   const handleDelete = (key?: number) => {
     if (key && radioValue === 'Bundles') {
       deleteBundleMutation({
@@ -328,13 +320,6 @@ export const Device = () => {
       render: (_: string, record: any) => {
         return (
           <span>
-            <Typography.Link
-              onClick={() => edit(record)}
-              style={{ marginRight: 8 }}
-              disabled={meData?.me.role !== UserRole.CENSE}
-            >
-              Edit
-            </Typography.Link>
             <Typography.Link href="#!">
               <Popconfirm
                 title="정말 삭제 하시겠습니까?"
@@ -380,7 +365,7 @@ export const Device = () => {
           onChange={handleRadioChange}
           value={radioValue}
         />
-        <SButton type="primary" size="small" onClick={() => handleAdd()}>
+        <SButton type="primary" size="small">
           {radioValue === 'Bundles' ? (
             <Link to="/cen/devices/add-bundle">Add</Link>
           ) : (

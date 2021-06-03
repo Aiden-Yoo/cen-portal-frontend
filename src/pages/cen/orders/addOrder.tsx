@@ -18,6 +18,7 @@ import {
   Checkbox,
   DatePicker,
   Divider,
+  TreeSelect,
 } from 'antd';
 import {
   FolderOpenOutlined,
@@ -39,6 +40,7 @@ import { useMe } from '../../../hooks/useMe';
 import { useAllBundles } from '../../../hooks/useAllBundles';
 import { useAllPartners } from '../../../hooks/useAllPartners';
 import { Loading } from '../../../components/loading';
+import { TreeNode } from 'rc-tree-select';
 
 const { Option } = Select;
 
@@ -102,7 +104,7 @@ interface IPart {
 interface IBundle {
   id: number;
   name: string;
-  series: string | null;
+  series: string;
   parts: IPart[] | null;
 }
 
@@ -134,6 +136,7 @@ export const AddOrder: React.FC = () => {
   const [deliveryDate, setDeliveryDate] = useState<string>();
   const [demoReturnDate, setDemoReturnDate] = useState<string>();
   const [orderSheet, setOrderSheet] = useState<boolean>(false);
+  const parentList: string[] = [];
 
   useEffect(() => {
     if (meData) {
@@ -144,7 +147,7 @@ export const AddOrder: React.FC = () => {
   useEffect(() => {
     const partnersName: string[] = [];
     if (partnerData) {
-      console.log(partnerData);
+      // console.log(partnerData);
       const allPartners = partnerData.allPartners.partners as IPartner[];
       setPartners(allPartners);
       allPartners?.map((partner) => partnersName.push(partner.name));
@@ -155,9 +158,14 @@ export const AddOrder: React.FC = () => {
   useEffect(() => {
     if (bundleData) {
       const allBundles = bundleData.allBundles.bundles as IBundle[];
+      allBundles.map((bundle) => {
+        if (parentList.indexOf(bundle.series) === -1) {
+          parentList.push(bundle.series);
+        }
+      });
       setBundles(allBundles);
     }
-  }, [bundleData]);
+  }, [bundleData, parentList]);
 
   const onCompleted = (data: createOrderMutation) => {
     const {
@@ -205,31 +213,65 @@ export const AddOrder: React.FC = () => {
   }
 
   const onFinish = (values: any) => {
+    let fail = '';
     console.log('Received values of form:', values);
-    createOrderMutation({
-      variables: {
-        input: {
-          address: values.address,
-          classification: values.classification,
-          contact: values.contact,
-          deliveryDate,
-          deliveryMethod: values.deliveryMethod,
-          deliveryType: values.deliveryType,
-          demoReturnDate,
-          destination: values.destination,
-          items: values.items,
-          orderSheet,
-          partnerId: values.partnerId,
-          projectName: values.projectName,
-          receiver: values.receiver,
-          remark: values.remark,
-          salesPerson: values.salesPerson
-            ? values.salesPerson
-            : meData?.me.name,
-          status: OrderStatus.Created,
+    if (!values.projectName) {
+      fail += `${fail !== '' ? ', ' : ''}프로젝트명`;
+    }
+    if (!values.classification) {
+      fail += `${fail !== '' ? ', ' : ''}구분`;
+    }
+    if (!values.receiver) {
+      fail += `${fail !== '' ? ', ' : ''}거래처`;
+    }
+    if (!values.contact) {
+      fail += `${fail !== '' ? ', ' : ''}연락처`;
+    }
+    if (!values.address) {
+      fail += `${fail !== '' ? ', ' : ''}납품장소`;
+    }
+    if (!values.deliveryType) {
+      fail += `${fail !== '' ? ', ' : ''}출고형태`;
+    }
+    if (!values.deliveryMethod) {
+      fail += `${fail !== '' ? ', ' : ''}출고방법`;
+    }
+    if (!values.deliveryMethod) {
+      fail += `${fail !== '' ? ', ' : ''}배송방법`;
+    }
+    if (fail !== '') {
+      notification.error({
+        message: 'Error',
+        description: `[작성 누락] ${fail}`,
+        placement: 'topRight',
+        duration: 3,
+      });
+    } else {
+      createOrderMutation({
+        variables: {
+          input: {
+            address: values.address,
+            classification: values.classification,
+            contact: values.contact,
+            deliveryDate,
+            deliveryMethod: values.deliveryMethod,
+            deliveryType: values.deliveryType,
+            demoReturnDate,
+            destination: values.destination,
+            items: values.items,
+            orderSheet,
+            partnerId: values.partnerId,
+            projectName: values.projectName,
+            receiver: values.receiver,
+            remark: values.remark,
+            salesPerson: values.salesPerson
+              ? values.salesPerson
+              : meData?.me.name,
+            status: OrderStatus.Created,
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   const onPartnerIdChange = (_: string, option?: any) => {
@@ -677,57 +719,90 @@ export const AddOrder: React.FC = () => {
                   {(fields, { add, remove }) => (
                     <>
                       {fields.map((field) => (
-                        <Space key={field.key} align="baseline">
-                          <Form.Item
-                            noStyle
-                            shouldUpdate={(prevValues, curValues) =>
-                              prevValues.area !== curValues.area ||
-                              prevValues.items !== curValues.items
-                            }
-                          >
-                            {() => (
-                              <Form.Item
-                                {...field}
-                                label="Bundle"
-                                name={[field.name, 'bundleId']}
-                                fieldKey={[field.fieldKey, 'bundleId']}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: '번들 이름을 선택해주세요.',
-                                  },
-                                ]}
-                                style={{ width: 280 }}
-                              >
-                                <Select>
-                                  {bundles.map((item) => (
-                                    <Option key={item.id} value={item.id}>
-                                      {item.name}
-                                    </Option>
-                                  ))}
-                                </Select>
-                              </Form.Item>
-                            )}
-                          </Form.Item>
-                          <Form.Item
-                            {...field}
-                            label="Num"
-                            name={[field.name, 'num']}
-                            fieldKey={[field.fieldKey, 'num']}
-                            rules={[
-                              {
-                                required: true,
-                                message: '수량 입력 필요',
-                              },
-                            ]}
-                            style={{ width: 150 }}
-                          >
-                            <InputNumber />
-                          </Form.Item>
-                          <MinusCircleOutlined
-                            onClick={() => remove(field.name)}
-                          />
-                        </Space>
+                        <div key={field.key}>
+                          <Space align="baseline">
+                            <Form.Item
+                              noStyle
+                              shouldUpdate={(prevValues, curValues) =>
+                                prevValues.area !== curValues.area ||
+                                prevValues.items !== curValues.items
+                              }
+                            >
+                              {() => (
+                                <Form.Item
+                                  {...field}
+                                  label="제품명"
+                                  name={[field.name, 'bundleId']}
+                                  fieldKey={[field.fieldKey, 'bundleId']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: '번들 이름을 선택해주세요.',
+                                    },
+                                  ]}
+                                  style={{ width: 250 }}
+                                >
+                                  <TreeSelect
+                                    showSearch
+                                    placeholder="Please select"
+                                    allowClear
+                                    style={{ width: '180px' }}
+                                    dropdownStyle={{
+                                      maxHeight: 400,
+                                      overflow: 'auto',
+                                    }}
+                                  >
+                                    {bundles
+                                      ? parentList.map((parent) => {
+                                          console.log(parentList);
+                                          return (
+                                            // parent list.
+                                            <TreeNode
+                                              key={parent}
+                                              value={parent}
+                                              title={parent}
+                                              selectable={false}
+                                            >
+                                              {bundles.map((bundle) => {
+                                                // children list.
+                                                if (bundle.series === parent) {
+                                                  return (
+                                                    <TreeNode
+                                                      key={bundle.id}
+                                                      value={bundle.id}
+                                                      title={bundle.name}
+                                                    />
+                                                  );
+                                                }
+                                              })}
+                                            </TreeNode>
+                                          );
+                                        })
+                                      : null}
+                                  </TreeSelect>
+                                </Form.Item>
+                              )}
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              label="수량"
+                              name={[field.name, 'num']}
+                              fieldKey={[field.fieldKey, 'num']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: '수량 입력 필요',
+                                },
+                              ]}
+                              style={{ width: 150 }}
+                            >
+                              <InputNumber />
+                            </Form.Item>
+                            <MinusCircleOutlined
+                              onClick={() => remove(field.name)}
+                            />
+                          </Space>
+                        </div>
                       ))}
                       <Form.Item>
                         <Button

@@ -77,19 +77,19 @@ export const AddBundle = () => {
     data: partData,
     loading: partLoading,
     refetch: reGetParts,
-  } = useAllParts();
+  } = useAllParts(1, 1000);
 
   useEffect(() => {
     if (partData && !partLoading) {
       const parts = partData.allParts.parts as IPart[];
-      setParts(parts);
       parts.map((part) => {
         if (parentList.indexOf(part.series) === -1) {
           parentList.push(part.series);
         }
       });
+      setParts(parts);
     }
-  }, [partData]);
+  }, [partData, parentList]);
 
   const onCompleted = (data: createBundleMutation) => {
     const {
@@ -240,28 +240,30 @@ export const AddBundle = () => {
                             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                           >
                             {parts
-                              ? parentList.map((parent) => (
-                                  // parent list.
-                                  <TreeNode
-                                    key={parent}
-                                    value={parent}
-                                    title={parent}
-                                    selectable={false}
-                                  >
-                                    {parts.map((part) => {
-                                      // children list.
-                                      if (part.series === parent) {
-                                        return (
-                                          <TreeNode
-                                            key={part.id}
-                                            value={part.id}
-                                            title={part.name}
-                                          />
-                                        );
-                                      }
-                                    })}
-                                  </TreeNode>
-                                ))
+                              ? parentList.map((parent) => {
+                                  return (
+                                    // parent list.
+                                    <TreeNode
+                                      key={parent}
+                                      value={parent}
+                                      title={parent}
+                                      selectable={false}
+                                    >
+                                      {parts.map((part) => {
+                                        // children list.
+                                        if (part.series === parent) {
+                                          return (
+                                            <TreeNode
+                                              key={part.id}
+                                              value={part.id}
+                                              title={part.name}
+                                            />
+                                          );
+                                        }
+                                      })}
+                                    </TreeNode>
+                                  );
+                                })
                               : null}
                           </TreeSelect>
                         </Form.Item>

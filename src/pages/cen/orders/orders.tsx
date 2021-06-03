@@ -114,7 +114,7 @@ interface IOrder {
   id?: number;
   createAt: string;
   salesPerson: string;
-  classification: OrderClassification;
+  classification: OrderClassification | string;
   projectName: string | JSX.Element;
   partner?: IPartner | null;
   deliveryType: DeliveryType;
@@ -282,7 +282,11 @@ export const Order = () => {
               to={`/cen/orders/${orders[i].id}`}
             >{`${orders[i].projectName}`}</Link>
           ),
-          classification: orders[i].classification,
+          classification: `${
+            orders[i].classification === OrderClassification.Sale
+              ? '판매'
+              : orders[i].classification
+          }`,
           salesPerson: orders[i].salesPerson,
           deliveryDate: new Date(orders[i].deliveryDate).toLocaleDateString(),
           deliveryMethod: orders[i].deliveryMethod,
