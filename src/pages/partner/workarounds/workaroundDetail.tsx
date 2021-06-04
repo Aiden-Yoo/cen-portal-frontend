@@ -44,6 +44,7 @@ import {
   editWorkaroundMutation,
   editWorkaroundMutationVariables,
 } from '../../../__generated__/editWorkaroundMutation';
+import { WAS_IP } from '../../../constants';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -509,7 +510,7 @@ export const WorkaroundDetail: React.FC = () => {
           uid: `${index + 1}`,
           name: `${file.path}`,
           status: 'done',
-          url: `http://localhost:4000/uploads/workarounds/${file.path}`,
+          url: `http://${WAS_IP}:4000/uploads/workarounds/${file.path}`,
         });
       });
       setDefaultFileList(uploadedList);
@@ -615,7 +616,7 @@ export const WorkaroundDetail: React.FC = () => {
     name: 'file',
     multiple: true,
     maxCount: 5,
-    action: 'http://localhost:4000/uploads/workarounds',
+    action: `http://${WAS_IP}:4000/uploads/workarounds`,
     customRequest: (options: any) => {
       const data = new FormData();
       data.append('file', options.file);
@@ -838,7 +839,7 @@ export const WorkaroundDetail: React.FC = () => {
                   <a
                     key={file.id}
                     title={`첨부${index + 1} 다운로드`}
-                    href={`http://localhost:4000/uploads/workarounds/${file.path}`}
+                    href={`http://${WAS_IP}:4000/uploads/workarounds/${file.path}`}
                     target="_blank"
                     rel="noreferrer"
                     download

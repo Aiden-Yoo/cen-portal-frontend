@@ -36,6 +36,7 @@ import {
   editDocumentMutation,
   editDocumentMutationVariables,
 } from '../../../__generated__/editDocumentMutation';
+import { WAS_IP } from '../../../constants';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -269,7 +270,7 @@ export const DocumentDetail: React.FC = () => {
           uid: `${index + 1}`,
           name: `${file.path}`,
           status: 'done',
-          url: `http://localhost:4000/uploads/documents/${file.path}`,
+          url: `http://${WAS_IP}:4000/uploads/documents/${file.path}`,
         });
       });
       setDefaultFileList(uploadedList);
@@ -346,7 +347,7 @@ export const DocumentDetail: React.FC = () => {
     name: 'file',
     multiple: true,
     maxCount: 5,
-    action: 'http://localhost:4000/uploads/documents',
+    action: `http://${WAS_IP}:4000/uploads/documents`,
     customRequest: (options: any) => {
       const data = new FormData();
       data.append('file', options.file);
@@ -579,7 +580,7 @@ export const DocumentDetail: React.FC = () => {
                   <a
                     key={file.id}
                     title={`첨부${index + 1} 다운로드`}
-                    href={`http://localhost:4000/uploads/documents/${file.path}`}
+                    href={`http://${WAS_IP}:4000/uploads/documents/${file.path}`}
                     target="_blank"
                     rel="noreferrer"
                     download
