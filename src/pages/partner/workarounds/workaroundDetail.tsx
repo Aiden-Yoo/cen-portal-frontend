@@ -855,7 +855,7 @@ export const WorkaroundDetail: React.FC = () => {
       </Form>
       <CommentColumn>
         {commentData?.length > 0 && <CommentList comments={commentData} />}
-        {!isEdit && (
+        {!isEdit && meData?.me.role === UserRole.CENSE && (
           <Comment
             content={
               <CommentEditor

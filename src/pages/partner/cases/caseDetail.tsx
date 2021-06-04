@@ -711,11 +711,7 @@ export const CaseDetail: React.FC = () => {
           <SButton
             type="primary"
             size="small"
-            disabled={
-              isEdit ||
-              meData?.me.id !== writer?.id ||
-              meData?.me.role !== UserRole.CENSE
-            }
+            disabled={isEdit || meData?.me.id !== writer?.id}
           >
             <Popconfirm
               title="정말 삭제 하시겠습니까?"
