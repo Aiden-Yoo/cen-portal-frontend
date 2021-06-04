@@ -23,6 +23,7 @@ import {
 } from '../../../__generated__/createIssueMutation';
 import { KindRole } from '../../../__generated__/globalTypes';
 import { useMe } from '../../../hooks/useMe';
+import { WAS_IP } from '../../../constants';
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -152,7 +153,7 @@ export const AddCase: React.FC = () => {
     name: 'file',
     multiple: true,
     maxCount: 5,
-    action: 'http://localhost:4000/uploads/issues',
+    action: `http://${WAS_IP}:4000/uploads/issues`,
     customRequest: (options: any) => {
       const data = new FormData();
       data.append('file', options.file);
