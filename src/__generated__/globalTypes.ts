@@ -552,6 +552,10 @@ export interface UserInputType {
   orders: OrderInputType[];
 }
 
+export interface VerifyEmailInput {
+  code: string;
+}
+
 export interface WorkaroundCommentsInputType {
   writer?: UserInputType | null;
   comment: string;

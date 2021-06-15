@@ -99,7 +99,7 @@ export const Login: React.FC = () => {
     } else if (error) {
       notification.error({
         message: 'Error',
-        description: `로그인 실패. ${error}`,
+        description: `[로그인 실패] ${error}`,
         placement: 'topRight',
         duration: 0,
       });
