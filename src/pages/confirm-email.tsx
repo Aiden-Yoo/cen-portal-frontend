@@ -3,6 +3,7 @@ import { notification } from 'antd';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import logo from '../images/CoreEdge_logo.png';
+import background from '../images/background2.png';
 import styled from 'styled-components';
 import {
   verifyEmail,
@@ -15,9 +16,9 @@ const Container = styled.div`
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background: no-repeat url() center center;
+  background: no-repeat url(${background});
   background-color: rgba(21, 20, 13, 0.5);
-  background-size: 1920px 640px;
+  background-size: cover;
 `;
 
 const LoginHeader = styled.header`
