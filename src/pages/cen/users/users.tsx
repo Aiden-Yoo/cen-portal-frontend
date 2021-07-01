@@ -2,7 +2,6 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { gql, useMutation } from '@apollo/client';
 import {
@@ -13,10 +12,9 @@ import {
   Button,
   notification,
   BackTop,
-  Checkbox,
   Select,
 } from 'antd';
-import { FolderOpenOutlined } from '@ant-design/icons';
+import { UsergroupAddOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
 import { useAllUsers } from '../../../hooks/useAllUsers';
 import {
@@ -24,7 +22,6 @@ import {
   editUserMutationVariables,
 } from '../../../__generated__/editUserMutation';
 import { UserRole } from '../../../__generated__/globalTypes';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -40,10 +37,6 @@ const MenuBar = styled.span`
   display: flex;
   justify-content: flex-end;
   margin-bottom: 8px;
-`;
-
-const SButton = styled(Button)`
-  margin-left: 8px;
 `;
 
 const EDIT_USER_MUTATION = gql`
@@ -138,12 +131,10 @@ export const User: React.FC = () => {
   const originData: IUser[] = [];
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [data, setData] = useState<IUser[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
-  const { data: meData } = useMe();
   const {
     data: allUsersData,
     loading: allUsersLoading,
@@ -188,9 +179,10 @@ export const User: React.FC = () => {
           key: `${users[i].id}`,
           // no: i + 1 + (getTotalPages - page) * (getTotalResults % take),
           no: (getTotalPages - page) * take + (getTotalResults % take) - i,
-          name: (
-            <Link to={`/cen/users/${users[i].id}`}>{`${users[i].name}`}</Link>
-          ),
+          name: users[i].name,
+          // (
+          //   <Link to={`/cen/users/${users[i].id}`}>{`${users[i].name}`}</Link>
+          // ),
           createAt: users[i].createAt,
           email: users[i].email,
           role: users[i].role,
@@ -254,19 +246,6 @@ export const User: React.FC = () => {
       console.log('Validate Failed:', errInfo);
     }
   };
-
-  // const handleCheckChange = (e: CheckboxChangeEvent) => {
-  //   const {
-  //     target: { id },
-  //   } = e;
-  //   if (id === 'isLocked') {
-  //     setIsLocked(!isLocked);
-  //     console.log(e);
-  //   }
-  //   if (id === 'verified') {
-  //     setVerified(!verified);
-  //   }
-  // };
 
   const handlePageChange = (page: number, take: number) => {
     setPage(page);
@@ -391,35 +370,16 @@ export const User: React.FC = () => {
     };
   });
 
-  const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: IUser[]) => {
-      setSelectedRowKeys(selectedRowKeys);
-      // console.log(
-      //   `selectedRowKeys: ${selectedRowKeys}`,
-      //   'selectedRows: ',
-      //   selectedRows,
-      // );
-    },
-    // getCheckboxProps: (record: IUser) => ({
-    //   disabled: record.name === 'Disabled User',
-    //   name: record.name,
-    // }),
-  };
-
   return (
     <Wrapper>
       <Helmet>
         <title>Users | CEN Portal</title>
       </Helmet>
       <TitleBar>
-        <FolderOpenOutlined />
+        <UsergroupAddOutlined />
         {' 회원관리'}
       </TitleBar>
-      <MenuBar>
-        <SButton type="primary" size="small">
-          <Link to="/cen/users/add-user">Add</Link>
-        </SButton>
-      </MenuBar>
+      <MenuBar />
       <Form form={form} component={false}>
         <Table<IUser>
           components={{
@@ -428,7 +388,6 @@ export const User: React.FC = () => {
             },
           }}
           bordered
-          rowSelection={rowSelection}
           dataSource={data}
           columns={mergedColumns}
           pagination={{
