@@ -198,10 +198,11 @@ export const Order = () => {
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [status, setStatus] = useState<OrderStatus | null>(null);
-  const { data: ordersData, loading, refetch: reGetData } = useQuery<
-    getOrdersQuery,
-    getOrdersQueryVariables
-  >(GET_ORDERS_QUERY, {
+  const {
+    data: ordersData,
+    loading,
+    refetch: reGetData,
+  } = useQuery<getOrdersQuery, getOrdersQueryVariables>(GET_ORDERS_QUERY, {
     variables: {
       input: {
         page,

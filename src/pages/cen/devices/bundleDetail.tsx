@@ -203,10 +203,11 @@ export const BundleDetail: React.FC = () => {
 
   const isEditing = (record: IBundleParts) => record.key === editingKey;
 
-  const { data: bundleData, loading: bundleLoading, refetch } = useQuery<
-    getBundleQuery,
-    getBundleQueryVariables
-  >(GET_BUNDLE_QUERY, {
+  const {
+    data: bundleData,
+    loading: bundleLoading,
+    refetch,
+  } = useQuery<getBundleQuery, getBundleQueryVariables>(GET_BUNDLE_QUERY, {
     variables: {
       input: {
         bundleId: +bundleId.id,

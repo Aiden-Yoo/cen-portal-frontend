@@ -1,35 +1,53 @@
 {
-  "parser": "@typescript-eslint/parser", // @typescript-eslint/parser
-  "extends": [
-    "plugin:react/recommended", // eslint-plugin-react
-    "plugin:@typescript-eslint/recommended", // @typescript-eslint/eslint-plugin
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended" // eslint-plugin-prettier
-  ],
-  "plugins": [
-    "react", // eslint-plugin-react
-    "@typescript-eslint", // @typescript-eslint/eslint-plugin
-    "prettier"
-  ],
+  "parser": "@typescript-eslint/parser", // typescript 전용 parser로 지정
   "parserOptions": {
-    // ESLint는 es6 이후의 문법을 알지 못하기 때문에 설정
-    // https://eslint.org/docs/user-guide/configuring#specifying-parser-options
-    "ecmaVersion": 6,
-    "ecmaFeatures": {
-      "jsx": true // eslint-plugin-react
-    }
+    "project": "./tsconfig.json",
+    "sourceType": "module"
   },
+  "env": {
+    "node": true, // node 사용 OK
+    "browser": true, // browser 인식 Ok
+    "es6": true // es6 버전사용 OK
+  },
+  "plugins": ["react", "@typescript-eslint", "prettier"], 
+  // react, react-hooks 가 있으면 Error Cannot get result from ~ 이 나옴.
+  "extends": [
+    "plugin:react/recommended", //recommended 붙여져 있는건 preset을 사용하겠다는 의미
+    "plugin:@typescript-eslint/eslint-recommended",
+    // "plugin:@typescript-eslint/recommended",
+    "prettier", // 8.0.0 버젼이상은 모두 prettier로 통합됨.
+    "plugin:prettier/recommended"
+  ],
+  //plugin과 extends로 적용된 규칙에 덮어씌워져서 강제 설정할 수 있는 부분
   "rules": {
-    // 설정하고 싶은 규칙 작성
-    // 밑은 예시일 뿐, 아무거나 추가 가능
+    "no-console": "off", // console.log(사용하는 것 금지)
     "prettier/prettier": [
       "error",
-      {
-        "singleQuote": true,
-        "endOfLine": "auto" // Delete `␍` eslint (prettier/prettier) 조치
-      }
-    ], // eslint-plugin-prettier
-    "react/jsx-uses-vars": "error" // eslint-plugin-react
+      {"endOfLine": "auto"} // Delete `␍` eslint (prettier/prettier) 조치
+    ],
+    "arrow-body-style": "off",
+    "prefer-arrow-callback": "off",
+    "react/react-in-jsx-scope": "off",
+    "no-unused-expressions": 0,
+    "import/extensions": ["off"],
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off", //values returned from a module are of the expected type.
+    "no-nested-ternary": "off", 
+    // 삼항연산안에 또 삼항연산 하는 것을 방지
+    "react/jsx-filename-extension": "off", // <> </>쓰는 것 방지
+    "spaced-comment": "off", // 주석 쓰는 것 방지
+    "no-unused-variable": "off",
+    "@typescript-eslint/no-non-null-assertion": "off"
   },
-  "ignorePatterns": ["*.config.js"] // 제외하려는 파일
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx", ".js"]
+    }
+  },
+  "ignorePatterns": ["*.config.js"] // 제외하려는 파일,
 }

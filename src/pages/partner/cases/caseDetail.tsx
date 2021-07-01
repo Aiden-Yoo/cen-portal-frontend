@@ -410,21 +410,17 @@ export const CaseDetail: React.FC = () => {
     refetch();
   };
 
-  const [
-    deleteIssueCommentMutation,
-    { data: deleteIssueCommentData },
-  ] = useMutation<
-    deleteIssueCommentMutation,
-    deleteIssueCommentMutationVariables
-  >(DELETE_COMMENT_MUTATION, { onCompleted: onCommentDeleteCompleted });
+  const [deleteIssueCommentMutation, { data: deleteIssueCommentData }] =
+    useMutation<
+      deleteIssueCommentMutation,
+      deleteIssueCommentMutationVariables
+    >(DELETE_COMMENT_MUTATION, { onCompleted: onCommentDeleteCompleted });
 
-  const [
-    createIssueCommentMutation,
-    { data: createIssueCommentData },
-  ] = useMutation<
-    createIssueCommentMutation,
-    createIssueCommentMutationVariables
-  >(CREATE_COMMENT_MUTATION, { onCompleted: onCommentCreateCompleted });
+  const [createIssueCommentMutation, { data: createIssueCommentData }] =
+    useMutation<
+      createIssueCommentMutation,
+      createIssueCommentMutationVariables
+    >(CREATE_COMMENT_MUTATION, { onCompleted: onCommentCreateCompleted });
 
   const [deleteIssueMutation] = useMutation<
     deleteIssueMutation,

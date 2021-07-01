@@ -134,10 +134,11 @@ export const OrderDetail: React.FC = () => {
   const [orderText, setOrderText] = useState('');
   const [orderColor, setOrderColor] = useState('');
 
-  const { data: orderData, loading, refetch } = useQuery<
-    getOrderQuery,
-    getOrderQueryVariables
-  >(GET_ORDER_QUERY, {
+  const {
+    data: orderData,
+    loading,
+    refetch,
+  } = useQuery<getOrderQuery, getOrderQueryVariables>(GET_ORDER_QUERY, {
     variables: {
       input: {
         id: +orderId.id,

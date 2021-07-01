@@ -85,10 +85,11 @@ export const PartDetail: React.FC = () => {
   const [series, setSeries] = useState<string>('');
   const [description, setDescription] = useState<string | null>('');
 
-  const { data: partData, loading, refetch } = useQuery<
-    getPartQuery,
-    getPartQueryVariables
-  >(GET_PART_QUERY, {
+  const {
+    data: partData,
+    loading,
+    refetch,
+  } = useQuery<getPartQuery, getPartQueryVariables>(GET_PART_QUERY, {
     variables: {
       input: {
         partId: +partId.id,

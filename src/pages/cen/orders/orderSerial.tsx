@@ -141,18 +141,22 @@ export const OrderSerial: React.FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const history = useHistory();
 
-  const { data: orderItemData, loading: orderItemLoading, refetch } = useQuery<
-    getOrderItemsQuery,
-    getOrderItemsQueryVariables
-  >(GET_ORDERITEMS_QUERY, {
-    variables: {
-      input: {
-        orderId: +orderId.id,
-        page,
-        take,
+  const {
+    data: orderItemData,
+    loading: orderItemLoading,
+    refetch,
+  } = useQuery<getOrderItemsQuery, getOrderItemsQueryVariables>(
+    GET_ORDERITEMS_QUERY,
+    {
+      variables: {
+        input: {
+          orderId: +orderId.id,
+          page,
+          take,
+        },
       },
     },
-  });
+  );
 
   const onCompleted = (data: editItemInfoMutation) => {
     const {
