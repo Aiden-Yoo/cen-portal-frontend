@@ -42,6 +42,7 @@ import { FirmwareDetail } from '../pages/partner/firmwares/firmwareDetail';
 import { Document } from '../pages/partner/documents/documents';
 import { AddDocument } from '../pages/partner/documents/addDocument';
 import { DocumentDetail } from '../pages/partner/documents/documentDetail';
+import { User } from '../pages/cen/users/users';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -83,7 +84,7 @@ const cenRoutes = [
   { path: '/cen/devices/add-part', component: <AddPart /> },
   { path: '/cen/devices/bundle/:id', component: <BundleDetail /> },
   { path: '/cen/devices/part/:id', component: <PartDetail /> },
-  // { path: '/cen/users', component: <User /> },
+  { path: '/cen/users', component: <User /> },
 ];
 
 const commonRoutes = [

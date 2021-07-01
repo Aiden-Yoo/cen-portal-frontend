@@ -110,6 +110,11 @@ export interface AllPartsInput {
   take?: number | null;
 }
 
+export interface AllUsersInput {
+  page?: number | null;
+  take?: number | null;
+}
+
 export interface AllWorkaroundsInput {
   page?: number | null;
   take?: number | null;
@@ -393,6 +398,12 @@ export interface EditProfileInput {
   team?: string | null;
   jobTitle?: string | null;
   bio?: string | null;
+}
+
+export interface EditUserInput {
+  role?: UserRole | null;
+  isLocked?: boolean | null;
+  userId: number;
 }
 
 export interface EditWorkaroundInput {
