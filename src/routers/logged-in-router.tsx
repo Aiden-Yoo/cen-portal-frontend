@@ -105,6 +105,7 @@ const commonRoutes = [
   { path: '/partner/workarounds/:id', component: <WorkaroundDetail /> },
   { path: '/partner/orders', component: <Order /> },
   { path: '/partner/orders/:id', component: <OrderDetail /> },
+  { path: '/partner/orders/:id/serial-number', component: <OrderSerial /> },
 ];
 
 const siderRoutes = [

@@ -16,7 +16,9 @@ import {
   DeliveryType,
   OrderClassification,
   OrderStatus,
+  UserRole,
 } from '../../../__generated__/globalTypes';
+import { useMe } from '../../../hooks/useMe';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -126,6 +128,7 @@ interface IOrderItemData {
 }
 
 export const OrderDetail: React.FC = () => {
+  const { data: meData } = useMe();
   const originData: IOrderItemData[] = [];
   const history = useHistory();
   const orderId: any = useParams();
@@ -230,9 +233,15 @@ export const OrderDetail: React.FC = () => {
       </TitleBar>
       <MenuBar>
         <SButton type="primary" size="small">
-          <Link to={`/cen/orders/${orderId.id}/serial-number`}>
-            Serial Number
-          </Link>
+          {meData?.me.role === UserRole.Partner ? (
+            <Link to={`/partner/orders/${orderId.id}/serial-number`}>
+              Serial Number
+            </Link>
+          ) : (
+            <Link to={`/cen/orders/${orderId.id}/serial-number`}>
+              Serial Number
+            </Link>
+          )}
         </SButton>
         <SButton type="primary" size="small" onClick={() => history.goBack()}>
           Back

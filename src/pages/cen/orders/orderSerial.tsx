@@ -23,6 +23,7 @@ import {
 } from '../../../__generated__/editItemInfoMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
+import { UserRole } from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -339,7 +340,12 @@ export const OrderSerial: React.FC = () => {
             </SButton>
           </>
         ) : (
-          <SButton type="primary" size="small" onClick={() => handleEdit()}>
+          <SButton
+            type="primary"
+            size="small"
+            disabled={meData?.me.role !== UserRole.CENSE}
+            onClick={() => handleEdit()}
+          >
             Edit
           </SButton>
         )}
