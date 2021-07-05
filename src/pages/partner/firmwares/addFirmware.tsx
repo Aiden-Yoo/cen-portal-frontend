@@ -152,7 +152,7 @@ export const AddFirmware: React.FC = () => {
   const uploadProps = {
     name: 'file',
     multiple: true,
-    maxCount: 5,
+    maxCount: 10,
     action: `http://${WAS_IP}:4000/uploads/firmwares`,
     customRequest: (options: any) => {
       const data = new FormData();
@@ -162,10 +162,10 @@ export const AddFirmware: React.FC = () => {
           'content-type': 'multipart/form-data',
         },
       };
-      if (uploadedFile.length >= 5) {
+      if (uploadedFile.length >= 10) {
         notification.error({
           message: 'Error',
-          description: `업로드는 최대 5개만 가능합니다.`,
+          description: `업로드는 최대 10개만 가능합니다.`,
           placement: 'topRight',
           duration: 1.5,
         });
@@ -202,7 +202,7 @@ export const AddFirmware: React.FC = () => {
       format: (percent: any) => `${parseFloat(percent.toFixed(2))}%`,
     },
     async onChange(info: any) {
-      if (info.file.status === 'uploading' && uploadedFile.length < 5) {
+      if (info.file.status === 'uploading' && uploadedFile.length < 10) {
         setIsUploading(true);
       } else {
         setIsUploading(false);
@@ -270,7 +270,7 @@ export const AddFirmware: React.FC = () => {
               업로드할 파일을 이 영역으로 드래그 또는 클릭합니다.
             </p>
             <p className="ant-upload-hint">
-              단일 또는 대량 업로드를 지원하며, 최대 5개까지 업로드 가능합니다.
+              단일 또는 대량 업로드를 지원하며, 최대 10개까지 업로드 가능합니다.
             </p>
           </Dragger>
           <ButtonColumn>

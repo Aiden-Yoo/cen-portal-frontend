@@ -145,8 +145,6 @@ export const Case: React.FC = () => {
       setData(originData);
     }
     reGetData();
-    console.log(allCasesData);
-    console.log(originData);
   }, [allCasesData]);
 
   const handlePageChange = (page: number, take: number) => {

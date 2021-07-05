@@ -141,8 +141,6 @@ export const Workaround: React.FC = () => {
       setData(originData);
     }
     reGetData();
-    console.log(allWorkaroundsData);
-    console.log(originData);
   }, [allWorkaroundsData]);
 
   const handlePageChange = (page: number, take: number) => {

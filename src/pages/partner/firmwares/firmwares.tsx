@@ -129,8 +129,6 @@ export const Firmware: React.FC = () => {
       setData(originData);
     }
     reGetData();
-    console.log(allFirmwaresData);
-    console.log(originData);
   }, [allFirmwaresData]);
 
   const handlePageChange = (page: number, take: number) => {

@@ -135,8 +135,6 @@ export const Document: React.FC = () => {
       setData(originData);
     }
     reGetData();
-    console.log(allDocumentsData);
-    console.log(originData);
   }, [allDocumentsData]);
 
   const handlePageChange = (page: number, take: number) => {

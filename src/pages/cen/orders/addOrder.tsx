@@ -140,7 +140,7 @@ export const AddOrder: React.FC = () => {
 
   useEffect(() => {
     if (meData) {
-      console.log(meData);
+      // console.log(meData);
     }
   }, [meData]);
 
@@ -214,7 +214,7 @@ export const AddOrder: React.FC = () => {
 
   const onFinish = (values: any) => {
     let fail = '';
-    console.log('Received values of form:', values);
+    // console.log('Received values of form:', values);
     if (!values.projectName) {
       fail += `${fail !== '' ? ', ' : ''}프로젝트명`;
     }
@@ -754,7 +754,7 @@ export const AddOrder: React.FC = () => {
                                   >
                                     {bundles
                                       ? parentList.map((parent) => {
-                                          console.log(parentList);
+                                          // console.log(parentList);
                                           return (
                                             // parent list.
                                             <TreeNode
