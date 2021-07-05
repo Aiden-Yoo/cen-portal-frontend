@@ -198,19 +198,20 @@ export const Order = () => {
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [status, setStatus] = useState<OrderStatus | null>(null);
-  const {
-    data: ordersData,
-    loading,
-    refetch: reGetData,
-  } = useQuery<getOrdersQuery, getOrdersQueryVariables>(GET_ORDERS_QUERY, {
-    variables: {
-      input: {
-        page,
-        take,
-        status,
-      },
-    },
-  });
+
+  const onGetCompleted = (data: getOrdersQuery) => {
+    const {
+      getOrders: { ok, error },
+    } = data;
+    if (error) {
+      notification.error({
+        message: 'Error',
+        description: `로드 실패. ${error}`,
+        placement: 'topRight',
+        duration: 3,
+      });
+    }
+  };
 
   const onDeleteCompleted = (data: deleteOrderMutation) => {
     const {
@@ -255,6 +256,21 @@ export const Order = () => {
     }
   };
 
+  const {
+    data: ordersData,
+    loading,
+    refetch: reGetData,
+  } = useQuery<getOrdersQuery, getOrdersQueryVariables>(GET_ORDERS_QUERY, {
+    variables: {
+      input: {
+        page,
+        take,
+        status,
+      },
+    },
+    onCompleted: onGetCompleted,
+  });
+
   const [deleteOrderMutation, { data: deleteOrderData }] = useMutation<
     deleteOrderMutation,
     deleteOrderMutationVariables
@@ -273,16 +289,21 @@ export const Order = () => {
     if (ordersData && !loading) {
       const orders = ordersData.getOrders.orders as IOrder[];
       const getTotal = ordersData.getOrders.totalResults as number;
-      for (let i = 0; i < orders.length; i++) {
+      for (let i = 0; i < orders?.length; i++) {
         originData.push({
           key: `${orders[i].id}`,
           no: 1 + i,
           createAt: new Date(orders[i].createAt).toLocaleDateString(),
-          projectName: (
-            <Link
-              to={`/cen/orders/${orders[i].id}`}
-            >{`${orders[i].projectName}`}</Link>
-          ),
+          projectName:
+            meData?.me.role === UserRole.Partner ? (
+              <Link
+                to={`/partner/orders/${orders[i].id}`}
+              >{`${orders[i].projectName}`}</Link>
+            ) : (
+              <Link
+                to={`/cen/orders/${orders[i].id}`}
+              >{`${orders[i].projectName}`}</Link>
+            ),
           classification: `${
             orders[i].classification === OrderClassification.Sale
               ? '판매'
@@ -540,7 +561,10 @@ export const Order = () => {
               </Typography.Link>
             )}
 
-            <Typography.Link href="#!">
+            <Typography.Link
+              href="#!"
+              disabled={meData?.me.role !== UserRole.CENSE}
+            >
               <Popconfirm
                 title="정말 삭제 하시겠습니까?"
                 onConfirm={() => handleRowDelete(record.key)}
@@ -608,10 +632,25 @@ export const Order = () => {
           <Radio.Button value={OrderStatus.Partial}>부분출고</Radio.Button>
           <Radio.Button value={OrderStatus.Completed}>출고완료</Radio.Button>
         </Radio.Group>
-        <SButton type="primary" size="small" onClick={() => handleAdd()}>
+        <SButton
+          type="primary"
+          size="small"
+          disabled={
+            meData?.me.role !== UserRole.CENSE &&
+            meData?.me.role !== UserRole.CEN
+          }
+          onClick={() => handleAdd()}
+        >
           <Link to="/cen/orders/add-order">Add</Link>
         </SButton>
-        <SButton type="primary" size="small">
+        <SButton
+          type="primary"
+          size="small"
+          disabled={
+            meData?.me.role !== UserRole.CENSE &&
+            meData?.me.role !== UserRole.CEN
+          }
+        >
           <Popconfirm
             title="정말 삭제 하시겠습니까?"
             onConfirm={() => handleDelete()}

@@ -103,6 +103,8 @@ const commonRoutes = [
   { path: '/partner/workarounds', component: <Workaround /> },
   { path: '/partner/workarounds/add-workaround', component: <AddWorkaround /> },
   { path: '/partner/workarounds/:id', component: <WorkaroundDetail /> },
+  { path: '/partner/orders', component: <Order /> },
+  { path: '/partner/orders/:id', component: <OrderDetail /> },
 ];
 
 const siderRoutes = [
@@ -137,19 +139,22 @@ const siderRoutes = [
     component: (
       <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
         <Menu.Item key="1" icon={<DesktopOutlined />}>
-          <Link to="/partner/firmwares">Firmwares</Link>
+          <Link to="/partner/firmwares">펌웨어</Link>
         </Menu.Item>
         <Menu.Item key="2" icon={<FileOutlined />}>
-          <Link to="/partner/documents">Documents</Link>
+          <Link to="/partner/documents">문서</Link>
         </Menu.Item>
-        <SubMenu key="3" icon={<ToolOutlined />} title="Technical">
+        <SubMenu key="3" icon={<ToolOutlined />} title="기술지원">
           <Menu.Item key="3-1">
-            <Link to="/partner/cases">Cases</Link>
+            <Link to="/partner/cases">Case</Link>
           </Menu.Item>
           <Menu.Item key="3-2">
             <Link to="/partner/workarounds">Workarounds</Link>
           </Menu.Item>
         </SubMenu>
+        <Menu.Item key="4" icon={<InboxOutlined />}>
+          <Link to="/partner/orders">출고현황</Link>
+        </Menu.Item>
       </Menu>
     ),
   },
@@ -169,10 +174,10 @@ export const LoggedInRouter: React.FC = () => {
             breakpoint="lg"
             collapsedWidth="0"
             onBreakpoint={(broken) => {
-              console.log(broken);
+              // console.log(broken);
             }}
             onCollapse={(collapsed, type) => {
-              console.log(collapsed, type);
+              // console.log(collapsed, type);
             }}
             style={{
               height: 'inherit',

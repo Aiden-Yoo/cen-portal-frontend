@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { gql, useMutation, useQuery } from '@apollo/client';
-import { Table, Button, Descriptions, Badge } from 'antd';
+import { Table, Button, Descriptions, Badge, notification } from 'antd';
 import {
   getOrderQuery,
   getOrderQueryVariables,
@@ -134,6 +134,20 @@ export const OrderDetail: React.FC = () => {
   const [orderText, setOrderText] = useState('');
   const [orderColor, setOrderColor] = useState('');
 
+  const onGetCompleted = (data: getOrderQuery) => {
+    const {
+      getOrder: { ok, error },
+    } = data;
+    if (error) {
+      notification.error({
+        message: 'Error',
+        description: `로드 실패. ${error}`,
+        placement: 'topRight',
+        duration: 3,
+      });
+    }
+  };
+
   const {
     data: orderData,
     loading,
@@ -144,6 +158,7 @@ export const OrderDetail: React.FC = () => {
         id: +orderId.id,
       },
     },
+    onCompleted: onGetCompleted,
   });
 
   const columns: ColumnsType<any> = [
@@ -171,8 +186,8 @@ export const OrderDetail: React.FC = () => {
     if (orderData && !loading) {
       const orderInfo = orderData.getOrder.order as IOrder;
       setOrder(orderInfo);
-      const orderItems = orderInfo.items as IOrderItem[];
-      for (let i = 0; i < orderItems.length; i++) {
+      const orderItems = orderInfo?.items as IOrderItem[];
+      for (let i = 0; i < orderItems?.length; i++) {
         originData.push({
           key: i + 1,
           no: i + 1,
@@ -181,27 +196,27 @@ export const OrderDetail: React.FC = () => {
         });
       }
       setData(originData);
-      if (orderInfo.status === OrderStatus.Created) {
+      if (orderInfo?.status === OrderStatus.Created) {
         setOrderText('출고요청');
         setOrderColor('orange');
-      } else if (orderInfo.status === OrderStatus.Canceled) {
+      } else if (orderInfo?.status === OrderStatus.Canceled) {
         setOrderText('취소됨');
         setOrderColor('red');
-      } else if (orderInfo.status === OrderStatus.Pending) {
+      } else if (orderInfo?.status === OrderStatus.Pending) {
         setOrderText('보류');
         setOrderColor('volcano');
-      } else if (orderInfo.status === OrderStatus.Preparing) {
+      } else if (orderInfo?.status === OrderStatus.Preparing) {
         setOrderText('준비중');
         setOrderColor('green');
-      } else if (orderInfo.status === OrderStatus.Partial) {
+      } else if (orderInfo?.status === OrderStatus.Partial) {
         setOrderText('부분출고');
         setOrderColor('blue');
-      } else if (orderInfo.status === OrderStatus.Completed) {
+      } else if (orderInfo?.status === OrderStatus.Completed) {
         setOrderText('출고완료');
         setOrderColor('geekblue');
       }
     }
-    refetch();
+    // refetch();
   }, [orderData]);
 
   return (
