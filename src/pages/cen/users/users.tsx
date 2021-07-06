@@ -17,11 +17,11 @@ import {
 import { UsergroupAddOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
 import { useAllUsers } from '../../../hooks/useAllUsers';
+import { UserRole } from '../../../__generated__/globalTypes';
 import {
   editUserMutation,
   editUserMutationVariables,
 } from '../../../__generated__/editUserMutation';
-import { UserRole } from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -228,6 +228,7 @@ export const User: React.FC = () => {
         });
         setData(newData);
         setEditingKey('');
+        const verified = row.verified === 'O' ? true : false;
         const isLocked = row.isLocked === 'O' ? true : false;
         const orderAuth = row.orderAuth === 'O' ? true : false;
         editUserMutation({
@@ -235,6 +236,7 @@ export const User: React.FC = () => {
             input: {
               userId: +key,
               role: row.role,
+              verified,
               isLocked,
               orderAuth,
             },
@@ -290,6 +292,7 @@ export const User: React.FC = () => {
     {
       title: '팀',
       dataIndex: 'team',
+      width: '8%',
       align: 'center',
     },
     {
@@ -300,10 +303,11 @@ export const User: React.FC = () => {
       editable: true,
     },
     {
-      title: '인증',
+      title: '승인',
       dataIndex: 'verified',
       width: '10%',
       align: 'center',
+      editable: true,
     },
     {
       title: '잠금',

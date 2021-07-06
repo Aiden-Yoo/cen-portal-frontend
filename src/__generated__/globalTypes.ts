@@ -402,6 +402,7 @@ export interface EditProfileInput {
 
 export interface EditUserInput {
   role?: UserRole | null;
+  verified?: boolean | null;
   isLocked?: boolean | null;
   orderAuth?: boolean | null;
   userId: number;
