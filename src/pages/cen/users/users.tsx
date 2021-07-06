@@ -60,6 +60,7 @@ interface IUser {
   name: string | JSX.Element;
   verified: boolean | string;
   isLocked: boolean | string;
+  orderAuth: boolean | string;
 }
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
@@ -190,6 +191,7 @@ export const User: React.FC = () => {
           team: users[i].team,
           verified: `${users[i].verified === true ? 'O' : 'X'}`,
           isLocked: `${users[i].isLocked === true ? 'O' : 'X'}`,
+          orderAuth: `${users[i].orderAuth === true ? 'O' : 'X'}`,
         });
       }
       setTotal(getTotalResults);
@@ -227,12 +229,14 @@ export const User: React.FC = () => {
         setData(newData);
         setEditingKey('');
         const isLocked = row.isLocked === 'O' ? true : false;
+        const orderAuth = row.orderAuth === 'O' ? true : false;
         editUserMutation({
           variables: {
             input: {
               userId: +key,
               role: row.role,
               isLocked,
+              orderAuth,
             },
           },
         });
@@ -304,6 +308,13 @@ export const User: React.FC = () => {
     {
       title: '잠금',
       dataIndex: 'isLocked',
+      width: '10%',
+      align: 'center',
+      editable: true,
+    },
+    {
+      title: '출고열람',
+      dataIndex: 'orderAuth',
       width: '10%',
       align: 'center',
       editable: true,

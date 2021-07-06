@@ -74,7 +74,6 @@ const cenRoutes = [
   { path: '/cen/orders', component: <Order /> },
   { path: '/cen/orders/add-order', component: <AddOrder /> },
   { path: '/cen/orders/:id', component: <OrderDetail /> },
-  // { path: '/cen/orders/:id/edit', component: <EditOrder /> },
   { path: '/cen/orders/:id/serial-number', component: <OrderSerial /> },
   { path: '/cen/partners', component: <Partner /> },
   { path: '/cen/partners/add-partner', component: <AddPartner /> },

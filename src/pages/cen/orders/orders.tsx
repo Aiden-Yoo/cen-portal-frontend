@@ -487,7 +487,7 @@ export const Order = () => {
     {
       title: '상태',
       dataIndex: 'status',
-      width: '1%',
+      width: '5%',
       editable: true,
       align: 'center',
       render: (status: OrderStatus) => {
@@ -523,7 +523,6 @@ export const Order = () => {
       title: 'Operation',
       dataIndex: 'operation',
       align: 'center',
-      width: '1%',
       render: (_: string, record: any) => {
         const editable = isEditing(record);
         return (

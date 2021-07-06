@@ -20,6 +20,7 @@ export interface allUsersQuery_allUsers_users {
   name: string;
   verified: boolean;
   isLocked: boolean;
+  orderAuth: boolean;
 }
 
 export interface allUsersQuery_allUsers {

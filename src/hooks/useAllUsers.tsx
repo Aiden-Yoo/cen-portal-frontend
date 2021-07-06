@@ -21,6 +21,7 @@ const ALL_USERS_QUERY = gql`
         name
         verified
         isLocked
+        orderAuth
       }
     }
   }

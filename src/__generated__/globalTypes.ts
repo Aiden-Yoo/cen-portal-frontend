@@ -403,6 +403,7 @@ export interface EditProfileInput {
 export interface EditUserInput {
   role?: UserRole | null;
   isLocked?: boolean | null;
+  orderAuth?: boolean | null;
   userId: number;
 }
 
@@ -560,6 +561,7 @@ export interface UserInputType {
   bio?: string | null;
   verified: boolean;
   isLocked: boolean;
+  orderAuth: boolean;
   orders: OrderInputType[];
 }
 
