@@ -11,7 +11,7 @@ import {
   SnippetsOutlined,
 } from '@ant-design/icons';
 import logo from '../images/CoreEdge_logo.png';
-import background from '../images/background2.png';
+import background from '../images/background.jpg';
 import {
   createAccountMutation,
   createAccountMutationVariables,

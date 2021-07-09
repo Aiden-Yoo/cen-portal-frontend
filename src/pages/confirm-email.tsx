@@ -3,7 +3,7 @@ import { notification } from 'antd';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import logo from '../images/CoreEdge_logo.png';
-import background from '../images/background2.png';
+import background from '../images/background.jpg';
 import styled from 'styled-components';
 import {
   verifyEmail,

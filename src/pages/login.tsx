@@ -8,7 +8,7 @@ import { Form, Input, Button, Spin, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { LOCALSTORAGE_TOKEN } from '../constants';
 import logo from '../images/CoreEdge_logo.png';
-import background from '../images/background2.png';
+import background from '../images/background.jpg';
 import {
   loginMutation,
   loginMutationVariables,
