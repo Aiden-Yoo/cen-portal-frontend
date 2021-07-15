@@ -118,7 +118,7 @@ interface IBundle {
 
 export const AddOrder: React.FC = () => {
   const { data: meData } = useMe();
-  const { data: bundleData } = useAllBundles();
+  const { data: bundleData } = useAllBundles(1, 1000);
   const { data: partnerData } = useAllPartners();
   const history = useHistory();
   const [form] = Form.useForm();

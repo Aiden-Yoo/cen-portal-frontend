@@ -111,7 +111,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
           style={{ margin: 0 }}
           rules={[
             {
-              required: true,
+              required: dataIndex === 'address' ? true : false,
               message: `Please Input ${title}!`,
             },
           ]}
