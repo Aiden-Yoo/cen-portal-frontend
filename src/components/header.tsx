@@ -5,12 +5,17 @@ import { Layout, Menu } from 'antd';
 import { UserRole } from '../__generated__/globalTypes';
 import { useMe } from '../hooks/useMe';
 import { LOCALSTORAGE_TOKEN } from '../constants';
+import { useEffect } from 'react';
 
 const { SubMenu } = Menu;
 
 export const Header: React.FC = () => {
-  const { data } = useMe();
+  const { data, refetch } = useMe();
   const history = useHistory();
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   return (
     <>

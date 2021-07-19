@@ -1,2 +1,2 @@
 export const LOCALSTORAGE_TOKEN = 'cen-token';
-export const WAS_IP = '192.168.45.21';
+export const WAS_IP = '1.215.225.34';

@@ -82,6 +82,7 @@ const LOGIN_MUTATION = gql`
 export const Login: React.FC = () => {
   const [email, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [form] = Form.useForm();
 
   const onCompleted = (data: loginMutation) => {
     const {
@@ -126,6 +127,7 @@ export const Login: React.FC = () => {
           },
         },
       });
+      form.resetFields();
       setUsername('');
       setPassword('');
     }
@@ -154,7 +156,7 @@ export const Login: React.FC = () => {
       <Container>
         <Column>
           <FormBox>
-            <Form onFinish={onFinish}>
+            <Form form={form} onFinish={onFinish}>
               <Form.Item
                 name="email"
                 rules={[
