@@ -198,6 +198,8 @@ export const Order = () => {
   const [take, setTake] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [status, setStatus] = useState<OrderStatus | null>(null);
+  const [classification, setClassification] =
+    useState<OrderClassification | null>(null);
 
   const onGetCompleted = (data: getOrdersQuery) => {
     const {
@@ -266,6 +268,7 @@ export const Order = () => {
         page,
         take,
         status,
+        classification,
       },
     },
     onCompleted: onGetCompleted,
@@ -399,6 +402,13 @@ export const Order = () => {
       target: { value },
     } = event;
     setStatus(value);
+  };
+
+  const handleClassChange = (event: RadioChangeEvent) => {
+    const {
+      target: { value },
+    } = event;
+    setClassification(value);
   };
 
   const columns: EditableCellProps[] = [
@@ -623,7 +633,20 @@ export const Order = () => {
         <Radio.Group
           defaultValue={null}
           size="small"
+          onChange={handleClassChange}
+          style={{ paddingLeft: '8px' }}
+        >
+          <Radio.Button value={null}>All</Radio.Button>
+          <Radio.Button value={OrderClassification.Demo}>데모</Radio.Button>
+          <Radio.Button value={OrderClassification.DoA}>DoA</Radio.Button>
+          <Radio.Button value={OrderClassification.RMA}>RMA</Radio.Button>
+          <Radio.Button value={OrderClassification.Sale}>판매</Radio.Button>
+        </Radio.Group>
+        <Radio.Group
+          defaultValue={null}
+          size="small"
           onChange={handleStatusChange}
+          style={{ paddingLeft: '8px' }}
         >
           <Radio.Button value={null}>All</Radio.Button>
           {/* <Radio.Button value={OrderStatus.Created}>출고요청</Radio.Button>

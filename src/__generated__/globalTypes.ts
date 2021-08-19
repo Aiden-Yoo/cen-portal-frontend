@@ -67,10 +67,10 @@ export enum OrderStatus {
   Canceled = 'Canceled',
   Completed = 'Completed',
   Created = 'Created',
+  Notcompleted = 'Notcompleted',
   Partial = 'Partial',
   Pending = 'Pending',
   Preparing = 'Preparing',
-  Notcompleted = 'Notcompleted',
 }
 
 export enum UserRole {
@@ -459,6 +459,7 @@ export interface GetOrdersInput {
   page?: number | null;
   take?: number | null;
   status?: OrderStatus | null;
+  classification?: OrderClassification | null;
 }
 
 export interface GetWorkaroundInput {
