@@ -292,7 +292,7 @@ export const Order = () => {
       for (let i = 0; i < orders?.length; i++) {
         originData.push({
           key: `${orders[i].id}`,
-          no: 1 + i,
+          no: getTotal - (page - 1) * take - i,
           createAt: new Date(orders[i].createAt).toLocaleDateString(),
           projectName:
             meData?.me.role === UserRole.Partner ? (
@@ -407,12 +407,11 @@ export const Order = () => {
       dataIndex: 'no',
       width: '1%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      defaultSortOrder: 'descend',
-      sorter: {
-        compare: (a: { no: number }, b: { no: number }) => a.no - b.no,
-        multiple: 1,
-      },
+      // sortDirections: ['ascend', 'descend'],
+      // sorter: {
+      //   compare: (a: { no: number }, b: { no: number }) => a.no - b.no,
+      //   multiple: 1,
+      // },
     },
     {
       title: '작성일',
@@ -461,12 +460,12 @@ export const Order = () => {
       dataIndex: 'deliveryType',
       width: '10%',
       align: 'center',
-      sortDirections: ['ascend', 'descend', 'ascend'],
-      sorter: {
-        compare: (a: { deliveryType: string }, b: { deliveryType: string }) =>
-          a.deliveryType.localeCompare(b.deliveryType),
-        multiple: 2,
-      },
+      // sortDirections: ['ascend', 'descend'],
+      // sorter: {
+      //   compare: (a: { deliveryType: string }, b: { deliveryType: string }) =>
+      //     a.deliveryType.localeCompare(b.deliveryType),
+      //   multiple: 2,
+      // },
       render: (deliveryType: DeliveryType) => {
         let color = '';
         let text = '';
@@ -554,7 +553,10 @@ export const Order = () => {
               <Typography.Link
                 onClick={() => edit(record)}
                 style={{ marginRight: 8 }}
-                disabled={meData?.me.role !== UserRole.CENSE}
+                disabled={
+                  meData?.me.role !== UserRole.CENSE &&
+                  meData?.me.role !== UserRole.CEN
+                }
               >
                 Edit
               </Typography.Link>
@@ -624,11 +626,12 @@ export const Order = () => {
           onChange={handleStatusChange}
         >
           <Radio.Button value={null}>All</Radio.Button>
-          <Radio.Button value={OrderStatus.Created}>출고요청</Radio.Button>
+          {/* <Radio.Button value={OrderStatus.Created}>출고요청</Radio.Button>
           <Radio.Button value={OrderStatus.Canceled}>출고취소</Radio.Button>
           <Radio.Button value={OrderStatus.Pending}>보류</Radio.Button>
           <Radio.Button value={OrderStatus.Preparing}>준비중</Radio.Button>
-          <Radio.Button value={OrderStatus.Partial}>부분출고</Radio.Button>
+          <Radio.Button value={OrderStatus.Partial}>부분출고</Radio.Button> */}
+          <Radio.Button value={OrderStatus.Notcompleted}>미완료</Radio.Button>
           <Radio.Button value={OrderStatus.Completed}>출고완료</Radio.Button>
         </Radio.Group>
         <SButton
