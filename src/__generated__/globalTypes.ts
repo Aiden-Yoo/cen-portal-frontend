@@ -8,77 +8,77 @@
 //==============================================================
 
 export enum DeliveryMethod {
-  Cargo = 'Cargo',
-  Directly = 'Directly',
-  Parcel = 'Parcel',
-  Quick = 'Quick',
+  Cargo = "Cargo",
+  Directly = "Directly",
+  Parcel = "Parcel",
+  Quick = "Quick",
 }
 
 export enum DeliveryType {
-  Partial = 'Partial',
-  Total = 'Total',
+  Partial = "Partial",
+  Total = "Total",
 }
 
 export enum KindDocument {
-  Brochure = 'Brochure',
-  Certificate = 'Certificate',
-  Datasheet = 'Datasheet',
-  ETC = 'ETC',
-  Proposal = 'Proposal',
-  TestReport = 'TestReport',
+  Brochure = "Brochure",
+  Certificate = "Certificate",
+  Datasheet = "Datasheet",
+  ETC = "ETC",
+  Proposal = "Proposal",
+  TestReport = "TestReport",
 }
 
 export enum KindFirmware {
-  C2000 = 'C2000',
-  C3000 = 'C3000',
-  C3100 = 'C3100',
-  C3300 = 'C3300',
-  C5000 = 'C5000',
-  C7000 = 'C7000',
-  C9000 = 'C9000',
-  ETC = 'ETC',
+  C2000 = "C2000",
+  C3000 = "C3000",
+  C3100 = "C3100",
+  C3300 = "C3300",
+  C5000 = "C5000",
+  C7000 = "C7000",
+  C9000 = "C9000",
+  ETC = "ETC",
 }
 
 export enum KindRole {
-  Case = 'Case',
-  ETC = 'ETC',
-  Question = 'Question',
+  Case = "Case",
+  ETC = "ETC",
+  Question = "Question",
 }
 
 export enum KindWorkaround {
-  C2000 = 'C2000',
-  C3000 = 'C3000',
-  C3100 = 'C3100',
-  C3300 = 'C3300',
-  C5000 = 'C5000',
-  C7000 = 'C7000',
-  C9000 = 'C9000',
-  ETC = 'ETC',
+  C2000 = "C2000",
+  C3000 = "C3000",
+  C3100 = "C3100",
+  C3300 = "C3300",
+  C5000 = "C5000",
+  C7000 = "C7000",
+  C9000 = "C9000",
+  ETC = "ETC",
 }
 
 export enum OrderClassification {
-  Demo = 'Demo',
-  DoA = 'DoA',
-  RMA = 'RMA',
-  Sale = 'Sale',
+  Demo = "Demo",
+  DoA = "DoA",
+  RMA = "RMA",
+  Sale = "Sale",
 }
 
 export enum OrderStatus {
-  Canceled = 'Canceled',
-  Completed = 'Completed',
-  Created = 'Created',
-  Notcompleted = 'Notcompleted',
-  Partial = 'Partial',
-  Pending = 'Pending',
-  Preparing = 'Preparing',
+  Canceled = "Canceled",
+  Completed = "Completed",
+  Created = "Created",
+  Notcompleted = "Notcompleted",
+  Partial = "Partial",
+  Pending = "Pending",
+  Preparing = "Preparing",
 }
 
 export enum UserRole {
-  CEN = 'CEN',
-  CENSE = 'CENSE',
-  Client = 'Client',
-  Distributor = 'Distributor',
-  Partner = 'Partner',
+  CEN = "CEN",
+  CENSE = "CENSE",
+  Client = "Client",
+  Distributor = "Distributor",
+  Partner = "Partner",
 }
 
 export interface AllBundlesInput {

@@ -45,13 +45,13 @@ const errorLink = onError(
         );
         switch (message) {
           case FORBIDDEN_RESOURCE:
-            localStorage.removeItem(LOCALSTORAGE_TOKEN);
             notification.error({
               message: 'Error',
               description: `[세션 만료] 다시 로그인 해주세요.`,
               placement: 'topRight',
               duration: 2,
             });
+            localStorage.removeItem(LOCALSTORAGE_TOKEN);
             setTimeout(() => {
               window.location.replace('/');
             }, 2000);
@@ -67,7 +67,19 @@ const errorLink = onError(
         }
       });
     }
-    if (networkError) console.log(`[Network error]: ${networkError}`);
+    if (networkError) {
+      console.log(`[Network error]: ${networkError}`);
+      notification.error({
+        message: 'Error',
+        description: `[에러 발생] 다시 로그인 해주세요.`,
+        placement: 'topRight',
+        duration: 2,
+      });
+      localStorage.removeItem(LOCALSTORAGE_TOKEN);
+      setTimeout(() => {
+        window.location.replace('/');
+      }, 2000);
+    }
   },
 );
 
