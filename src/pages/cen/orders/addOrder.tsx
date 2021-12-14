@@ -136,6 +136,7 @@ export const AddOrder: React.FC = () => {
   const [deliveryDate, setDeliveryDate] = useState<string>();
   const [demoReturnDate, setDemoReturnDate] = useState<string>();
   const [orderSheet, setOrderSheet] = useState<boolean>(false);
+  const [warranty, setWarranty] = useState<string>();
   const parentList: string[] = [];
 
   useEffect(() => {
@@ -215,28 +216,31 @@ export const AddOrder: React.FC = () => {
   const onFinish = (values: any) => {
     let fail = '';
     // console.log('Received values of form:', values);
-    if (!values.projectName) {
+    if (!values.projectName || values.projectName === '') {
       fail += `${fail !== '' ? ', ' : ''}프로젝트명`;
     }
-    if (!values.classification) {
+    if (!values.classification || values.classification === '') {
       fail += `${fail !== '' ? ', ' : ''}구분`;
     }
-    if (!values.receiver) {
+    if (!values.receiver || values.receiver === '') {
       fail += `${fail !== '' ? ', ' : ''}거래처`;
     }
-    if (!values.contact) {
+    if (!values.contact || values.contact === '') {
       fail += `${fail !== '' ? ', ' : ''}연락처`;
     }
-    if (!values.address) {
+    if (!values.address || values.address === '') {
       fail += `${fail !== '' ? ', ' : ''}납품장소`;
     }
-    if (!values.deliveryType) {
+    if (!values.warranty || values.warranty === '') {
+      fail += `${fail !== '' ? ', ' : ''}무상수리 기간`;
+    }
+    if (!values.deliveryType || values.deliveryType === '') {
       fail += `${fail !== '' ? ', ' : ''}출고형태`;
     }
-    if (!values.deliveryMethod) {
+    if (!values.deliveryMethod || values.deliveryMethod === '') {
       fail += `${fail !== '' ? ', ' : ''}출고방법`;
     }
-    if (!values.deliveryMethod) {
+    if (!values.deliveryMethod || values.deliveryMethod === '') {
       fail += `${fail !== '' ? ', ' : ''}배송방법`;
     }
     if (fail !== '') {
@@ -268,6 +272,7 @@ export const AddOrder: React.FC = () => {
               ? values.salesPerson
               : meData?.me.name,
             status: OrderStatus.Created,
+            warranty: values.warranty,
           },
         },
       });
@@ -320,6 +325,10 @@ export const AddOrder: React.FC = () => {
   const addReceiver = () => {
     setRecvItem([...recvItem, newReceiver]);
     setNewReceiver('');
+  };
+
+  const onWarrantyChange = (event: any) => {
+    setWarranty(event.target.value);
   };
 
   const onTelChange = (event: any) => {
@@ -645,7 +654,7 @@ export const AddOrder: React.FC = () => {
                 </Select>
               </Form.Item>
             </Descriptions.Item>
-            <Descriptions.Item label="납품장소" span={3}>
+            <Descriptions.Item label="납품장소" span={2}>
               <Form.Item name="address">
                 <Select
                   placeholder="납품장소 입력"
@@ -694,6 +703,15 @@ export const AddOrder: React.FC = () => {
                     </Option>
                   ))}
                 </Select>
+              </Form.Item>
+            </Descriptions.Item>
+            <Descriptions.Item label="무상수리 기간" span={1}>
+              <Form.Item name="warranty">
+                <Input
+                  style={{ flex: 'auto' }}
+                  value={warranty}
+                  onChange={onWarrantyChange}
+                />
               </Form.Item>
             </Descriptions.Item>
             <Descriptions.Item label="요청사항" span={3}>

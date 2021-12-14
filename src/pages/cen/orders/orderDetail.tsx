@@ -68,6 +68,7 @@ const GET_ORDER_QUERY = gql`
         deliveryType
         deliveryMethod
         remark
+        warranty
         items {
           bundle {
             name
@@ -118,6 +119,7 @@ interface IOrder {
   remark: string | null;
   items: IOrderItem[];
   status: OrderStatus;
+  warranty?: string | null;
 }
 
 interface IOrderItemData {
@@ -280,7 +282,9 @@ export const OrderDetail: React.FC = () => {
                 : `${order?.classification}`}
             </Descriptions.Item>
             <Descriptions.Item label="Demo 회수일자">
-              {new Date(`${order?.demoReturnDate}`).toLocaleDateString()}
+              {order?.demoReturnDate
+                ? new Date(`${order?.demoReturnDate}`).toLocaleDateString()
+                : '-'}
             </Descriptions.Item>
             <Descriptions.Item label="발주서 접수">
               {order?.orderSheet === true ? 'O' : 'X'}
@@ -314,8 +318,11 @@ export const OrderDetail: React.FC = () => {
             <Descriptions.Item label="연락처">
               {order?.contact}
             </Descriptions.Item>
-            <Descriptions.Item label="납품장소" span={3}>
+            <Descriptions.Item label="납품장소" span={2}>
               {order?.address}
+            </Descriptions.Item>
+            <Descriptions.Item label="무상수리 기간" span={1}>
+              {order?.warranty ? order?.warranty : '-'}
             </Descriptions.Item>
             <Descriptions.Item label="요청사항" span={3}>
               {order?.remark}

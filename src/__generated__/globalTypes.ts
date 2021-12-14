@@ -229,6 +229,7 @@ export interface CreateOrderInput {
   deliveryMethod: DeliveryMethod;
   remark?: string | null;
   status: OrderStatus;
+  warranty?: string | null;
   partnerId: number;
   items: CreateOrderItemInput[];
 }
@@ -523,6 +524,7 @@ export interface OrderInputType {
   itemInfos?: ItemInfoInputType[] | null;
   items: OrderItemInputType[];
   status: OrderStatus;
+  warranty?: string | null;
 }
 
 export interface OrderItemInputType {

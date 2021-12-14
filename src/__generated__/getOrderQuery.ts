@@ -50,6 +50,7 @@ export interface getOrderQuery_getOrder_order {
   deliveryType: DeliveryType;
   deliveryMethod: DeliveryMethod;
   remark: string | null;
+  warranty: string | null;
   items: getOrderQuery_getOrder_order_items[];
   status: OrderStatus;
 }
