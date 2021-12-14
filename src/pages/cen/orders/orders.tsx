@@ -195,11 +195,14 @@ export const Order = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [data, setData] = useState<IOrder[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [take, setTake] = useState<number>(10);
+  const [take, setTake] = useState<number>(20);
   const [total, setTotal] = useState<number>(0);
   const [status, setStatus] = useState<OrderStatus | null>(null);
   const [classification, setClassification] =
     useState<OrderClassification | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+
+  const { Search } = Input;
 
   const onGetCompleted = (data: getOrdersQuery) => {
     const {
@@ -269,6 +272,7 @@ export const Order = () => {
         take,
         status,
         classification,
+        searchTerm,
       },
     },
     onCompleted: onGetCompleted,
@@ -314,6 +318,7 @@ export const Order = () => {
           }`,
           salesPerson: orders[i].salesPerson,
           deliveryDate: new Date(orders[i].deliveryDate).toLocaleDateString(),
+          partner: orders[i].partner?.name as any,
           deliveryMethod: orders[i].deliveryMethod,
           deliveryType: orders[i].deliveryType,
           status: orders[i].status,
@@ -411,6 +416,10 @@ export const Order = () => {
     setClassification(value);
   };
 
+  const onSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
   const columns: EditableCellProps[] = [
     {
       title: 'No',
@@ -451,6 +460,12 @@ export const Order = () => {
       title: '납품일',
       dataIndex: 'deliveryDate',
       width: '10%',
+      align: 'center',
+    },
+    {
+      title: '파트너',
+      dataIndex: 'partner',
+      width: '15%',
       align: 'center',
     },
     {
@@ -630,6 +645,14 @@ export const Order = () => {
         {' 출고요청서'}
       </TitleBar>
       <MenuBar>
+        <Search
+          placeholder="input search text"
+          onSearch={onSearch}
+          style={{ width: 250 }}
+          size="small"
+          allowClear
+          enterButton
+        />
         <Radio.Group
           defaultValue={null}
           size="small"

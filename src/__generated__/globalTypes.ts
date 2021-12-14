@@ -460,6 +460,7 @@ export interface GetOrdersInput {
   take?: number | null;
   status?: OrderStatus | null;
   classification?: OrderClassification | null;
+  searchTerm?: string | null;
 }
 
 export interface GetWorkaroundInput {
