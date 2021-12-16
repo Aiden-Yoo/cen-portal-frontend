@@ -378,7 +378,7 @@ export const Order = () => {
   };
 
   const handleAdd = () => {
-    console.log('handleAdd');
+    // console.log('handleAdd');
   };
 
   const handleDelete = () => {
@@ -646,9 +646,9 @@ export const Order = () => {
       </TitleBar>
       <MenuBar>
         <Search
-          placeholder="input search text"
+          placeholder="검색(프로젝트, 담당영업, 납품처)"
           onSearch={onSearch}
-          style={{ width: 250 }}
+          style={{ width: 300 }}
           size="small"
           allowClear
           enterButton
@@ -724,6 +724,7 @@ export const Order = () => {
               `${range[0]}-${range[1]} of ${total} items`,
             onChange: (page, take) => handlePageChange(page, take as number),
             showSizeChanger: true,
+            pageSize: 20,
           }}
           loading={loading}
           size="small"

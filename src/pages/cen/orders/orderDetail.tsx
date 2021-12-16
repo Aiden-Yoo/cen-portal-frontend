@@ -274,19 +274,19 @@ export const OrderDetail: React.FC = () => {
             <Descriptions.Item label="상태">
               <Badge color={orderColor} text={orderText} />
             </Descriptions.Item>
-            <Descriptions.Item label="구분">
+            <Descriptions.Item label="구분" span={2}>
               {order?.classification === OrderClassification.Sale
                 ? '판매'
                 : order?.classification === OrderClassification.Demo
                 ? '데모'
                 : `${order?.classification}`}
             </Descriptions.Item>
-            <Descriptions.Item label="Demo 회수일자">
+            {/* <Descriptions.Item label="Demo 회수일자">
               {order?.demoReturnDate
                 ? new Date(`${order?.demoReturnDate}`).toLocaleDateString()
                 : '-'}
-            </Descriptions.Item>
-            <Descriptions.Item label="발주서 접수">
+            </Descriptions.Item> */}
+            <Descriptions.Item label="발주서 접수" span={1}>
               {order?.orderSheet === true ? 'O' : 'X'}
             </Descriptions.Item>
             <Descriptions.Item label="거래처">
@@ -321,7 +321,7 @@ export const OrderDetail: React.FC = () => {
             <Descriptions.Item label="납품장소" span={2}>
               {order?.address}
             </Descriptions.Item>
-            <Descriptions.Item label="무상수리 기간" span={1}>
+            <Descriptions.Item label="무상 유지보수 기간" span={1}>
               {order?.warranty ? order?.warranty : '-'}
             </Descriptions.Item>
             <Descriptions.Item label="요청사항" span={3}>

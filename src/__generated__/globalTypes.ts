@@ -19,6 +19,16 @@ export enum DeliveryType {
   Total = "Total",
 }
 
+export enum DemoStatus {
+  Completed = "Completed",
+  Etc = "Etc",
+  Loss = "Loss",
+  Notcompleted = "Notcompleted",
+  Release = "Release",
+  Return = "Return",
+  Sold = "Sold",
+}
+
 export enum KindDocument {
   Brochure = "Brochure",
   Certificate = "Certificate",
@@ -71,6 +81,12 @@ export enum OrderStatus {
   Partial = "Partial",
   Pending = "Pending",
   Preparing = "Preparing",
+}
+
+export enum Origin {
+  Demo = "Demo",
+  LAB = "LAB",
+  New = "New",
 }
 
 export enum UserRole {
@@ -178,6 +194,22 @@ export interface CreateContactInput {
   partnerId: number;
 }
 
+export interface CreateDemoInput {
+  status?: DemoStatus | null;
+  deliverDate?: any | null;
+  returnDate?: any | null;
+  projectName?: string | null;
+  model?: string | null;
+  serialNumber?: string | null;
+  salesPerson?: string | null;
+  applier?: string | null;
+  receiver?: string | null;
+  partner?: string | null;
+  partnerPerson?: string | null;
+  origin?: Origin | null;
+  description?: string | null;
+}
+
 export interface CreateDocumentInput {
   locked?: boolean | null;
   kind: KindDocument;
@@ -276,6 +308,10 @@ export interface DeleteContactInput {
   contactId: number;
 }
 
+export interface DeleteDemoInput {
+  id: number;
+}
+
 export interface DeleteDocumentInput {
   documentId: number;
 }
@@ -341,6 +377,23 @@ export interface EditContactInput {
   jobTitle?: string | null;
   tel?: string | null;
   contactId: number;
+}
+
+export interface EditDemoInput {
+  id: number;
+  status?: DemoStatus | null;
+  deliverDate?: any | null;
+  returnDate?: any | null;
+  projectName?: string | null;
+  model?: string | null;
+  serialNumber?: string | null;
+  salesPerson?: string | null;
+  applier?: string | null;
+  receiver?: string | null;
+  partner?: string | null;
+  partnerPerson?: string | null;
+  origin?: Origin | null;
+  description?: string | null;
 }
 
 export interface EditDocumentInput {
@@ -432,6 +485,13 @@ export interface FirmwaresInputType {
   content: string;
   files?: FirmwareFilesInputType[] | null;
   deleteAt?: any | null;
+}
+
+export interface GetDemosInput {
+  page?: number | null;
+  take?: number | null;
+  status?: DemoStatus | null;
+  searchTerm?: string | null;
 }
 
 export interface GetDocumentInput {

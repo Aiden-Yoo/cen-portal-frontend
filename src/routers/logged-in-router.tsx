@@ -9,6 +9,7 @@ import {
   UsergroupAddOutlined,
   DesktopOutlined,
   ToolOutlined,
+  SnippetsOutlined,
 } from '@ant-design/icons';
 import { UserRole } from '../__generated__/globalTypes';
 import logo from '../images/CoreEdge_logo.png';
@@ -43,6 +44,7 @@ import { Document } from '../pages/partner/documents/documents';
 import { AddDocument } from '../pages/partner/documents/addDocument';
 import { DocumentDetail } from '../pages/partner/documents/documentDetail';
 import { User } from '../pages/cen/users/users';
+import { Demo } from '../pages/cen/demo/demos';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -85,6 +87,8 @@ const cenRoutes = [
   { path: '/cen/devices/bundle/:id', component: <BundleDetail /> },
   { path: '/cen/devices/part/:id', component: <PartDetail /> },
   { path: '/cen/users', component: <User /> },
+  { path: '/cen/demo', component: <Demo /> },
+  // { path: '/cen/rma-doa', component:  },
 ];
 
 const commonRoutes = [
@@ -118,7 +122,7 @@ const siderRoutes = [
         defaultSelectedKeys={['1-1']}
         defaultOpenKeys={['1']}
       >
-        <SubMenu key="1" icon={<InboxOutlined />} title="출고요청">
+        <SubMenu key="1" icon={<SnippetsOutlined />} title="출고요청">
           <Menu.Item key="1-1">
             <Link to="/cen/orders">출고요청서</Link>
           </Menu.Item>
@@ -129,7 +133,15 @@ const siderRoutes = [
             <Link to="/cen/devices">제품</Link>
           </Menu.Item>
         </SubMenu>
-        <Menu.Item key="2" icon={<UsergroupAddOutlined />}>
+        <SubMenu key="2" icon={<InboxOutlined />} title="입출고">
+          <Menu.Item key="2-1">
+            <Link to="/cen/rma-doa">RMA/DOA</Link>
+          </Menu.Item>
+          <Menu.Item key="2-2">
+            <Link to="/cen/demo">Demo</Link>
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Item key="3" icon={<UsergroupAddOutlined />}>
           <Link to="/cen/users">회원관리</Link>
         </Menu.Item>
       </Menu>

@@ -219,9 +219,9 @@ export const AddOrder: React.FC = () => {
     if (!values.projectName || values.projectName === '') {
       fail += `${fail !== '' ? ', ' : ''}프로젝트명`;
     }
-    if (!values.classification || values.classification === '') {
-      fail += `${fail !== '' ? ', ' : ''}구분`;
-    }
+    // if (!values.classification || values.classification === '') {
+    //   fail += `${fail !== '' ? ', ' : ''}구분`;
+    // }
     if (!values.receiver || values.receiver === '') {
       fail += `${fail !== '' ? ', ' : ''}거래처`;
     }
@@ -232,7 +232,7 @@ export const AddOrder: React.FC = () => {
       fail += `${fail !== '' ? ', ' : ''}납품장소`;
     }
     if (!values.warranty || values.warranty === '') {
-      fail += `${fail !== '' ? ', ' : ''}무상수리 기간`;
+      fail += `${fail !== '' ? ', ' : ''}무상 유지보수 기간`;
     }
     if (!values.deliveryType || values.deliveryType === '') {
       fail += `${fail !== '' ? ', ' : ''}출고형태`;
@@ -255,7 +255,7 @@ export const AddOrder: React.FC = () => {
         variables: {
           input: {
             address: values.address,
-            classification: values.classification,
+            classification: OrderClassification.Sale, //values.classification
             contact: values.contact,
             deliveryDate,
             deliveryMethod: values.deliveryMethod,
@@ -403,9 +403,9 @@ export const AddOrder: React.FC = () => {
                 />
               </Form.Item>
             </Descriptions.Item>
-            <Descriptions.Item label="구분">
+            <Descriptions.Item label="구분" span={2}>
               <Form.Item name="classification">
-                <Select>
+                <Select defaultValue={OrderClassification.Sale} disabled>
                   <Option value={OrderClassification.Sale}>판매</Option>
                   <Option value={OrderClassification.Demo}>Demo</Option>
                   <Option value={OrderClassification.RMA}>RMA</Option>
@@ -413,14 +413,14 @@ export const AddOrder: React.FC = () => {
                 </Select>
               </Form.Item>
             </Descriptions.Item>
-            <Descriptions.Item label="Demo 회수일자">
+            {/* <Descriptions.Item label="Demo 회수일자">
               <Form.Item name="demoReturnDate">
                 <Space direction="vertical">
                   <DatePicker onChange={onDemoReturnDateChange} />
                 </Space>
               </Form.Item>
-            </Descriptions.Item>
-            <Descriptions.Item label="발주서 접수">
+            </Descriptions.Item> */}
+            <Descriptions.Item label="발주서 접수" span={1}>
               <Form.Item name="orderSheet">
                 <Checkbox onChange={onOrderSheetChange} checked={orderSheet} />
               </Form.Item>
@@ -705,7 +705,7 @@ export const AddOrder: React.FC = () => {
                 </Select>
               </Form.Item>
             </Descriptions.Item>
-            <Descriptions.Item label="무상수리 기간" span={1}>
+            <Descriptions.Item label="무상 유지보수 기간" span={1}>
               <Form.Item name="warranty">
                 <Input
                   style={{ flex: 'auto' }}
