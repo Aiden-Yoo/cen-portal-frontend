@@ -45,6 +45,7 @@ import { AddDocument } from '../pages/partner/documents/addDocument';
 import { DocumentDetail } from '../pages/partner/documents/documentDetail';
 import { User } from '../pages/cen/users/users';
 import { Demo } from '../pages/cen/demo/demos';
+import { Rma } from '../pages/cen/rma/rmas';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -88,7 +89,7 @@ const cenRoutes = [
   { path: '/cen/devices/part/:id', component: <PartDetail /> },
   { path: '/cen/users', component: <User /> },
   { path: '/cen/demo', component: <Demo /> },
-  // { path: '/cen/rma-doa', component:  },
+  { path: '/cen/rma', component: <Rma /> },
 ];
 
 const commonRoutes = [
@@ -135,7 +136,7 @@ const siderRoutes = [
         </SubMenu>
         <SubMenu key="2" icon={<InboxOutlined />} title="입출고">
           <Menu.Item key="2-1">
-            <Link to="/cen/rma-doa">RMA/DOA</Link>
+            <Link to="/cen/rma">RMA/DoA</Link>
           </Menu.Item>
           <Menu.Item key="2-2">
             <Link to="/cen/demo">Demo</Link>

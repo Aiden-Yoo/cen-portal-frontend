@@ -23,28 +23,24 @@ import {
 import { FormInstance } from 'antd/lib/form';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
+import { Classification, UserRole } from '../../../__generated__/globalTypes';
 import {
-  DemoStatus,
-  Origin,
-  UserRole,
-} from '../../../__generated__/globalTypes';
-import {
-  getDemosQuery,
-  getDemosQueryVariables,
-} from '../../../__generated__/getDemosQuery';
+  getRmasQuery,
+  getRmasQueryVariables,
+} from '../../../__generated__/getRmasQuery';
 import Search from 'antd/lib/input/Search';
 import {
-  deleteDemoMutation,
-  deleteDemoMutationVariables,
-} from '../../../__generated__/deleteDemoMutation';
+  deleteRmaMutation,
+  deleteRmaMutationVariables,
+} from '../../../__generated__/deleteRmaMutation';
 import {
-  editDemoMutation,
-  editDemoMutationVariables,
-} from '../../../__generated__/editDemoMutation';
+  editRmaMutation,
+  editRmaMutationVariables,
+} from '../../../__generated__/editRmaMutation';
 import {
-  createDemoMutation,
-  createDemoMutationVariables,
-} from '../../../__generated__/createDemoMutation';
+  createRmaMutation,
+  createRmaMutationVariables,
+} from '../../../__generated__/createRmaMutation';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -66,22 +62,21 @@ const SButton = styled(Button)`
   margin-left: 8px;
 `;
 
-interface IDemo {
+interface IRma {
   key?: string;
   no?: number;
   id?: number;
-  status: DemoStatus;
-  deliverDate: string;
-  returnDate?: string | null;
-  projectName: string;
+  rmaStatus?: string;
+  classification: Classification;
   model: string;
-  serialNumber: string;
-  salesPerson: string;
-  applier?: string | null;
-  receiver?: string | null;
-  partner: string;
-  partnerPerson?: string | null;
-  origin: Origin;
+  projectName: string;
+  returnDate?: string | null;
+  returnSrc?: string | null;
+  returnSn?: string | null;
+  deliverDate?: string | null;
+  deliverDst?: string | null;
+  deliverSn: string | null;
+  person?: string | null;
   description?: string | null;
 }
 
@@ -90,7 +85,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   dataIndex: string;
   title: string;
   inputType?: 'number' | 'text' | 'select';
-  record?: IDemo;
+  record?: IRma;
   index?: number;
   children?: React.ReactNode;
   width?: string | number;
@@ -117,22 +112,11 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
   const inputNode = (dataIndex: string) => {
     switch (dataIndex) {
-      case 'status':
+      case 'classification':
         return (
-          <Select style={{ width: 100 }}>
-            <Option value={DemoStatus.Release}>출고상태</Option>
-            <Option value={DemoStatus.Return}>반납완료</Option>
-            <Option value={DemoStatus.Sold}>판매전환</Option>
-            <Option value={DemoStatus.Loss}>손실처리</Option>
-            <Option value={DemoStatus.Etc}>기타</Option>
-          </Select>
-        );
-      case 'origin':
-        return (
-          <Select style={{ width: 100 }}>
-            <Option value={Origin.Demo}>데모장비</Option>
-            <Option value={Origin.LAB}>랩장비</Option>
-            <Option value={Origin.New}>새장비</Option>
+          <Select style={{ width: 80 }}>
+            <Option value={Classification.RMA}>RMA</Option>
+            <Option value={Classification.DoA}>DoA</Option>
           </Select>
         );
       default:
@@ -142,13 +126,8 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
   const missCheck = (dataIndex: string) => {
     switch (dataIndex) {
-      case 'status':
-      case 'deliverDate':
       case 'projectName':
       case 'model':
-      case 'serialNumber':
-      case 'salesPerson':
-      case 'partner':
         return true;
       default:
         return false;
@@ -177,93 +156,93 @@ const EditableCell: React.FC<EditableCellProps> = ({
   );
 };
 
-const GET_DEMOS_QUERY = gql`
-  query getDemosQuery($input: GetDemosInput!) {
-    getDemos(input: $input) {
+const GET_RMAS_QUERY = gql`
+  query getRmasQuery($input: GetRmasInput!) {
+    getRmas(input: $input) {
       ok
       error
       totalPages
       totalResults
-      demos {
+      rmas {
         id
         createAt
-        status
-        deliverDate
-        returnDate
-        projectName
+        updateAt
+        classification
         model
-        serialNumber
-        salesPerson
-        applier
-        receiver
-        partner
-        partnerPerson
-        origin
+        projectName
+        returnDate
+        returnSrc
+        returnSn
+        deliverDst
+        deliverDate
+        deliverSn
+        person
         description
+        rmaStatus
       }
     }
   }
 `;
 
-const DELETE_DEMO_MUTATION = gql`
-  mutation deleteDemoMutation($input: DeleteDemoInput!) {
-    deleteDemo(input: $input) {
+const DELETE_RMA_MUTATION = gql`
+  mutation deleteRmaMutation($input: DeleteRmaInput!) {
+    deleteRma(input: $input) {
       ok
       error
     }
   }
 `;
 
-const EDIT_DEMO_MUTATION = gql`
-  mutation editDemoMutation($input: EditDemoInput!) {
-    editDemo(input: $input) {
+const EDIT_RMA_MUTATION = gql`
+  mutation editRmaMutation($input: EditRmaInput!) {
+    editRma(input: $input) {
       ok
       error
     }
   }
 `;
 
-const CREATE_DEMO_MUTATION = gql`
-  mutation createDemoMutation($input: CreateDemoInput!) {
-    createDemo(input: $input) {
+const CREATE_RMA_MUTATION = gql`
+  mutation createRmaMutation($input: CreateRmaInput!) {
+    createRma(input: $input) {
       ok
       error
     }
   }
 `;
 
-export const Demo = () => {
-  const originData: IDemo[] = [];
+export const Rma = () => {
+  const originData: IRma[] = [];
   const [form] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [data, setData] = useState<IDemo[]>([]);
+  const [data, setData] = useState<IRma[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(20);
   const [total, setTotal] = useState<number>(0);
-  const [status, setStatus] = useState<DemoStatus>();
+  const [classification, setClassification] = useState<Classification>();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isNew, setIsNew] = useState<boolean>(false);
   const { data: meData } = useMe();
 
   const {
-    data: demoData,
+    data: rmaData,
     loading,
     refetch: reGetData,
-  } = useQuery<getDemosQuery, getDemosQueryVariables>(GET_DEMOS_QUERY, {
+  } = useQuery<getRmasQuery, getRmasQueryVariables>(GET_RMAS_QUERY, {
     variables: {
       input: {
         page,
         take,
-        status,
+        classification,
         searchTerm,
       },
     },
   });
 
-  const onDeleteCompleted = (data: deleteDemoMutation) => {
+  const onDeleteCompleted = (data: deleteRmaMutation) => {
     const {
-      deleteDemo: { ok, error },
+      deleteRma: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -283,16 +262,16 @@ export const Demo = () => {
     }
   };
 
-  const [deleteDemoMutation, { data: deleteDemoData }] = useMutation<
-    deleteDemoMutation,
-    deleteDemoMutationVariables
-  >(DELETE_DEMO_MUTATION, {
+  const [deleteRmaMutation, { data: deleteRmaData }] = useMutation<
+    deleteRmaMutation,
+    deleteRmaMutationVariables
+  >(DELETE_RMA_MUTATION, {
     onCompleted: onDeleteCompleted,
   });
 
-  const onEditCompleted = (data: editDemoMutation) => {
+  const onEditCompleted = (data: editRmaMutation) => {
     const {
-      editDemo: { ok, error },
+      editRma: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -311,16 +290,16 @@ export const Demo = () => {
     }
   };
 
-  const [editDemoMutation, { data: editDemoData }] = useMutation<
-    editDemoMutation,
-    editDemoMutationVariables
-  >(EDIT_DEMO_MUTATION, {
+  const [editRmaMutation, { data: editRmaData }] = useMutation<
+    editRmaMutation,
+    editRmaMutationVariables
+  >(EDIT_RMA_MUTATION, {
     onCompleted: onEditCompleted,
   });
 
-  const onCreateCompleted = (data: createDemoMutation) => {
+  const onCreateCompleted = (data: createRmaMutation) => {
     const {
-      createDemo: { ok, error },
+      createRma: { ok, error },
     } = data;
     if (ok) {
       notification.success({
@@ -340,35 +319,36 @@ export const Demo = () => {
     }
   };
 
-  const [createDemoMutation, { data: createDemoData }] = useMutation<
-    createDemoMutation,
-    createDemoMutationVariables
-  >(CREATE_DEMO_MUTATION, {
+  const [createRmaMutation, { data: createRmaData }] = useMutation<
+    createRmaMutation,
+    createRmaMutationVariables
+  >(CREATE_RMA_MUTATION, {
     onCompleted: onCreateCompleted,
   });
 
   useEffect(() => {
-    if (demoData) {
-      const demos = demoData.getDemos.demos as IDemo[];
-      const getTotal = demoData.getDemos.totalResults as number;
-      for (let i = 0; i < demos?.length; i++) {
+    if (rmaData) {
+      const rmas = rmaData.getRmas.rmas as IRma[];
+      const getTotal = rmaData.getRmas.totalResults as number;
+      for (let i = 0; i < rmas?.length; i++) {
         originData.push({
-          key: `${demos[i].id}`,
-          status: demos[i].status,
-          deliverDate: new Date(demos[i].deliverDate).toLocaleDateString(),
-          returnDate: demos[i].returnDate
-            ? new Date(`${demos[i].returnDate}`).toLocaleDateString()
+          key: `${rmas[i].id}`,
+          rmaStatus: rmas[i].rmaStatus,
+          classification: rmas[i].classification,
+          model: rmas[i].model,
+          projectName: rmas[i].projectName,
+          returnDate: rmas[i].returnDate
+            ? new Date(`${rmas[i].returnDate}`).toLocaleDateString()
             : null,
-          projectName: demos[i].projectName,
-          model: demos[i].model,
-          serialNumber: demos[i].serialNumber,
-          salesPerson: demos[i].salesPerson,
-          applier: demos[i].applier,
-          receiver: demos[i].receiver,
-          partner: demos[i].partner,
-          partnerPerson: demos[i].partnerPerson,
-          origin: demos[i].origin,
-          description: demos[i].description,
+          returnSrc: rmas[i].returnSrc,
+          returnSn: rmas[i].returnSn,
+          deliverDate: rmas[i].deliverDate
+            ? new Date(`${rmas[i].deliverDate}`).toLocaleDateString()
+            : null,
+          deliverDst: rmas[i].deliverDst,
+          deliverSn: rmas[i].deliverSn,
+          person: rmas[i].person,
+          description: rmas[i].description,
         });
       }
       setTotal(getTotal);
@@ -376,13 +356,13 @@ export const Demo = () => {
     }
     reGetData();
     // if (data !== originData) reGetData();
-  }, [demoData]);
+  }, [rmaData]);
 
   const handleStatusChange = (event: RadioChangeEvent) => {
     const {
       target: { value },
     } = event;
-    setStatus(value);
+    setClassification(value);
   };
 
   const onSearch = (value: string) => {
@@ -394,9 +374,9 @@ export const Demo = () => {
     setTake(take);
   };
 
-  const isEditing = (record: IDemo) => record.key === editingKey;
+  const isEditing = (record: IRma) => record.key === editingKey;
 
-  const handleEdit = (record: Partial<IDemo> & { key: React.Key }) => {
+  const handleEdit = (record: Partial<IRma> & { key: React.Key }) => {
     form.setFieldsValue({
       status: '',
       ...record,
@@ -410,7 +390,7 @@ export const Demo = () => {
 
   const handleSave = async (key: React.Key) => {
     try {
-      const row = (await form.validateFields()) as IDemo;
+      const row = (await form.validateFields()) as IRma;
 
       const newData = [...data];
       const index = newData?.findIndex((item) => key === item.key);
@@ -423,44 +403,40 @@ export const Demo = () => {
         setData(newData);
         setEditingKey('');
         if (!isNew) {
-          editDemoMutation({
+          editRmaMutation({
             variables: {
               input: {
                 id: +key,
-                status: row.status,
-                applier: row.applier,
-                deliverDate: row.deliverDate,
-                description: row.description,
+                classification: row.classification,
                 model: row.model,
-                origin: row.origin,
-                partner: row.partner,
-                partnerPerson: row.partnerPerson,
                 projectName: row.projectName,
-                receiver: row.receiver,
-                returnDate: row.returnDate,
-                salesPerson: row.salesPerson,
-                serialNumber: row.serialNumber,
+                returnDate: '' ? '' : row.returnDate,
+                returnSrc: row.returnSrc,
+                returnSn: row.returnSn,
+                deliverDst: row.deliverDst,
+                deliverDate: '' ? '' : row.deliverDate,
+                deliverSn: row.deliverSn,
+                person: row.person,
+                description: row.description,
               },
             },
           });
         }
         if (isNew) {
-          createDemoMutation({
+          createRmaMutation({
             variables: {
               input: {
-                status: row.status,
-                applier: row.applier,
-                deliverDate: row.deliverDate,
-                description: row.description,
+                classification: row.classification,
                 model: row.model,
-                origin: row.origin,
-                partner: row.partner,
-                partnerPerson: row.partnerPerson,
                 projectName: row.projectName,
-                receiver: row.receiver,
                 returnDate: row.returnDate,
-                salesPerson: row.salesPerson,
-                serialNumber: row.serialNumber,
+                returnSrc: row.returnSrc,
+                returnSn: row.returnSn,
+                deliverDst: row.deliverDst,
+                deliverDate: row.deliverDate,
+                deliverSn: row.deliverSn,
+                person: row.person,
+                description: row.description,
               },
             },
           });
@@ -493,16 +469,12 @@ export const Demo = () => {
         duration: 2,
       });
     } else {
-      const newData: IDemo = {
+      const newData: IRma = {
         key: `0`,
-        deliverDate: new Date().toLocaleDateString(),
+        classification: Classification.RMA,
         model: '',
-        origin: Origin.Demo,
-        partner: '',
         projectName: '',
-        salesPerson: '',
-        serialNumber: '',
-        status: DemoStatus.Release,
+        deliverSn: '',
       };
       setData([newData, ...data]);
       setTotal(total + 1);
@@ -511,7 +483,7 @@ export const Demo = () => {
 
   const handleDelete = () => {
     selectedRowKeys.map((key) => {
-      deleteDemoMutation({
+      deleteRmaMutation({
         variables: { input: { id: +key } },
       });
     });
@@ -519,14 +491,14 @@ export const Demo = () => {
   };
 
   const handleRowDelete = (key: number) => {
-    deleteDemoMutation({
+    deleteRmaMutation({
       variables: { input: { id: +key } },
     });
     reGetData();
   };
 
   const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: IDemo[]) => {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: IRma[]) => {
       setSelectedRowKeys(selectedRowKeys);
       // console.log(
       //   `selectedRowKeys: ${selectedRowKeys}`,
@@ -534,7 +506,7 @@ export const Demo = () => {
       //   selectedRows,
       // );
     },
-    // getCheckboxProps: (record: IDemo) => ({
+    // getCheckboxProps: (record: IRma) => ({
     //   disabled: record.name === 'Disabled User',
     //   name: record.name,
     // }),
@@ -542,64 +514,61 @@ export const Demo = () => {
 
   const columns: EditableCellProps[] = [
     {
-      title: '상태',
-      dataIndex: 'status',
-      width: 120,
+      title: '구분',
+      dataIndex: 'classification',
+      width: 100,
       editable: true,
       align: 'center',
       fixed: 'left',
-      render: (status: DemoStatus) => {
+      render: (classification: Classification) => {
         let color = '';
         let text = '';
-        switch (status) {
-          case DemoStatus.Release:
-            color = 'orange';
-            text = '출고상태';
-            break;
-          case DemoStatus.Return:
+        switch (classification) {
+          case Classification.RMA:
             color = 'geekblue';
-            text = '반납완료';
+            text = 'RMA';
             break;
-          case DemoStatus.Sold:
+          case Classification.DoA:
             color = 'green';
-            text = '판매전환';
-            break;
-          case DemoStatus.Loss:
-            color = 'red';
-            text = '손실처리';
-            break;
-          case DemoStatus.Etc:
-            color = 'volcano';
-            text = '기타';
+            text = 'DoA';
             break;
         }
         return (
-          <Tag color={color} key={status}>
+          <Tag color={color} key={classification}>
             {text}
           </Tag>
         );
       },
     },
     {
-      title: '출고일자',
-      dataIndex: 'deliverDate',
-      width: 120,
-      editable: true,
+      title: '상태',
+      dataIndex: 'rmaStatus',
+      width: 80,
       align: 'center',
-    },
-    {
-      title: '반납일자',
-      dataIndex: 'returnDate',
-      width: 120,
-      editable: true,
-      align: 'center',
-    },
-    {
-      title: '프로젝트명',
-      dataIndex: 'projectName',
-      width: 250,
-      editable: true,
-      align: 'center',
+      fixed: 'left',
+      render: (rmaStatus: string) => {
+        let color = '';
+        let text = '';
+        switch (rmaStatus) {
+          case '완료':
+            color = 'purple';
+            text = '완료';
+            break;
+          case '선출고':
+            color = 'volcano';
+            text = '선출고';
+            break;
+          case '선입고':
+            color = 'blue';
+            text = '선입고';
+            break;
+        }
+        return (
+          <Tag color={color} key={rmaStatus}>
+            {text}
+          </Tag>
+        );
+      },
     },
     {
       title: '모델명',
@@ -609,63 +578,60 @@ export const Demo = () => {
       align: 'center',
     },
     {
-      title: 'SN or 수량',
-      dataIndex: 'serialNumber',
+      title: '프로젝트명',
+      dataIndex: 'projectName',
+      width: 200,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '회수날짜',
+      dataIndex: 'returnDate',
+      width: 120,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '회수지',
+      dataIndex: 'returnSrc',
       width: 150,
       editable: true,
       align: 'center',
     },
     {
-      title: '신청자',
-      dataIndex: 'salesPerson',
-      width: 80,
+      title: '회수SN(수량)',
+      dataIndex: 'returnSn',
+      width: 150,
       editable: true,
       align: 'center',
     },
     {
-      title: '출고자',
-      dataIndex: 'applier',
-      width: 80,
+      title: '출고날짜',
+      dataIndex: 'deliverDate',
+      width: 120,
       editable: true,
       align: 'center',
     },
     {
-      title: '반납자',
-      dataIndex: 'receiver',
-      width: 80,
+      title: '출고지',
+      dataIndex: 'deliverDst',
+      width: 150,
       editable: true,
       align: 'center',
     },
     {
-      title: '파트너사',
-      dataIndex: 'partner',
+      title: '출고SN(수량)',
+      dataIndex: 'deliverSn',
       width: 150,
       editable: true,
       align: 'center',
     },
     {
       title: '담당자/연락처',
-      dataIndex: 'partnerPerson',
+      dataIndex: 'person',
       width: 200,
       editable: true,
       align: 'center',
-    },
-    {
-      title: '장비구분',
-      dataIndex: 'origin',
-      width: 120,
-      editable: true,
-      align: 'center',
-      render: (deliveryMethod: Origin) => {
-        switch (deliveryMethod) {
-          case Origin.Demo:
-            return '데모장비';
-          case Origin.LAB:
-            return '랩장비';
-          case Origin.New:
-            return '새장비';
-        }
-      },
     },
     {
       title: '비고',
@@ -740,9 +706,9 @@ export const Demo = () => {
     }
     return {
       ...col,
-      onCell: (record: IDemo) => ({
+      onCell: (record: IRma) => ({
         record,
-        inputType: col.dataIndex === ('status' || 'origin') ? 'select' : 'text',
+        inputType: col.dataIndex === 'classification' ? 'select' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -753,11 +719,11 @@ export const Demo = () => {
   return (
     <Wrapper>
       <Helmet>
-        <title>Demo | CEN Portal</title>
+        <title>RMA/DoA | CEN Portal</title>
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
-        {' 입출고 - Demo'}
+        {' 입출고 - RMA/DoA'}
       </TitleBar>
       <MenuBar>
         <Search
@@ -775,8 +741,8 @@ export const Demo = () => {
           style={{ paddingLeft: '8px' }}
         >
           <Radio.Button value={null}>All</Radio.Button>
-          <Radio.Button value={DemoStatus.Notcompleted}>미완료</Radio.Button>
-          <Radio.Button value={DemoStatus.Completed}>완료</Radio.Button>
+          <Radio.Button value={Classification.RMA}>RMA</Radio.Button>
+          <Radio.Button value={Classification.DoA}>DoA</Radio.Button>
         </Radio.Group>
         <SButton
           type="primary"
@@ -800,7 +766,7 @@ export const Demo = () => {
         </SButton>
       </MenuBar>
       <Form form={form} component={false}>
-        <Table<IDemo>
+        <Table<IRma>
           components={{
             body: {
               cell: EditableCell,

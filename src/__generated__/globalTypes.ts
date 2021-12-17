@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum Classification {
+  DoA = "DoA",
+  RMA = "RMA",
+}
+
 export enum DeliveryMethod {
   Cargo = "Cargo",
   Directly = "Directly",
@@ -284,6 +289,20 @@ export interface CreatePartnerInput {
   tel?: string | null;
 }
 
+export interface CreateRmaInput {
+  classification?: Classification | null;
+  model?: string | null;
+  projectName?: string | null;
+  returnDate?: any | null;
+  returnSrc?: string | null;
+  returnSn?: string | null;
+  deliverDate?: any | null;
+  deliverDst?: string | null;
+  deliverSn?: string | null;
+  person?: string | null;
+  description?: string | null;
+}
+
 export interface CreateWorkaroundCommentInput {
   comment?: string | null;
   depth?: number | null;
@@ -338,6 +357,10 @@ export interface DeletePartInput {
 
 export interface DeletePartnerInput {
   partnerId: number;
+}
+
+export interface DeleteRmaInput {
+  id: number;
 }
 
 export interface DeleteWorkaroundCommentInput {
@@ -455,6 +478,21 @@ export interface EditProfileInput {
   bio?: string | null;
 }
 
+export interface EditRmaInput {
+  id: number;
+  classification?: Classification | null;
+  model?: string | null;
+  projectName?: string | null;
+  returnDate?: any | null;
+  returnSrc?: string | null;
+  returnSn?: string | null;
+  deliverDate?: any | null;
+  deliverDst?: string | null;
+  deliverSn?: string | null;
+  person?: string | null;
+  description?: string | null;
+}
+
 export interface EditUserInput {
   role?: UserRole | null;
   verified?: boolean | null;
@@ -521,6 +559,13 @@ export interface GetOrdersInput {
   take?: number | null;
   status?: OrderStatus | null;
   classification?: OrderClassification | null;
+  searchTerm?: string | null;
+}
+
+export interface GetRmasInput {
+  page?: number | null;
+  take?: number | null;
+  classification?: Classification | null;
   searchTerm?: string | null;
 }
 
