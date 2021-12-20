@@ -376,7 +376,7 @@ export const Demo = () => {
     }
     reGetData();
     // if (data !== originData) reGetData();
-  }, [demoData]);
+  }, [demoData, createDemoData, editDemoData, deleteDemoData]);
 
   const handleStatusChange = (event: RadioChangeEvent) => {
     const {
@@ -437,7 +437,7 @@ export const Demo = () => {
                 partnerPerson: row.partnerPerson,
                 projectName: row.projectName,
                 receiver: row.receiver,
-                returnDate: row.returnDate,
+                returnDate: row.returnDate === '' ? null : row.returnDate,
                 salesPerson: row.salesPerson,
                 serialNumber: row.serialNumber,
               },

@@ -653,7 +653,7 @@ export const Order = () => {
           allowClear
           enterButton
         />
-        <Radio.Group
+        {/* <Radio.Group
           defaultValue={null}
           size="small"
           onChange={handleClassChange}
@@ -664,7 +664,7 @@ export const Order = () => {
           <Radio.Button value={OrderClassification.DoA}>DoA</Radio.Button>
           <Radio.Button value={OrderClassification.RMA}>RMA</Radio.Button>
           <Radio.Button value={OrderClassification.Sale}>판매</Radio.Button>
-        </Radio.Group>
+        </Radio.Group> */}
         <Radio.Group
           defaultValue={null}
           size="small"

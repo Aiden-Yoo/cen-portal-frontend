@@ -356,7 +356,7 @@ export const Rma = () => {
     }
     reGetData();
     // if (data !== originData) reGetData();
-  }, [rmaData]);
+  }, [rmaData, createRmaData, deleteRmaData, editRmaData]);
 
   const handleStatusChange = (event: RadioChangeEvent) => {
     const {
@@ -410,11 +410,11 @@ export const Rma = () => {
                 classification: row.classification,
                 model: row.model,
                 projectName: row.projectName,
-                returnDate: '' ? '' : row.returnDate,
+                returnDate: row.returnDate === '' ? null : row.returnDate,
                 returnSrc: row.returnSrc,
                 returnSn: row.returnSn,
                 deliverDst: row.deliverDst,
-                deliverDate: '' ? '' : row.deliverDate,
+                deliverDate: row.deliverDate === '' ? null : row.deliverDate,
                 deliverSn: row.deliverSn,
                 person: row.person,
                 description: row.description,
