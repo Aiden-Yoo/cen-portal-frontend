@@ -402,6 +402,21 @@ export const Demo = () => {
   };
 
   const handleCancel = () => {
+    form.setFieldsValue({
+      status: DemoStatus.Release,
+      applier: '',
+      deliverDate: new Date().toLocaleDateString(),
+      description: '',
+      model: '',
+      origin: Origin.Demo,
+      partner: '',
+      partnerPerson: '',
+      projectName: '',
+      receiver: '',
+      returnDate: null,
+      salesPerson: '',
+      serialNumber: '',
+    });
     setEditingKey('');
   };
 
@@ -512,6 +527,7 @@ export const Demo = () => {
         variables: { input: { id: +key } },
       });
     });
+    setIsNew(false);
     reGetData();
   };
 
@@ -519,6 +535,7 @@ export const Demo = () => {
     deleteDemoMutation({
       variables: { input: { id: +key } },
     });
+    setIsNew(false);
     reGetData();
   };
 

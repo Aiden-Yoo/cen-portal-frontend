@@ -23,6 +23,7 @@ export interface getRmasQuery_getRmas_rmas {
   deliverDst: string | null;
   deliverDate: any | null;
   deliverSn: string | null;
+  reenactment: boolean | null;
   person: string | null;
   description: string | null;
   rmaStatus: string;

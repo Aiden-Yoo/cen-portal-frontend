@@ -73,6 +73,7 @@ interface IRma {
   deliverDate?: string | null;
   deliverDst?: string | null;
   deliverSn: string | null;
+  reenactment?: boolean | string | null;
   person?: string | null;
   description?: string | null;
 }
@@ -81,7 +82,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing?: boolean;
   dataIndex: string;
   title: string;
-  inputType?: 'number' | 'text' | 'select';
+  inputType?: 'number' | 'text' | 'select' | 'checkbox';
   record?: IRma;
   index?: number;
   children?: React.ReactNode;
@@ -114,6 +115,13 @@ const EditableCell: React.FC<EditableCellProps> = ({
           <Select style={{ width: 80 }}>
             <Option value={Classification.RMA}>RMA</Option>
             <Option value={Classification.DoA}>DoA</Option>
+          </Select>
+        );
+      case 'reenactment':
+        return (
+          <Select style={{ width: 60 }}>
+            <Option value={'O'}>O</Option>
+            <Option value={'x'}>X</Option>
           </Select>
         );
       default:
@@ -173,6 +181,7 @@ const GET_RMAS_QUERY = gql`
         deliverDst
         deliverDate
         deliverSn
+        reenactment
         person
         description
         rmaStatus
@@ -221,6 +230,71 @@ export const Rma = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isNew, setIsNew] = useState<boolean>(false);
   const { data: meData } = useMe();
+
+  // const EditableCell: React.FC<EditableCellProps> = ({
+  //   editing,
+  //   dataIndex,
+  //   title,
+  //   inputType,
+  //   record,
+  //   index,
+  //   children,
+  //   ...restProps
+  // }) => {
+  //   const { Option } = Select;
+
+  //   const inputNode = (dataIndex: string) => {
+  //     switch (dataIndex) {
+  //       case 'classification':
+  //         return (
+  //           <Select style={{ width: 80 }}>
+  //             <Option value={Classification.RMA}>RMA</Option>
+  //             <Option value={Classification.DoA}>DoA</Option>
+  //           </Select>
+  //         );
+  //       case 'reenactment':
+  //         return (
+  //           <Select style={{ width: 60 }}>
+  //             <Option value={'O'}>O</Option>
+  //             <Option value={'X'}>X</Option>
+  //           </Select>
+  //         );
+  //       default:
+  //         return <Input />;
+  //     }
+  //   };
+
+  //   const missCheck = (dataIndex: string) => {
+  //     switch (dataIndex) {
+  //       case 'projectName':
+  //       case 'model':
+  //         return true;
+  //       default:
+  //         return false;
+  //     }
+  //   };
+
+  //   return (
+  //     <td {...restProps}>
+  //       {editing ? (
+  //         <Form.Item
+  //           name={dataIndex}
+  //           style={{ margin: 0 }}
+  //           rules={[
+  //             {
+  //               required: missCheck(dataIndex),
+  //               message: `${title} 작성 필요!`,
+  //             },
+  //           ]}
+  //         >
+  //           {inputNode(dataIndex)}
+  //         </Form.Item>
+  //       ) : (
+  //         children
+  //       )}
+  //     </td>
+  //   );
+  // };
 
   const {
     data: rmaData,
@@ -344,6 +418,7 @@ export const Rma = () => {
             : null,
           deliverDst: rmas[i].deliverDst,
           deliverSn: rmas[i].deliverSn,
+          reenactment: rmas[i].reenactment === true ? 'O' : 'X',
           person: rmas[i].person,
           description: rmas[i].description,
         });
@@ -382,6 +457,20 @@ export const Rma = () => {
   };
 
   const handleCancel = () => {
+    form.setFieldsValue({
+      classification: Classification.RMA,
+      model: '',
+      projectName: '',
+      returnDate: '',
+      returnSrc: '',
+      returnSn: '',
+      deliverDst: '',
+      deliverDate: '',
+      deliverSn: '',
+      reenactment: 'X',
+      person: '',
+      description: '',
+    });
     setEditingKey('');
   };
 
@@ -413,6 +502,7 @@ export const Rma = () => {
                 deliverDst: row.deliverDst,
                 deliverDate: row.deliverDate === '' ? null : row.deliverDate,
                 deliverSn: row.deliverSn,
+                reenactment: row.reenactment === 'O' ? true : false,
                 person: row.person,
                 description: row.description,
               },
@@ -432,6 +522,7 @@ export const Rma = () => {
                 deliverDst: row.deliverDst,
                 deliverDate: row.deliverDate,
                 deliverSn: row.deliverSn,
+                reenactment: row.reenactment === 'O' ? true : false,
                 person: row.person,
                 description: row.description,
               },
@@ -484,6 +575,7 @@ export const Rma = () => {
         variables: { input: { id: +key } },
       });
     });
+    setIsNew(false);
     reGetData();
   };
 
@@ -491,6 +583,7 @@ export const Rma = () => {
     deleteRmaMutation({
       variables: { input: { id: +key } },
     });
+    setIsNew(false);
     reGetData();
   };
 
@@ -620,6 +713,13 @@ export const Rma = () => {
       title: '출고SN(수량)',
       dataIndex: 'deliverSn',
       width: 150,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '재현여부',
+      dataIndex: 'reenactment',
+      width: 80,
       editable: true,
       align: 'center',
     },

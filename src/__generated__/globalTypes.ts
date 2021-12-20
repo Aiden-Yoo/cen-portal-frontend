@@ -299,6 +299,7 @@ export interface CreateRmaInput {
   deliverDate?: any | null;
   deliverDst?: string | null;
   deliverSn?: string | null;
+  reenactment?: boolean | null;
   person?: string | null;
   description?: string | null;
 }
@@ -489,6 +490,7 @@ export interface EditRmaInput {
   deliverDate?: any | null;
   deliverDst?: string | null;
   deliverSn?: string | null;
+  reenactment?: boolean | null;
   person?: string | null;
   description?: string | null;
 }
