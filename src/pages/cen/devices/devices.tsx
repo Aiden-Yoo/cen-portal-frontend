@@ -240,7 +240,7 @@ export const Device = () => {
       setPartsTotal(getTotal);
       setPartsData(originPartData);
     }
-  }, [bundleGetData, partGetData]);
+  }, [bundleGetData, partGetData, deleteBundleData, deletePartData]);
 
   const handleDelete = (key?: number) => {
     if (key && radioValue === 'Bundles') {

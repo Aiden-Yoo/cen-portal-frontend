@@ -133,7 +133,7 @@ export const PartDetail: React.FC = () => {
       setSeries(partInfo.series);
       setDescription(partInfo.description);
     }
-  }, [partData]);
+  }, [partData, editPartData]);
 
   const handleChange = (e: any) => {
     const {

@@ -328,7 +328,7 @@ export const Order = () => {
       setData(originData);
     }
     reGetData();
-  }, [ordersData]);
+  }, [ordersData, deleteOrderData, editOrderData]);
 
   const isEditing = (record: IOrder) => record.key === editingKey;
 

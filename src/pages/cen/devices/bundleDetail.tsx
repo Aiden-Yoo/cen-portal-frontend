@@ -264,7 +264,7 @@ export const BundleDetail: React.FC = () => {
       }
       setData(originData);
     }
-  }, [bundleData]);
+  }, [bundleData, editBundleData]);
 
   const handleChange = (e: any) => {
     const {

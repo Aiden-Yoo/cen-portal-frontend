@@ -79,18 +79,6 @@ export const AddBundle = () => {
     refetch: reGetParts,
   } = useAllParts(1, 1000);
 
-  useEffect(() => {
-    if (partData && !partLoading) {
-      const parts = partData.allParts.parts as IPart[];
-      parts.map((part) => {
-        if (parentList.indexOf(part.series) === -1) {
-          parentList.push(part.series);
-        }
-      });
-      setParts(parts);
-    }
-  }, [partData, parentList]);
-
   const onCompleted = (data: createBundleMutation) => {
     const {
       createBundle: { ok, error },
@@ -147,6 +135,18 @@ export const AddBundle = () => {
   const handleChange = () => {
     form.setFieldsValue({ parts: [] });
   };
+
+  useEffect(() => {
+    if (partData && !partLoading) {
+      const parts = partData.allParts.parts as IPart[];
+      parts.map((part) => {
+        if (parentList.indexOf(part.series) === -1) {
+          parentList.push(part.series);
+        }
+      });
+      setParts(parts);
+    }
+  }, [partData, parentList, createBundleData]);
 
   return (
     <Wrapper>
