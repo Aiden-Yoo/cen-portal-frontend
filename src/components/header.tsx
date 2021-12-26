@@ -40,9 +40,9 @@ export const Header: React.FC = () => {
         placement: 'topRight',
         duration: 2,
       });
-      localStorage.removeItem(LOCALSTORAGE_TOKEN);
-      history.push('/');
-      isLoggedInVar(false);
+      // localStorage.removeItem(LOCALSTORAGE_TOKEN);
+      // history.push('/');
+      // isLoggedInVar(false);
     } else if (error) {
       notification.error({
         message: 'Error',
@@ -62,7 +62,10 @@ export const Header: React.FC = () => {
 
   const onLogout = () => {
     if (!loading) {
-      logoutMutation();
+      // logoutMutation();
+      localStorage.removeItem(LOCALSTORAGE_TOKEN);
+      history.push('/');
+      isLoggedInVar(false);
     }
   };
 

@@ -21,7 +21,7 @@ export const authTokenVar = makeVar(token);
 
 const httpLink = createHttpLink({
   uri: `http://${WAS_IP}:4000/graphql`,
-  credentials: 'include',
+  // credentials: 'include',
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -32,7 +32,7 @@ const authLink = setContext((_, { headers }) => {
       // 'Access-Control-Allow-Credentials': true,
       // 'Access-Control-Allow-Methods': 'GET, POST',
       // 'Access-Control-Allow-Headers': 'Content-Type',
-      // 'x-jwt': authTokenVar() || '',
+      'x-jwt': authTokenVar() || '',
       // Authentication: `Bearer ${token}`,
     },
   };

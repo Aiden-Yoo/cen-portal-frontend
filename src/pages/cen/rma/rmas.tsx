@@ -491,6 +491,21 @@ export const Rma = () => {
   };
 
   const handleAdd = () => {
+    form.setFieldsValue({
+      classification: Classification.RMA,
+      model: '',
+      projectName: '',
+      returnDate: '',
+      returnSrc: '',
+      returnSn: '',
+      deliverDst: '',
+      deliverDate: '',
+      deliverSn: '',
+      reenactment: 'X',
+      person: '',
+      description: '',
+    });
+    setEditingKey('');
     setIsNew(true);
     setEditingKey('0');
     if (isNew) {

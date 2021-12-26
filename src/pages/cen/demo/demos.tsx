@@ -495,6 +495,22 @@ export const Demo = () => {
   };
 
   const handleAdd = () => {
+    form.setFieldsValue({
+      status: DemoStatus.Release,
+      applier: '',
+      deliverDate: new Date().toLocaleDateString(),
+      description: '',
+      model: '',
+      origin: Origin.Demo,
+      partner: '',
+      partnerPerson: '',
+      projectName: '',
+      receiver: '',
+      returnDate: null,
+      salesPerson: '',
+      serialNumber: '',
+    });
+    setEditingKey('');
     setIsNew(true);
     setEditingKey('0');
     if (isNew) {
