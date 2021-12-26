@@ -28,6 +28,10 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
+      // 'Access-Control-Allow-Origin': '*',
+      // 'Access-Control-Allow-Credentials': true,
+      // 'Access-Control-Allow-Methods': 'GET, POST',
+      // 'Access-Control-Allow-Headers': 'Content-Type',
       // 'x-jwt': authTokenVar() || '',
       // Authentication: `Bearer ${token}`,
     },
