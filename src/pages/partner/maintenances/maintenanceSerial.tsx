@@ -14,13 +14,13 @@ import {
   notification,
 } from 'antd';
 import {
-  getOrderItemsQuery,
-  getOrderItemsQueryVariables,
-} from '../../../__generated__/getOrderItemsQuery';
+  getMaintenanceItemsQuery,
+  getMaintenanceItemsQueryVariables,
+} from '../../../__generated__/getMaintenanceItemsQuery';
 import {
-  editItemInfoMutation,
-  editItemInfoMutationVariables,
-} from '../../../__generated__/editItemInfoMutation';
+  editMaintenanceItemInfoMutation,
+  editMaintenanceItemInfoMutationVariables,
+} from '../../../__generated__/editMaintenanceItemInfoMutation';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
 import { UserRole } from '../../../__generated__/globalTypes';
@@ -45,9 +45,9 @@ const SButton = styled(Button)`
   margin-left: 8px;
 `;
 
-const GET_ORDERITEMS_QUERY = gql`
-  query getOrderItemsQuery($input: GetOrderItemsInput!) {
-    getOrderItems(input: $input) {
+const GET_MAINTENANCEITEMS_QUERY = gql`
+  query getMaintenanceItemsQuery($input: GetMaintenanceItemsInput!) {
+    getMaintenanceItems(input: $input) {
       ok
       error
       totalPages
@@ -61,9 +61,11 @@ const GET_ORDERITEMS_QUERY = gql`
   }
 `;
 
-const EDIT_ITEMINFO_MUTATION = gql`
-  mutation editItemInfoMutation($input: EditItemInfoInput!) {
-    editItemInfo(input: $input) {
+const EDIT_MAINTENANCEITEMINFO_MUTATION = gql`
+  mutation editMaintenanceItemInfoMutation(
+    $input: EditMaintenanceItemInfoInput!
+  ) {
+    editMaintenanceItemInfo(input: $input) {
       ok
       error
     }
@@ -108,7 +110,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editable?: boolean;
   align?: 'left' | 'center' | 'right' | 'justify' | 'char' | undefined;
   sortDirections?: string[];
-  defaultSortOrder?: string;
+  defaultSortMaintenance?: string;
   sorter?: unknown;
   render?: unknown;
 }
@@ -130,10 +132,10 @@ type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 ////////////////////////////////////////////////////////////////
 
-export const OrderSerial: React.FC = () => {
+export const MaintenanceSerial: React.FC = () => {
   const { data: meData } = useMe();
   const [form] = Form.useForm();
-  const orderId: any = useParams();
+  const maintenanceId: any = useParams();
   const [data, setData] = useState<IItemInfo[]>([]);
   const originData: IItemInfo[] = [];
   const [page, setPage] = useState<number>(1);
@@ -143,15 +145,15 @@ export const OrderSerial: React.FC = () => {
   const history = useHistory();
 
   const {
-    data: orderItemData,
-    loading: orderItemLoading,
+    data: maintenanceItemData,
+    loading: maintenanceItemLoading,
     refetch,
-  } = useQuery<getOrderItemsQuery, getOrderItemsQueryVariables>(
-    GET_ORDERITEMS_QUERY,
+  } = useQuery<getMaintenanceItemsQuery, getMaintenanceItemsQueryVariables>(
+    GET_MAINTENANCEITEMS_QUERY,
     {
       variables: {
         input: {
-          orderId: +orderId.id,
+          maintenanceId: +maintenanceId.id,
           page,
           take,
         },
@@ -159,9 +161,9 @@ export const OrderSerial: React.FC = () => {
     },
   );
 
-  const onCompleted = (data: editItemInfoMutation) => {
+  const onCompleted = (data: editMaintenanceItemInfoMutation) => {
     const {
-      editItemInfo: { ok, error },
+      editMaintenanceItemInfo: { ok, error },
     } = data;
 
     if (ok) {
@@ -182,10 +184,13 @@ export const OrderSerial: React.FC = () => {
     }
   };
 
-  const [editItemInfoMutation, { data: editItemInfoData }] = useMutation<
-    editItemInfoMutation,
-    editItemInfoMutationVariables
-  >(EDIT_ITEMINFO_MUTATION, {
+  const [
+    editMaintenanceItemInfoMutation,
+    { data: editMaintenanceItemInfoData },
+  ] = useMutation<
+    editMaintenanceItemInfoMutation,
+    editMaintenanceItemInfoMutationVariables
+  >(EDIT_MAINTENANCEITEMINFO_MUTATION, {
     onCompleted,
   });
 
@@ -218,10 +223,12 @@ export const OrderSerial: React.FC = () => {
   };
 
   useEffect(() => {
-    if (orderItemData && !orderItemLoading) {
-      const itemInfos = orderItemData.getOrderItems.itemInfos as IItemInfo[];
-      const getTotalPages = orderItemData.getOrderItems.totalPages as number;
-      const getTotalResults = orderItemData.getOrderItems
+    if (maintenanceItemData && !maintenanceItemLoading) {
+      const itemInfos = maintenanceItemData.getMaintenanceItems
+        .itemInfos as IItemInfo[];
+      const getTotalPages = maintenanceItemData.getMaintenanceItems
+        .totalPages as number;
+      const getTotalResults = maintenanceItemData.getMaintenanceItems
         .totalResults as number;
       for (let i = 0; i < itemInfos.length; i++) {
         originData.push({
@@ -235,7 +242,7 @@ export const OrderSerial: React.FC = () => {
       setData(originData);
     }
     refetch();
-  }, [orderItemData, editItemInfoData]);
+  }, [maintenanceItemData, editMaintenanceItemInfoData]);
 
   const handleChange = (e: any) => {
     console.log(e);
@@ -254,7 +261,7 @@ export const OrderSerial: React.FC = () => {
       const row = await form.validateFields();
       for (const item in row) {
         if (typeof row[item] === 'string') {
-          editItemInfoMutation({
+          editMaintenanceItemInfoMutation({
             variables: {
               input: {
                 itemInfoId: +item,
@@ -321,7 +328,7 @@ export const OrderSerial: React.FC = () => {
   return (
     <Wrapper>
       <Helmet>
-        <title>Orders | CEN Portal</title>
+        <title>Maintenances | CEN Portal</title>
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
@@ -377,7 +384,7 @@ export const OrderSerial: React.FC = () => {
             onChange: (page, take) => handlePageChange(page, take as number),
             showSizeChanger: true,
           }}
-          loading={orderItemLoading}
+          loading={maintenanceItemLoading}
           size="small"
         />
       </Form>

@@ -775,9 +775,9 @@ export const Demo = () => {
       </TitleBar>
       <MenuBar>
         <Search
-          placeholder="검색(프로젝트, SN, 파트너)"
+          placeholder="검색(프로젝트, 모델, SN, 파트너)"
           onSearch={onSearch}
-          style={{ width: 250 }}
+          style={{ width: 300 }}
           size="small"
           allowClear
           enterButton

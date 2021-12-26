@@ -10,7 +10,7 @@ import { EditOrderInput } from "./globalTypes";
 // ====================================================
 
 export interface editOrderMutation_editOrder {
-  __typename: "EditOPrderOutput";
+  __typename: "EditOrderOutput";
   ok: boolean;
   error: string | null;
 }

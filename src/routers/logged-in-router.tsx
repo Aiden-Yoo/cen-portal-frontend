@@ -10,6 +10,7 @@ import {
   DesktopOutlined,
   ToolOutlined,
   SnippetsOutlined,
+  PhoneOutlined,
 } from '@ant-design/icons';
 import { UserRole } from '../__generated__/globalTypes';
 import logo from '../images/CoreEdge_logo.png';
@@ -46,6 +47,10 @@ import { DocumentDetail } from '../pages/partner/documents/documentDetail';
 import { User } from '../pages/cen/users/users';
 import { Demo } from '../pages/cen/demo/demos';
 import { Rma } from '../pages/cen/rma/rmas';
+import { Maintenance } from '../pages/partner/maintenances/maintenances';
+import { MaintenanceDetail } from '../pages/partner/maintenances/maintenanceDetail';
+import { MaintenanceSerial } from '../pages/partner/maintenances/maintenanceSerial';
+import { AddMaintenance } from '../pages/partner/maintenances/addMaintenance';
 
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -108,9 +113,19 @@ const commonRoutes = [
   { path: '/partner/workarounds', component: <Workaround /> },
   { path: '/partner/workarounds/add-workaround', component: <AddWorkaround /> },
   { path: '/partner/workarounds/:id', component: <WorkaroundDetail /> },
-  { path: '/partner/orders', component: <Order /> },
-  { path: '/partner/orders/:id', component: <OrderDetail /> },
-  { path: '/partner/orders/:id/serial-number', component: <OrderSerial /> },
+  // { path: '/partner/orders', component: <Order /> },
+  // { path: '/partner/orders/:id', component: <OrderDetail /> },
+  // { path: '/partner/orders/:id/serial-number', component: <OrderSerial /> },
+  { path: '/partner/maintenances', component: <Maintenance /> },
+  {
+    path: '/partner/maintenances/add-maintenance',
+    component: <AddMaintenance />,
+  },
+  { path: '/partner/maintenances/:id', component: <MaintenanceDetail /> },
+  {
+    path: '/partner/maintenances/:id/serial-number',
+    component: <MaintenanceSerial />,
+  },
 ];
 
 const siderRoutes = [
@@ -158,7 +173,7 @@ const siderRoutes = [
         <Menu.Item key="2" icon={<FileOutlined />}>
           <Link to="/partner/documents">문서</Link>
         </Menu.Item>
-        <SubMenu key="3" icon={<ToolOutlined />} title="기술지원">
+        <SubMenu key="3" icon={<PhoneOutlined />} title="기술지원">
           <Menu.Item key="3-1">
             <Link to="/partner/cases">Case</Link>
           </Menu.Item>
@@ -166,8 +181,11 @@ const siderRoutes = [
             <Link to="/partner/workarounds">Workarounds</Link>
           </Menu.Item>
         </SubMenu>
-        <Menu.Item key="4" icon={<InboxOutlined />}>
+        {/* <Menu.Item key="4" icon={<InboxOutlined />}>
           <Link to="/partner/orders">출고현황</Link>
+        </Menu.Item> */}
+        <Menu.Item key="5" icon={<ToolOutlined />}>
+          <Link to="/partner/maintenances">유지보수</Link>
         </Menu.Item>
       </Menu>
     ),

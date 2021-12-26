@@ -251,6 +251,23 @@ export interface CreateIssueInput {
   files?: IssueFilesInputType[] | null;
 }
 
+export interface CreateMaintenanceInput {
+  contractNo: string;
+  salesPerson: string;
+  projectName?: string | null;
+  reqPartner?: string | null;
+  startDate?: any | null;
+  endDate?: any | null;
+  description?: string | null;
+  distPartnerId: number;
+  items: CreateMaintenanceItemInput[];
+}
+
+export interface CreateMaintenanceItemInput {
+  bundleId: number;
+  num: number;
+}
+
 export interface CreateOrderInput {
   salesPerson: string;
   projectName: string;
@@ -346,6 +363,10 @@ export interface DeleteIssueCommentInput {
 
 export interface DeleteIssueInput {
   issueId: number;
+}
+
+export interface DeleteMaintenanceInput {
+  maintenanceId: number;
 }
 
 export interface DeleteOrderInput {
@@ -452,6 +473,11 @@ export interface EditItemInfoInput {
   itemInfoId: number;
 }
 
+export interface EditMaintenanceItemInfoInput {
+  serialNumber?: string | null;
+  itemInfoId: number;
+}
+
 export interface EditOrderInput {
   id: number;
   status: OrderStatus;
@@ -546,6 +572,23 @@ export interface GetIssueInput {
   id: number;
 }
 
+export interface GetMaintenanceInput {
+  id: number;
+}
+
+export interface GetMaintenanceItemsInput {
+  page?: number | null;
+  take?: number | null;
+  maintenanceId: number;
+}
+
+export interface GetMaintenancesInput {
+  page?: number | null;
+  take?: number | null;
+  searchTerm?: string | null;
+  maintenanceStatus?: string | null;
+}
+
 export interface GetOrderInput {
   id: number;
 }
@@ -567,6 +610,7 @@ export interface GetOrdersInput {
 export interface GetRmasInput {
   page?: number | null;
   take?: number | null;
+  rmaStatus?: string | null;
   classification?: Classification | null;
   searchTerm?: string | null;
 }
@@ -610,6 +654,18 @@ export interface ItemInfoInputType {
 export interface LoginInput {
   email: string;
   password: string;
+}
+
+export interface MaintenanceItemInfoInputType {
+  name: string;
+  serialNumber?: string | null;
+  maintenance: RmaInputType;
+}
+
+export interface MaintenanceItemInputType {
+  bundle?: BundleInputType | null;
+  num: number;
+  maintenance: RmaInputType;
 }
 
 export interface OrderInputType {
@@ -661,6 +717,21 @@ export interface PartnerInputType {
   tel?: string | null;
   contacts?: ContactInputType[] | null;
   orders?: OrderInputType[] | null;
+  maintenances?: RmaInputType[] | null;
+}
+
+export interface RmaInputType {
+  contractNo: string;
+  writer?: UserInputType | null;
+  salesPerson: string;
+  projectName?: string | null;
+  distPartner?: PartnerInputType | null;
+  reqPartner?: string | null;
+  startDate?: any | null;
+  endDate?: any | null;
+  description?: string | null;
+  items: MaintenanceItemInputType[];
+  maintenanceItemInfos?: MaintenanceItemInfoInputType[] | null;
 }
 
 export interface UserInputType {
@@ -676,6 +747,7 @@ export interface UserInputType {
   isLocked: boolean;
   orderAuth: boolean;
   orders: OrderInputType[];
+  maintenances: RmaInputType[];
 }
 
 export interface VerifyEmailInput {

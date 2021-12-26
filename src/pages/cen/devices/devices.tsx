@@ -412,6 +412,7 @@ export const Device = () => {
               onChange: (page, take) =>
                 handlePartPageChange(page, take as number),
               showSizeChanger: true,
+              pageSize: 20,
             }}
             loading={partLoading}
             size="small"

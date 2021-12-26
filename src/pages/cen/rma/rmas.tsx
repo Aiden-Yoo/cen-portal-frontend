@@ -226,75 +226,11 @@ export const Rma = () => {
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(20);
   const [total, setTotal] = useState<number>(0);
+  const [rmaStatus, setRmaStatus] = useState<string | null>(null);
   const [classification, setClassification] = useState<Classification>();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isNew, setIsNew] = useState<boolean>(false);
   const { data: meData } = useMe();
-
-  // const EditableCell: React.FC<EditableCellProps> = ({
-  //   editing,
-  //   dataIndex,
-  //   title,
-  //   inputType,
-  //   record,
-  //   index,
-  //   children,
-  //   ...restProps
-  // }) => {
-  //   const { Option } = Select;
-
-  //   const inputNode = (dataIndex: string) => {
-  //     switch (dataIndex) {
-  //       case 'classification':
-  //         return (
-  //           <Select style={{ width: 80 }}>
-  //             <Option value={Classification.RMA}>RMA</Option>
-  //             <Option value={Classification.DoA}>DoA</Option>
-  //           </Select>
-  //         );
-  //       case 'reenactment':
-  //         return (
-  //           <Select style={{ width: 60 }}>
-  //             <Option value={'O'}>O</Option>
-  //             <Option value={'X'}>X</Option>
-  //           </Select>
-  //         );
-  //       default:
-  //         return <Input />;
-  //     }
-  //   };
-
-  //   const missCheck = (dataIndex: string) => {
-  //     switch (dataIndex) {
-  //       case 'projectName':
-  //       case 'model':
-  //         return true;
-  //       default:
-  //         return false;
-  //     }
-  //   };
-
-  //   return (
-  //     <td {...restProps}>
-  //       {editing ? (
-  //         <Form.Item
-  //           name={dataIndex}
-  //           style={{ margin: 0 }}
-  //           rules={[
-  //             {
-  //               required: missCheck(dataIndex),
-  //               message: `${title} 작성 필요!`,
-  //             },
-  //           ]}
-  //         >
-  //           {inputNode(dataIndex)}
-  //         </Form.Item>
-  //       ) : (
-  //         children
-  //       )}
-  //     </td>
-  //   );
-  // };
 
   const {
     data: rmaData,
@@ -305,6 +241,7 @@ export const Rma = () => {
       input: {
         page,
         take,
+        rmaStatus,
         classification,
         searchTerm,
       },
@@ -431,6 +368,13 @@ export const Rma = () => {
   }, [rmaData, createRmaData, deleteRmaData, editRmaData]);
 
   const handleStatusChange = (event: RadioChangeEvent) => {
+    const {
+      target: { value },
+    } = event;
+    setRmaStatus(value);
+  };
+
+  const handleClassificationChange = (event: RadioChangeEvent) => {
     const {
       target: { value },
     } = event;
@@ -824,9 +768,9 @@ export const Rma = () => {
       </TitleBar>
       <MenuBar>
         <Search
-          placeholder="검색(프로젝트, SN, 파트너)"
+          placeholder="검색(프로젝트, 모델, SN, 파트너)"
           onSearch={onSearch}
-          style={{ width: 250 }}
+          style={{ width: 300 }}
           size="small"
           allowClear
           enterButton
@@ -835,6 +779,17 @@ export const Rma = () => {
           defaultValue={null}
           size="small"
           onChange={handleStatusChange}
+          style={{ paddingLeft: '8px' }}
+        >
+          <Radio.Button value={null}>All</Radio.Button>
+          <Radio.Button value={'선입고'}>선입고</Radio.Button>
+          <Radio.Button value={'선출고'}>선출고</Radio.Button>
+          <Radio.Button value={'완료'}>완료</Radio.Button>
+        </Radio.Group>
+        <Radio.Group
+          defaultValue={null}
+          size="small"
+          onChange={handleClassificationChange}
           style={{ paddingLeft: '8px' }}
         >
           <Radio.Button value={null}>All</Radio.Button>
