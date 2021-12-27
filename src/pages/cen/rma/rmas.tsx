@@ -20,7 +20,11 @@ import {
 } from 'antd';
 import { FolderOpenOutlined } from '@ant-design/icons';
 import { useMe } from '../../../hooks/useMe';
-import { Classification, UserRole } from '../../../__generated__/globalTypes';
+import {
+  Reenactment,
+  RmaClassification,
+  UserRole,
+} from '../../../__generated__/globalTypes';
 import {
   getRmasQuery,
   getRmasQueryVariables,
@@ -64,7 +68,7 @@ interface IRma {
   no?: number;
   id?: number;
   rmaStatus?: string;
-  classification: Classification;
+  classification: RmaClassification | null;
   model: string;
   projectName: string;
   returnDate?: string | null;
@@ -73,9 +77,11 @@ interface IRma {
   deliverDate?: string | null;
   deliverDst?: string | null;
   deliverSn: string | null;
-  reenactment?: boolean | string | null;
+  reenactment?: Reenactment | string | null;
   person?: string | null;
   description?: string | null;
+  address?: string | null;
+  symptom?: string | null;
 }
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
@@ -113,15 +119,16 @@ const EditableCell: React.FC<EditableCellProps> = ({
       case 'classification':
         return (
           <Select style={{ width: 80 }}>
-            <Option value={Classification.RMA}>RMA</Option>
-            <Option value={Classification.DoA}>DoA</Option>
+            <Option value={RmaClassification.RMA}>RMA</Option>
+            <Option value={RmaClassification.DoA}>DoA</Option>
           </Select>
         );
       case 'reenactment':
         return (
-          <Select style={{ width: 60 }}>
-            <Option value={'O'}>O</Option>
-            <Option value={'x'}>X</Option>
+          <Select style={{ width: 100 }}>
+            <Option value={Reenactment.True}>재현됨</Option>
+            <Option value={Reenactment.False}>재현불가</Option>
+            <Option value={Reenactment.Later}>추후확인</Option>
           </Select>
         );
       default:
@@ -185,6 +192,8 @@ const GET_RMAS_QUERY = gql`
         person
         description
         rmaStatus
+        address
+        symptom
       }
     }
   }
@@ -223,11 +232,12 @@ export const Rma = () => {
   const [editingKey, setEditingKey] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [data, setData] = useState<IRma[]>([]);
+  const [oldData, setOldData] = useState<IRma[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(20);
   const [total, setTotal] = useState<number>(0);
   const [rmaStatus, setRmaStatus] = useState<string | null>(null);
-  const [classification, setClassification] = useState<Classification>();
+  const [classification, setRmaClassification] = useState<RmaClassification>();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isNew, setIsNew] = useState<boolean>(false);
   const { data: meData } = useMe();
@@ -334,6 +344,17 @@ export const Rma = () => {
     onCompleted: onCreateCompleted,
   });
 
+  const reenactmentCheck = (reenactment: Reenactment) => {
+    switch (reenactment) {
+      case Reenactment.Later:
+        return '추후확인';
+      case Reenactment.False:
+        return '재현불가';
+      case Reenactment.True:
+        return '재현됨';
+    }
+  };
+
   useEffect(() => {
     if (rmaData) {
       const rmas = rmaData.getRmas.rmas as IRma[];
@@ -355,13 +376,16 @@ export const Rma = () => {
             : null,
           deliverDst: rmas[i].deliverDst,
           deliverSn: rmas[i].deliverSn,
-          reenactment: rmas[i].reenactment === true ? 'O' : 'X',
+          reenactment: reenactmentCheck(rmas[i].reenactment as Reenactment),
           person: rmas[i].person,
           description: rmas[i].description,
+          address: rmas[i].address,
+          symptom: rmas[i].symptom,
         });
       }
       setTotal(getTotal);
       setData(originData);
+      setOldData(originData);
     }
     reGetData();
     // if (data !== originData) reGetData();
@@ -374,11 +398,11 @@ export const Rma = () => {
     setRmaStatus(value);
   };
 
-  const handleClassificationChange = (event: RadioChangeEvent) => {
+  const handleRmaClassificationChange = (event: RadioChangeEvent) => {
     const {
       target: { value },
     } = event;
-    setClassification(value);
+    setRmaClassification(value);
   };
 
   const onSearch = (value: string) => {
@@ -392,17 +416,9 @@ export const Rma = () => {
 
   const isEditing = (record: IRma) => record.key === editingKey;
 
-  const handleEdit = (record: Partial<IRma> & { key: React.Key }) => {
+  const initializeForm = () => {
     form.setFieldsValue({
-      status: '',
-      ...record,
-    });
-    setEditingKey(record.key);
-  };
-
-  const handleCancel = () => {
-    form.setFieldsValue({
-      classification: Classification.RMA,
+      classification: null,
       model: '',
       projectName: '',
       returnDate: '',
@@ -411,17 +427,35 @@ export const Rma = () => {
       deliverDst: '',
       deliverDate: '',
       deliverSn: '',
-      reenactment: 'X',
+      reenactment: null,
       person: '',
       description: '',
+      address: '',
+      symptom: '',
     });
+  };
+
+  const handleEdit = (record: Partial<IRma> & { key: React.Key }) => {
+    if (isNew) initializeForm();
+    if (!isNew) {
+      form.setFieldsValue({
+        status: '',
+        ...record,
+      });
+    }
+    setEditingKey(record.key);
+  };
+
+  const handleCancel = (key: React.Key) => {
+    initializeForm();
+    setIsNew(false);
     setEditingKey('');
+    setData(oldData);
   };
 
   const handleSave = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as IRma;
-
       const newData = [...data];
       const index = newData?.findIndex((item) => key === item.key);
       if (index > -1) {
@@ -446,9 +480,11 @@ export const Rma = () => {
                 deliverDst: row.deliverDst,
                 deliverDate: row.deliverDate === '' ? null : row.deliverDate,
                 deliverSn: row.deliverSn,
-                reenactment: row.reenactment === 'O' ? true : false,
+                reenactment: row.reenactment as Reenactment,
                 person: row.person,
                 description: row.description,
+                address: row.address,
+                symptom: row.symptom,
               },
             },
           });
@@ -466,9 +502,11 @@ export const Rma = () => {
                 deliverDst: row.deliverDst,
                 deliverDate: row.deliverDate,
                 deliverSn: row.deliverSn,
-                reenactment: row.reenactment === 'O' ? true : false,
+                reenactment: row.reenactment as Reenactment,
                 person: row.person,
                 description: row.description,
+                address: row.address,
+                symptom: row.symptom,
               },
             },
           });
@@ -478,6 +516,8 @@ export const Rma = () => {
         setData(newData);
         setEditingKey('');
       }
+      initializeForm();
+      setIsNew(false);
       reGetData();
     } catch (errInfo) {
       // console.log('Validate Failed:', errInfo);
@@ -491,22 +531,10 @@ export const Rma = () => {
   };
 
   const handleAdd = () => {
-    form.setFieldsValue({
-      classification: Classification.RMA,
-      model: '',
-      projectName: '',
-      returnDate: '',
-      returnSrc: '',
-      returnSn: '',
-      deliverDst: '',
-      deliverDate: '',
-      deliverSn: '',
-      reenactment: 'X',
-      person: '',
-      description: '',
-    });
+    initializeForm();
     setEditingKey('');
     setIsNew(true);
+    setOldData(data);
     setEditingKey('0');
     if (isNew) {
       notification.error({
@@ -518,7 +546,7 @@ export const Rma = () => {
     } else {
       const newData: IRma = {
         key: `0`,
-        classification: Classification.RMA,
+        classification: null,
         model: '',
         projectName: '',
         deliverSn: '',
@@ -569,15 +597,15 @@ export const Rma = () => {
       editable: true,
       align: 'center',
       fixed: 'left',
-      render: (classification: Classification) => {
+      render: (classification: RmaClassification) => {
         let color = '';
         let text = '';
         switch (classification) {
-          case Classification.RMA:
+          case RmaClassification.RMA:
             color = 'geekblue';
             text = 'RMA';
             break;
-          case Classification.DoA:
+          case RmaClassification.DoA:
             color = 'green';
             text = 'DoA';
             break;
@@ -678,7 +706,21 @@ export const Rma = () => {
     {
       title: '재현여부',
       dataIndex: 'reenactment',
-      width: 80,
+      width: 120,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '장애증상',
+      dataIndex: 'symptom',
+      width: 120,
+      editable: true,
+      align: 'center',
+    },
+    {
+      title: '납품장소',
+      dataIndex: 'address',
+      width: 350,
       editable: true,
       align: 'center',
     },
@@ -721,7 +763,7 @@ export const Rma = () => {
                   </Typography.Link>
                 </Popconfirm>
                 <Typography.Link
-                  onClick={handleCancel}
+                  onClick={() => handleCancel(record.key)}
                   style={{
                     marginRight: 8,
                   }}
@@ -733,7 +775,7 @@ export const Rma = () => {
               <Typography.Link
                 onClick={() => handleEdit(record)}
                 style={{ marginRight: 8 }}
-                disabled={meData?.me.role !== UserRole.CENSE}
+                disabled={meData?.me.role !== UserRole.CENSE || isNew}
               >
                 Edit
               </Typography.Link>
@@ -741,7 +783,7 @@ export const Rma = () => {
 
             <Typography.Link
               href="#!"
-              disabled={meData?.me.role !== UserRole.CENSE}
+              disabled={meData?.me.role !== UserRole.CENSE || isNew}
             >
               <Popconfirm
                 title="정말 삭제 하시겠습니까?"
@@ -804,17 +846,17 @@ export const Rma = () => {
         <Radio.Group
           defaultValue={null}
           size="small"
-          onChange={handleClassificationChange}
+          onChange={handleRmaClassificationChange}
           style={{ paddingLeft: '8px' }}
         >
           <Radio.Button value={null}>All</Radio.Button>
-          <Radio.Button value={Classification.RMA}>RMA</Radio.Button>
-          <Radio.Button value={Classification.DoA}>DoA</Radio.Button>
+          <Radio.Button value={RmaClassification.RMA}>RMA</Radio.Button>
+          <Radio.Button value={RmaClassification.DoA}>DoA</Radio.Button>
         </Radio.Group>
         <SButton
           type="primary"
           size="small"
-          disabled={meData?.me.role !== UserRole.CENSE}
+          disabled={meData?.me.role !== UserRole.CENSE || isNew}
           onClick={() => handleAdd()}
         >
           Add
@@ -822,7 +864,7 @@ export const Rma = () => {
         <SButton
           type="primary"
           size="small"
-          disabled={meData?.me.role !== UserRole.CENSE}
+          disabled={meData?.me.role !== UserRole.CENSE || isNew}
         >
           <Popconfirm
             title="정말 삭제 하시겠습니까?"

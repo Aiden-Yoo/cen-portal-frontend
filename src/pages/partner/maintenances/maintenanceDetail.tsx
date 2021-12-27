@@ -12,7 +12,10 @@ import {
   getMaintenanceQuery,
   getMaintenanceQueryVariables,
 } from '../../../__generated__/getMaintenanceQuery';
-import { UserRole } from '../../../__generated__/globalTypes';
+import {
+  MaintenanceClassification,
+  UserRole,
+} from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -67,6 +70,9 @@ const GET_MAINTENANCE_QUERY = gql`
           serialNumber
         }
         maintenanceStatus
+        classification
+        inCharge
+        contact
       }
     }
   }
@@ -102,6 +108,9 @@ interface IMaintenance {
   description?: string | null;
   items?: IItem[] | null;
   maintenanceStatus?: string | null;
+  classification?: MaintenanceClassification | null;
+  inCharge?: string | null;
+  contact?: string | null;
 }
 
 interface IMaintenanceItemData {
@@ -205,7 +214,7 @@ export const MaintenanceDetail: React.FC = () => {
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
-        {` 출고요청서`}
+        {` 유지보수`}
       </TitleBar>
       <MenuBar>
         <SButton type="primary" size="small">
@@ -236,6 +245,9 @@ export const MaintenanceDetail: React.FC = () => {
             <Descriptions.Item label="상태">
               <Badge color={maintenanceColor} text={maintenanceText} />
             </Descriptions.Item>
+            <Descriptions.Item label="계약종류" span={3}>
+              {maintenance?.classification}
+            </Descriptions.Item>
             <Descriptions.Item label="고객사(프로젝트명)" span={2}>
               {maintenance?.projectName}
             </Descriptions.Item>
@@ -254,6 +266,12 @@ export const MaintenanceDetail: React.FC = () => {
             <Descriptions.Item label="계약기간">
               {`${new Date(`${maintenance?.startDate}`).toLocaleDateString()} ~
                 ${new Date(`${maintenance?.endDate}`).toLocaleDateString()}`}
+            </Descriptions.Item>
+            <Descriptions.Item label="담당자" span={2}>
+              {maintenance?.inCharge}
+            </Descriptions.Item>
+            <Descriptions.Item label="연락처">
+              {maintenance?.contact}
             </Descriptions.Item>
             <Descriptions.Item label="비고" span={3}>
               {maintenance?.description}

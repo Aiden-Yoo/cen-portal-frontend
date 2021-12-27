@@ -7,19 +7,18 @@ import { UserRole } from '../__generated__/globalTypes';
 import { useMe } from '../hooks/useMe';
 import { LOCALSTORAGE_TOKEN } from '../constants';
 import { useEffect } from 'react';
-import { logoutMutation } from '../__generated__/logoutMutation';
 import { notification } from 'antd';
 
 const { SubMenu } = Menu;
 
-const LOGOUT_MUTATION = gql`
-  mutation logoutMutation {
-    logout {
-      ok
-      error
-    }
-  }
-`;
+// const LOGOUT_MUTATION = gql`
+//   mutation logoutMutation {
+//     logout {
+//       ok
+//       error
+//     }
+//   }
+// `;
 
 export const Header: React.FC = () => {
   const { data, refetch } = useMe();
@@ -29,44 +28,44 @@ export const Header: React.FC = () => {
     refetch();
   }, []);
 
-  const onLogoutCompleted = (logoutResult: logoutMutation) => {
-    const {
-      logout: { ok, error },
-    } = logoutResult;
-    if (ok) {
-      notification.success({
-        message: 'Success!',
-        description: '로그아웃 성공',
-        placement: 'topRight',
-        duration: 2,
-      });
-      // localStorage.removeItem(LOCALSTORAGE_TOKEN);
-      // history.push('/');
-      // isLoggedInVar(false);
-    } else if (error) {
-      notification.error({
-        message: 'Error',
-        description: `[로그아웃 실패] ${error}`,
-        placement: 'topRight',
-        duration: 0,
-      });
-    }
-  };
+  // const onLogoutCompleted = (logoutResult: logoutMutation) => {
+  //   const {
+  //     logout: { ok, error },
+  //   } = logoutResult;
+  //   if (ok) {
+  //     notification.success({
+  //       message: 'Success!',
+  //       description: '로그아웃 성공',
+  //       placement: 'topRight',
+  //       duration: 2,
+  //     });
+  //     // localStorage.removeItem(LOCALSTORAGE_TOKEN);
+  //     // history.push('/');
+  //     // isLoggedInVar(false);
+  //   } else if (error) {
+  //     notification.error({
+  //       message: 'Error',
+  //       description: `[로그아웃 실패] ${error}`,
+  //       placement: 'topRight',
+  //       duration: 0,
+  //     });
+  //   }
+  // };
 
-  const [logoutMutation, { data: logoutResult, loading, error }] =
-    useMutation<logoutMutation>(LOGOUT_MUTATION, {
-      onCompleted: onLogoutCompleted,
-    });
+  // const [logoutMutation, { data: logoutResult, loading, error }] =
+  //   useMutation<logoutMutation>(LOGOUT_MUTATION, {
+  //     onCompleted: onLogoutCompleted,
+  //   });
 
-  if (error) console.log(error);
+  // if (error) console.log(error);
 
   const onLogout = () => {
-    if (!loading) {
-      // logoutMutation();
-      localStorage.removeItem(LOCALSTORAGE_TOKEN);
-      history.push('/');
-      isLoggedInVar(false);
-    }
+    // if (!loading) {
+    // logoutMutation();
+    localStorage.removeItem(LOCALSTORAGE_TOKEN);
+    history.push('/');
+    isLoggedInVar(false);
+    // }
   };
 
   return (

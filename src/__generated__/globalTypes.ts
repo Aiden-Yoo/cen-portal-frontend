@@ -7,11 +7,6 @@
 // START Enums and Input Objects
 //==============================================================
 
-export enum Classification {
-  DoA = "DoA",
-  RMA = "RMA",
-}
-
 export enum DeliveryMethod {
   Cargo = "Cargo",
   Directly = "Directly",
@@ -71,6 +66,11 @@ export enum KindWorkaround {
   ETC = "ETC",
 }
 
+export enum MaintenanceClassification {
+  CSTC = "CSTC",
+  CSTY = "CSTY",
+}
+
 export enum OrderClassification {
   Demo = "Demo",
   DoA = "DoA",
@@ -92,6 +92,17 @@ export enum Origin {
   Demo = "Demo",
   LAB = "LAB",
   New = "New",
+}
+
+export enum Reenactment {
+  False = "False",
+  Later = "Later",
+  True = "True",
+}
+
+export enum RmaClassification {
+  DoA = "DoA",
+  RMA = "RMA",
 }
 
 export enum UserRole {
@@ -259,6 +270,9 @@ export interface CreateMaintenanceInput {
   startDate?: any | null;
   endDate?: any | null;
   description?: string | null;
+  classification?: MaintenanceClassification | null;
+  inCharge?: string | null;
+  contact?: string | null;
   distPartnerId: number;
   items: CreateMaintenanceItemInput[];
 }
@@ -307,7 +321,7 @@ export interface CreatePartnerInput {
 }
 
 export interface CreateRmaInput {
-  classification?: Classification | null;
+  classification?: RmaClassification | null;
   model?: string | null;
   projectName?: string | null;
   returnDate?: any | null;
@@ -316,9 +330,11 @@ export interface CreateRmaInput {
   deliverDate?: any | null;
   deliverDst?: string | null;
   deliverSn?: string | null;
-  reenactment?: boolean | null;
+  reenactment?: Reenactment | null;
   person?: string | null;
   description?: string | null;
+  address?: string | null;
+  symptom?: string | null;
 }
 
 export interface CreateWorkaroundCommentInput {
@@ -507,7 +523,7 @@ export interface EditProfileInput {
 
 export interface EditRmaInput {
   id: number;
-  classification?: Classification | null;
+  classification?: RmaClassification | null;
   model?: string | null;
   projectName?: string | null;
   returnDate?: any | null;
@@ -516,9 +532,11 @@ export interface EditRmaInput {
   deliverDate?: any | null;
   deliverDst?: string | null;
   deliverSn?: string | null;
-  reenactment?: boolean | null;
+  reenactment?: Reenactment | null;
   person?: string | null;
   description?: string | null;
+  address?: string | null;
+  symptom?: string | null;
 }
 
 export interface EditUserInput {
@@ -611,7 +629,7 @@ export interface GetRmasInput {
   page?: number | null;
   take?: number | null;
   rmaStatus?: string | null;
-  classification?: Classification | null;
+  classification?: RmaClassification | null;
   searchTerm?: string | null;
 }
 
@@ -732,6 +750,9 @@ export interface RmaInputType {
   description?: string | null;
   items: MaintenanceItemInputType[];
   maintenanceItemInfos?: MaintenanceItemInfoInputType[] | null;
+  classification?: MaintenanceClassification | null;
+  inCharge?: string | null;
+  contact?: string | null;
 }
 
 export interface UserInputType {

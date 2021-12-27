@@ -67,7 +67,7 @@ interface IDemo {
   key?: string;
   no?: number;
   id?: number;
-  status: DemoStatus;
+  status: DemoStatus | null;
   deliverDate: string;
   returnDate?: string | null;
   projectName: string;
@@ -78,7 +78,7 @@ interface IDemo {
   receiver?: string | null;
   partner: string;
   partnerPerson?: string | null;
-  origin: Origin;
+  origin: Origin | null;
   description?: string | null;
 }
 
@@ -235,6 +235,7 @@ export const Demo = () => {
   const [editingKey, setEditingKey] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [data, setData] = useState<IDemo[]>([]);
+  const [oldData, setOldData] = useState<IDemo[]>([]);
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(20);
   const [total, setTotal] = useState<number>(0);
@@ -370,6 +371,7 @@ export const Demo = () => {
       }
       setTotal(getTotal);
       setData(originData);
+      setOldData(originData);
     }
     reGetData();
     // if (data !== originData) reGetData();
@@ -393,22 +395,14 @@ export const Demo = () => {
 
   const isEditing = (record: IDemo) => record.key === editingKey;
 
-  const handleEdit = (record: Partial<IDemo> & { key: React.Key }) => {
+  const initializeForm = () => {
     form.setFieldsValue({
-      status: '',
-      ...record,
-    });
-    setEditingKey(record.key);
-  };
-
-  const handleCancel = () => {
-    form.setFieldsValue({
-      status: DemoStatus.Release,
+      status: null,
       applier: '',
-      deliverDate: new Date().toLocaleDateString(),
+      deliverDate: null,
       description: '',
       model: '',
-      origin: Origin.Demo,
+      origin: null,
       partner: '',
       partnerPerson: '',
       projectName: '',
@@ -417,7 +411,24 @@ export const Demo = () => {
       salesPerson: '',
       serialNumber: '',
     });
+  };
+
+  const handleEdit = (record: Partial<IDemo> & { key: React.Key }) => {
+    if (isNew) initializeForm();
+    if (!isNew) {
+      form.setFieldsValue({
+        status: '',
+        ...record,
+      });
+    }
+    setEditingKey(record.key);
+  };
+
+  const handleCancel = () => {
+    initializeForm();
+    setIsNew(false);
     setEditingKey('');
+    setData(oldData);
   };
 
   const handleSave = async (key: React.Key) => {
@@ -482,6 +493,8 @@ export const Demo = () => {
         setData(newData);
         setEditingKey('');
       }
+      initializeForm();
+      setIsNew(false);
       reGetData();
     } catch (errInfo) {
       // console.log('Validate Failed:', errInfo);
@@ -495,23 +508,10 @@ export const Demo = () => {
   };
 
   const handleAdd = () => {
-    form.setFieldsValue({
-      status: DemoStatus.Release,
-      applier: '',
-      deliverDate: new Date().toLocaleDateString(),
-      description: '',
-      model: '',
-      origin: Origin.Demo,
-      partner: '',
-      partnerPerson: '',
-      projectName: '',
-      receiver: '',
-      returnDate: null,
-      salesPerson: '',
-      serialNumber: '',
-    });
+    initializeForm();
     setEditingKey('');
     setIsNew(true);
+    setOldData(data);
     setEditingKey('0');
     if (isNew) {
       notification.error({
@@ -525,12 +525,12 @@ export const Demo = () => {
         key: `0`,
         deliverDate: new Date().toLocaleDateString(),
         model: '',
-        origin: Origin.Demo,
+        origin: null,
         partner: '',
         projectName: '',
         salesPerson: '',
         serialNumber: '',
-        status: DemoStatus.Release,
+        status: null,
       };
       setData([newData, ...data]);
       setTotal(total + 1);
@@ -741,7 +741,7 @@ export const Demo = () => {
               <Typography.Link
                 onClick={() => handleEdit(record)}
                 style={{ marginRight: 8 }}
-                disabled={meData?.me.role !== UserRole.CENSE}
+                disabled={meData?.me.role !== UserRole.CENSE || isNew}
               >
                 Edit
               </Typography.Link>
@@ -749,7 +749,7 @@ export const Demo = () => {
 
             <Typography.Link
               href="#!"
-              disabled={meData?.me.role !== UserRole.CENSE}
+              disabled={meData?.me.role !== UserRole.CENSE || isNew}
             >
               <Popconfirm
                 title="정말 삭제 하시겠습니까?"
@@ -811,7 +811,7 @@ export const Demo = () => {
         <SButton
           type="primary"
           size="small"
-          disabled={meData?.me.role !== UserRole.CENSE}
+          disabled={meData?.me.role !== UserRole.CENSE || isNew}
           onClick={() => handleAdd()}
         >
           Add
@@ -819,7 +819,7 @@ export const Demo = () => {
         <SButton
           type="primary"
           size="small"
-          disabled={meData?.me.role !== UserRole.CENSE}
+          disabled={meData?.me.role !== UserRole.CENSE || isNew}
         >
           <Popconfirm
             title="정말 삭제 하시겠습니까?"

@@ -30,10 +30,7 @@ import {
   createMaintenanceMutation,
   createMaintenanceMutationVariables,
 } from '../../../__generated__/createMaintenanceMutation';
-import {
-  DeliveryMethod,
-  DeliveryType,
-} from '../../../__generated__/globalTypes';
+import { MaintenanceClassification } from '../../../__generated__/globalTypes';
 import { useMe } from '../../../hooks/useMe';
 import { useAllBundles } from '../../../hooks/useAllBundles';
 import { useAllPartners } from '../../../hooks/useAllPartners';
@@ -107,14 +104,6 @@ interface IBundle {
   parts: IPart[] | null;
 }
 
-// interface IAllBundlesOutput {
-//   ok: boolean;
-//   error: string | null;
-//   totalPages: number | null;
-//   totalResults: number | null;
-//   bundles: IBundle[] | null;
-// }
-
 export const AddMaintenance: React.FC = () => {
   const { data: meData } = useMe();
   const { data: bundleData } = useAllBundles(1, 1000);
@@ -134,7 +123,7 @@ export const AddMaintenance: React.FC = () => {
     if (ok) {
       notification.success({
         message: 'Success!',
-        description: '번들 등록 성공',
+        description: '유지보수 등록 성공',
         placement: 'topRight',
         duration: 1,
       });
@@ -142,7 +131,7 @@ export const AddMaintenance: React.FC = () => {
     } else if (error) {
       notification.error({
         message: 'Error',
-        description: `번들 등록 실패. ${error}`,
+        description: `유지보수 등록 실패. ${error}`,
         placement: 'topRight',
         duration: 1,
       });
@@ -203,6 +192,9 @@ export const AddMaintenance: React.FC = () => {
     if (!values.projectName || values.projectName === '') {
       fail += `${fail !== '' ? ', ' : ''}프로젝트명`;
     }
+    if (!values.classification || values.classification === '') {
+      fail += `${fail !== '' ? ', ' : ''}계약종류`;
+    }
     if (!values.distPartnerId || values.distPartnerId === '') {
       fail += `${fail !== '' ? ', ' : ''}계약 파트너사`;
     }
@@ -240,6 +232,9 @@ export const AddMaintenance: React.FC = () => {
             description: values.description,
             distPartnerId: values.distPartnerId,
             items: values.items,
+            classification: values.classification,
+            inCharge: values.inCharge,
+            contact: values.contact,
           },
         },
       });
@@ -269,7 +264,7 @@ export const AddMaintenance: React.FC = () => {
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
-        {' 출고요청서 등록'}
+        {' 유지보수 등록'}
       </TitleBar>
       <FormColumn>
         <Form form={form} onFinish={onFinish} autoComplete="off">
@@ -283,7 +278,7 @@ export const AddMaintenance: React.FC = () => {
                 <Input
                   defaultValue={`CEN-SVC-${new Date()
                     .toISOString()
-                    .substring(0, 10)
+                    .substring(2, 10)
                     .replace(/-/g, '')}-XX`}
                   disabled
                 />
@@ -303,6 +298,14 @@ export const AddMaintenance: React.FC = () => {
                   prefix={<Badge status="processing" text="작성중" />}
                   disabled
                 />
+              </Form.Item>
+            </Descriptions.Item>
+            <Descriptions.Item label="계약종류" span={3}>
+              <Form.Item name="classification">
+                <Select style={{ width: 80 }}>
+                  <Option value={MaintenanceClassification.CSTY}>CSTY</Option>
+                  <Option value={MaintenanceClassification.CSTC}>CSTC</Option>
+                </Select>
               </Form.Item>
             </Descriptions.Item>
             <Descriptions.Item label="고객사(프로젝트명)" span={2}>
@@ -352,6 +355,16 @@ export const AddMaintenance: React.FC = () => {
                 <Space direction="vertical">
                   <RangePicker onChange={onDateChange} />
                 </Space>
+              </Form.Item>
+            </Descriptions.Item>
+            <Descriptions.Item label="담당자" span={2}>
+              <Form.Item name="inCharge">
+                <Input />
+              </Form.Item>
+            </Descriptions.Item>
+            <Descriptions.Item label="연락처">
+              <Form.Item name="contact">
+                <Input />
               </Form.Item>
             </Descriptions.Item>
             <Descriptions.Item label="비고" span={3}>

@@ -31,7 +31,10 @@ import {
   getMaintenancesQueryVariables,
 } from '../../../__generated__/getMaintenancesQuery';
 import { ColumnsType } from 'antd/lib/table';
-import { UserRole } from '../../../__generated__/globalTypes';
+import {
+  MaintenanceClassification,
+  UserRole,
+} from '../../../__generated__/globalTypes';
 
 const Wrapper = styled.div`
   padding: 20px;
@@ -84,6 +87,9 @@ const GET_MAINTENANCES_QUERY = gql`
           num
         }
         maintenanceStatus
+        classification
+        inCharge
+        contact
       }
     }
   }
@@ -130,13 +136,15 @@ interface IMaintenance {
   description?: string | null;
   items?: IItem[] | null;
   maintenanceStatus?: string | null;
+  classification?: MaintenanceClassification | null;
+  inCharge?: string | null;
+  contact?: string | null;
 }
 
 export const Maintenance = () => {
   const originData: IMaintenance[] = [];
   const { data: meData } = useMe();
   const [form] = Form.useForm();
-  const [editingKey, setEditingKey] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [data, setData] = useState<IMaintenance[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -242,6 +250,9 @@ export const Maintenance = () => {
           description: maintenances[i].description,
           items: maintenances[i].items,
           maintenanceStatus: maintenances[i].maintenanceStatus,
+          classification: maintenances[i].classification,
+          inCharge: maintenances[i].inCharge,
+          contact: maintenances[i].contact,
         });
       }
       setTotal(getTotal);
@@ -316,6 +327,12 @@ export const Maintenance = () => {
       title: '프로젝트',
       dataIndex: 'projectName',
       width: '20%',
+      align: 'center',
+    },
+    {
+      title: '계약종류',
+      dataIndex: 'classification',
+      width: '10%',
       align: 'center',
     },
     {
@@ -398,7 +415,7 @@ export const Maintenance = () => {
       </Helmet>
       <TitleBar>
         <FolderOpenOutlined />
-        {' 출고요청서'}
+        {' 유지보수'}
       </TitleBar>
       <MenuBar>
         <Search

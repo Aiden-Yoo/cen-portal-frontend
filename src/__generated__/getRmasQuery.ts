@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { GetRmasInput, Classification } from "./globalTypes";
+import { GetRmasInput, RmaClassification, Reenactment } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: getRmasQuery
@@ -14,7 +14,7 @@ export interface getRmasQuery_getRmas_rmas {
   id: number;
   createAt: any;
   updateAt: any;
-  classification: Classification | null;
+  classification: RmaClassification | null;
   model: string | null;
   projectName: string | null;
   returnDate: any | null;
@@ -23,10 +23,12 @@ export interface getRmasQuery_getRmas_rmas {
   deliverDst: string | null;
   deliverDate: any | null;
   deliverSn: string | null;
-  reenactment: boolean | null;
+  reenactment: Reenactment | null;
   person: string | null;
   description: string | null;
   rmaStatus: string;
+  address: string | null;
+  symptom: string | null;
 }
 
 export interface getRmasQuery_getRmas {
