@@ -76,7 +76,7 @@ interface IRma {
   returnSn?: string | null;
   deliverDate?: string | null;
   deliverDst?: string | null;
-  deliverSn: string | null;
+  deliverSn?: string | null;
   reenactment?: Reenactment | string | null;
   person?: string | null;
   description?: string | null;
@@ -421,11 +421,11 @@ export const Rma = () => {
       classification: null,
       model: '',
       projectName: '',
-      returnDate: '',
+      returnDate: null,
       returnSrc: '',
       returnSn: '',
       deliverDst: '',
-      deliverDate: '',
+      deliverDate: null,
       deliverSn: '',
       reenactment: null,
       person: '',
@@ -496,11 +496,11 @@ export const Rma = () => {
                 classification: row.classification,
                 model: row.model,
                 projectName: row.projectName,
-                returnDate: row.returnDate,
+                returnDate: row.returnDate === '' ? null : row.returnDate,
                 returnSrc: row.returnSrc,
                 returnSn: row.returnSn,
                 deliverDst: row.deliverDst,
-                deliverDate: row.deliverDate,
+                deliverDate: row.deliverDate === '' ? null : row.deliverDate,
                 deliverSn: row.deliverSn,
                 reenactment: row.reenactment as Reenactment,
                 person: row.person,
@@ -549,7 +549,7 @@ export const Rma = () => {
         classification: null,
         model: '',
         projectName: '',
-        deliverSn: '',
+        // deliverSn: '',
       };
       setData([newData, ...data]);
       setTotal(total + 1);
@@ -628,7 +628,7 @@ export const Rma = () => {
         let text = '';
         switch (rmaStatus) {
           case '완료':
-            color = 'purple';
+            color = 'geekblue';
             text = '완료';
             break;
           case '선출고':
@@ -636,8 +636,12 @@ export const Rma = () => {
             text = '선출고';
             break;
           case '선입고':
-            color = 'blue';
+            color = 'purple';
             text = '선입고';
+            break;
+          case '임시':
+            color = 'red';
+            text = '임시';
             break;
         }
         return (
