@@ -10,6 +10,9 @@ import {
   verifyEmailVariables,
 } from '../__generated__/verifyEmail';
 import { useHistory } from 'react-router';
+import { useMe } from '../hooks/useMe';
+import { LOCALSTORAGE_TOKEN } from '../constants';
+import { isLoggedInVar } from '../apollo';
 
 const Container = styled.div`
   display: flex;
@@ -63,6 +66,7 @@ const VERIFY_EMAIL_MUTATION = gql`
 
 export const ConfirmEmail: React.FC = () => {
   const history = useHistory();
+  const { data: meData } = useMe();
 
   const onCompleted = (data: verifyEmail) => {
     const {
@@ -93,6 +97,10 @@ export const ConfirmEmail: React.FC = () => {
 
   useEffect(() => {
     const [_, code] = window.location.href.split('code=');
+    if (meData) {
+      localStorage.removeItem(LOCALSTORAGE_TOKEN);
+      isLoggedInVar(false);
+    }
     verifyEmail({
       variables: {
         input: {
